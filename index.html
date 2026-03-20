@@ -1,888 +1,816 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>E-Commerce &amp; Digitale Geschäftsmodelle · THWS Business School</title>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>E-Commerce &amp; Digitale Geschäftsmodelle · THWS Business School</title>
+<style>
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  font-family:'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;
+  background:#fff;color:#212529;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  line-height:1.5
+}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
 
-  <style>
-    /* ── Base ── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      background: #ffffff;
-      color: #212529;
-      overflow-x: hidden;
-    }
+/* ── GRID SYSTEM ── */
+/* 8px base, columns: max 1200px centered, 32px gutters */
+.container{max-width:1200px;margin:0 auto;padding:0 32px}
+@media(max-width:640px){.container{padding:0 16px}}
 
-    /* ── Orange top bar (Aicher-Manifest) ── */
-    .top-bar { height: 4px; background: #E87722; position: fixed; top: 0; left: 0; right: 0; z-index: 200; }
+/* ── AICHER TOP BAR ── */
+.topbar{height:4px;background:#E87722;position:fixed;top:0;left:0;right:0;z-index:200}
 
-    /* ── Navbar ── */
-    .navbar {
-      position: sticky; top: 4px; z-index: 100;
-      background: #fff;
-      border-bottom: 1px solid #E9ECEF;
-      box-shadow: 0 1px 8px rgba(0,0,0,0.05);
-      height: 64px;
-      display: flex; align-items: center;
-      padding: 0 32px;
-      justify-content: space-between;
-    }
-    .navbar-brand {
-      display: flex; align-items: center; gap: 12px;
-    }
-    .navbar-logo {
-      height: 36px; width: auto;
-    }
-    .navbar-title {
-      font-size: 0.78rem; font-weight: 700;
-      color: #005B9A; letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-    .navbar-divider {
-      width: 1px; height: 28px;
-      background: #E9ECEF; margin: 0 4px;
-    }
+/* ── NAVBAR ── */
+.navbar{
+  position:sticky;top:4px;z-index:100;
+  background:#fff;
+  border-bottom:1px solid #E9ECEF;
+  height:64px;
+}
+.navbar__inner{
+  max-width:1200px;margin:0 auto;padding:0 32px;
+  height:64px;display:flex;align-items:center;
+  justify-content:space-between;gap:24px;
+}
+.navbar__brand{display:flex;align-items:center;gap:16px;flex-shrink:0}
+.navbar__logo{height:28px;width:auto;flex-shrink:0}
+.navbar__sep{width:1px;height:24px;background:#E9ECEF;flex-shrink:0}
+.navbar__kurs{
+  font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:#6C757D;white-space:nowrap;
+}
+.navbar__right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.lang-btn{
+  padding:4px 12px;
+  border:1.5px solid #E9ECEF;background:#fff;
+  font-size:11px;font-weight:700;letter-spacing:.06em;
+  color:#6C757D;transition:all .15s;
+}
+.lang-btn.is-active{background:#E87722;color:#fff;border-color:#E87722}
+.lang-btn:hover:not(.is-active){border-color:#005B9A;color:#005B9A}
 
-    /* ── Language toggle ── */
-    .lang-wrap { display: flex; gap: 4px; }
-    .lang-btn {
-      padding: 4px 12px; border-radius: 4px;
-      border: 1.5px solid #E9ECEF; background: #fff;
-      cursor: pointer; font-weight: 700; font-size: 0.75rem;
-      color: #6C757D; transition: all 0.15s;
-      font-family: inherit;
-    }
-    .lang-btn.active { background: #E87722; color: #fff; border-color: #E87722; }
-    .lang-btn:hover:not(.active) { border-color: #005B9A; color: #005B9A; }
+/* ── HERO ── */
+.hero{
+  background:#005B9A;
+  padding:80px 0 72px;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';
+  position:absolute;top:-80px;right:-80px;
+  width:480px;height:480px;border-radius:50%;
+  background:rgba(232,119,34,.1);
+  pointer-events:none;
+}
+.hero__inner{
+  max-width:1200px;margin:0 auto;padding:0 32px;
+  display:grid;grid-template-columns:1fr auto;
+  align-items:end;gap:64px;
+}
+@media(max-width:900px){.hero__inner{grid-template-columns:1fr;gap:40px}}
+.hero__label{
+  font-size:11px;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.5);
+  margin-bottom:16px;
+}
+.hero__title{
+  font-size:clamp(40px,6vw,72px);
+  font-weight:800;color:#fff;
+  line-height:1.05;letter-spacing:-.02em;
+  margin-bottom:0;
+}
+.hero__title em{color:#E87722;font-style:normal;display:block}
+.hero__sub{
+  font-size:17px;color:rgba(255,255,255,.72);
+  line-height:1.7;margin-top:24px;max-width:540px;
+}
+.hero__badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px}
+.hero__badge{
+  border:1.5px solid rgba(255,255,255,.3);
+  color:rgba(255,255,255,.7);
+  font-size:11px;font-weight:700;letter-spacing:.08em;
+  padding:5px 12px;text-transform:uppercase;
+}
+.hero__cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:40px}
+.btn-primary{
+  background:#E87722;color:#fff;
+  padding:12px 28px;font-size:13px;font-weight:700;
+  border:2px solid #E87722;letter-spacing:.04em;
+  transition:background .15s,transform .15s;
+  display:inline-block;
+}
+.btn-primary:hover{background:#cf6a1c;border-color:#cf6a1c;transform:translateY(-1px)}
+.btn-outline-white{
+  background:transparent;color:#fff;
+  padding:12px 28px;font-size:13px;font-weight:700;
+  border:2px solid rgba(255,255,255,.4);letter-spacing:.04em;
+  transition:border-color .15s;
+  display:inline-block;
+}
+.btn-outline-white:hover{border-color:rgba(255,255,255,.8)}
 
-    /* ── Hero ── */
-    .hero {
-      background: #005B9A;
-      position: relative;
-      overflow: hidden;
-      padding: 80px 32px 64px;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .hero-geo-1 {
-      position: absolute; top: -60px; right: -80px;
-      width: 380px; height: 380px; border-radius: 50%;
-      background: rgba(232,119,34,0.14);
-      animation: floatA 12s ease-in-out infinite;
-      pointer-events: none;
-    }
-    .hero-geo-2 {
-      position: absolute; bottom: -40px; left: -40px;
-      width: 220px; height: 220px;
-      background: rgba(255,255,255,0.06);
-      transform: rotate(30deg);
-      animation: floatB 16s ease-in-out infinite;
-      pointer-events: none;
-    }
-    @keyframes floatA { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-20px,20px); } }
-    @keyframes floatB { 0%,100% { transform: rotate(30deg) translate(0,0); } 50% { transform: rotate(35deg) translate(10px,-10px); } }
+/* ── STATS BAR ── */
+.statsbar{
+  background:#fff;
+  border-bottom:1px solid #E9ECEF;
+}
+.statsbar__inner{
+  max-width:1200px;margin:0 auto;padding:0 32px;
+  display:flex;flex-wrap:wrap;
+}
+.stat{
+  flex:1;min-width:150px;
+  padding:28px 24px;
+  text-align:center;
+  position:relative;
+}
+.stat+.stat::before{
+  content:'';position:absolute;
+  left:0;top:24px;height:calc(100% - 48px);
+  width:1px;background:#E9ECEF;
+}
+.stat__num{
+  font-size:36px;font-weight:900;
+  color:#E87722;line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.stat__lbl{
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;
+  color:#005B9A;margin-top:8px;
+}
 
-    .hero-content { position: relative; z-index: 2; max-width: 900px; text-align: center; }
-    .hero-eyebrow {
-      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em;
-      text-transform: uppercase; color: rgba(255,255,255,0.6);
-      margin-bottom: 16px;
-    }
-    .hero-kurs-tag {
-      display: inline-block;
-      border: 1.5px solid rgba(255,255,255,0.4);
-      color: rgba(255,255,255,0.82);
-      padding: 4px 14px;
-      font-size: 0.72rem; font-weight: 700;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      margin-bottom: 24px;
-    }
-    .hero-title {
-      font-size: clamp(2.8rem, 7vw, 6rem);
-      font-weight: 800; color: #fff;
-      line-height: 1.0; margin-bottom: 16px;
-    }
-    .hero-title span { color: #E87722; }
-    .hero-subtitle {
-      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-      color: rgba(255,255,255,0.75);
-      font-weight: 400; margin-bottom: 32px;
-      line-height: 1.5;
-    }
-    .hero-badges {
-      display: flex; flex-wrap: wrap; gap: 8px;
-      justify-content: center; margin-bottom: 40px;
-    }
-    .hero-badge {
-      border: 1.5px solid rgba(255,255,255,0.35);
-      color: rgba(255,255,255,0.72);
-      padding: 4px 12px; font-size: 0.72rem; font-weight: 600;
-    }
-    .hero-cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-    .btn-primary {
-      background: #E87722; color: #fff;
-      padding: 12px 28px; font-weight: 700; font-size: 0.9rem;
-      border: 2px solid #E87722; cursor: pointer;
-      text-decoration: none; display: inline-block;
-      transition: background 0.15s, transform 0.15s;
-      font-family: inherit;
-    }
-    .btn-primary:hover { background: #d06a1a; border-color: #d06a1a; transform: translateY(-1px); }
-    .btn-outline {
-      background: transparent; color: #fff;
-      padding: 12px 28px; font-weight: 700; font-size: 0.9rem;
-      border: 2px solid rgba(255,255,255,0.5); cursor: pointer;
-      text-decoration: none; display: inline-block;
-      transition: border-color 0.15s;
-      font-family: inherit;
-    }
-    .btn-outline:hover { border-color: #fff; }
+/* ── SECTIONS ── */
+.section{padding:80px 0}
+.section--alt{background:#F8F9FA}
+.section__eyebrow{
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.14em;
+  color:#E87722;margin-bottom:8px;
+}
+.section__title{
+  font-size:clamp(24px,3vw,36px);
+  font-weight:800;color:#212529;
+  line-height:1.2;
+}
+.section__lead{
+  font-size:15px;color:#6C757D;
+  line-height:1.75;margin-top:16px;
+  max-width:640px;
+}
+.divider{width:48px;height:3px;background:#E87722;margin:12px 0 32px}
 
-    /* ── Stats bar ── */
-    .stats-bar {
-      background: #fff;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-      border-bottom: 1px solid #E9ECEF;
-    }
-    .stats-inner {
-      max-width: 960px; margin: 0 auto;
-      display: flex; flex-wrap: wrap;
-    }
-    .stat-item {
-      flex: 1; min-width: 140px;
-      text-align: center; padding: 28px 24px;
-      position: relative;
-    }
-    .stat-item + .stat-item::before {
-      content: '';
-      position: absolute; left: 0; top: 25%; height: 50%;
-      width: 1px; background: rgba(0,91,154,0.1);
-    }
-    .stat-num { font-size: 2.5rem; font-weight: 900; color: #E87722; line-height: 1; }
-    .stat-lbl {
-      font-size: 0.68rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      color: #005B9A; margin-top: 6px;
-    }
+/* ── DEMING QUOTE ── */
+.quote{
+  border-left:3px solid #E87722;
+  padding:32px 40px;
+  background:#F8F9FA;
+  margin-top:48px;
+}
+.quote__text{
+  font-size:clamp(18px,2.5vw,26px);
+  font-weight:700;color:#212529;
+  line-height:1.45;font-style:italic;
+}
+.quote__source{
+  margin-top:16px;
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.12em;
+  color:#E87722;
+}
 
-    /* ── Section layout ── */
-    .section { padding: 72px 32px; }
-    .section-inner { max-width: 960px; margin: 0 auto; }
-    .section-eyebrow {
-      font-size: 0.68rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.14em;
-      color: #E87722; margin-bottom: 8px;
-    }
-    .section-title {
-      font-size: clamp(1.6rem, 3vw, 2.2rem);
-      font-weight: 800; color: #005B9A;
-      line-height: 1.2; margin-bottom: 16px;
-    }
-    .section-lead {
-      font-size: 1rem; color: #6C757D;
-      line-height: 1.7; max-width: 680px;
-    }
-    .divider-line {
-      width: 48px; height: 4px;
-      background: #E87722; margin: 12px 0 24px;
-    }
+/* ── WORKFLOW ── */
+.workflow{
+  display:flex;align-items:stretch;
+  margin-top:40px;overflow-x:auto;
+  border:1px solid #E9ECEF;
+}
+.wf-step{
+  flex:1;min-width:120px;
+  padding:20px 16px;
+  text-align:center;
+  border-right:1px solid #E9ECEF;
+  position:relative;
+}
+.wf-step:last-child{border-right:0}
+.wf-step__num{
+  font-size:11px;font-weight:700;
+  color:#E87722;letter-spacing:.1em;
+  text-transform:uppercase;margin-bottom:8px;
+}
+.wf-step__label{
+  font-size:13px;font-weight:700;color:#212529;
+  line-height:1.3;
+}
+.wf-step__arrow{
+  position:absolute;right:-1px;top:50%;
+  transform:translateY(-50%);
+  width:8px;height:8px;
+  border-top:2px solid #E87722;
+  border-right:2px solid #E87722;
+  transform:translateY(-50%) rotate(45deg);
+  background:#fff;
+  z-index:1;
+}
+.wf-step:last-child .wf-step__arrow{display:none}
 
-    /* ── Deming quote ── */
-    .deming-section {
-      background: #F1F3F5;
-      border-left: 4px solid #E87722;
-      padding: 40px 48px;
-    }
-    .deming-quote {
-      font-size: clamp(1.3rem, 3vw, 2rem);
-      font-weight: 700; color: #212529;
-      line-height: 1.4; margin-bottom: 12px;
-      font-style: italic;
-    }
-    .deming-source {
-      font-size: 0.78rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      color: #E87722;
-    }
+/* ── LAB GRID ── */
+.lab-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;background:#E9ECEF;
+  border:1px solid #E9ECEF;
+  margin-top:48px;
+}
+@media(max-width:900px){.lab-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:580px){.lab-grid{grid-template-columns:1fr}}
 
-    /* ── Lab cards grid ── */
-    .labs-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 24px;
-      margin-top: 48px;
-    }
-    .lab-card {
-      background: #fff;
-      border: 1.5px solid #E9ECEF;
-      border-top: 3px solid #005B9A;
-      padding: 28px;
-      position: relative;
-      transition: transform 0.25s ease, box-shadow 0.25s ease, border-top-color 0.25s ease;
-      display: flex; flex-direction: column;
-      min-height: 260px;
-      cursor: pointer;
-      text-decoration: none; color: inherit;
-    }
-    .lab-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 16px 32px rgba(232,119,34,0.12);
-      border-top-color: #E87722;
-      border-color: rgba(232,119,34,0.3);
-    }
-    .lab-card-num {
-      position: absolute; top: 16px; right: 20px;
-      font-size: 2.8rem; font-weight: 900;
-      color: rgba(0,91,154,0.07); line-height: 1;
-      pointer-events: none; user-select: none;
-      font-variant-numeric: tabular-nums;
-    }
-    .lab-icon {
-      width: 40px; height: 40px;
-      background: #005B9A; border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 16px; flex-shrink: 0;
-    }
-    .lab-icon svg { color: #fff; }
-    .lab-kw {
-      font-size: 0.68rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      color: #6C757D; margin-bottom: 4px;
-    }
-    .lab-title {
-      font-size: 1rem; font-weight: 800;
-      color: #005B9A; line-height: 1.25;
-      margin-bottom: 8px;
-    }
-    .lab-desc {
-      font-size: 0.84rem; color: #6C757D;
-      line-height: 1.65; flex: 1; margin-bottom: 16px;
-    }
-    .lab-footer {
-      display: flex; align-items: center;
-      justify-content: space-between; margin-top: auto;
-    }
-    .diff-badge {
-      font-size: 0.68rem; font-weight: 700;
-      padding: 3px 10px; letter-spacing: 0.04em;
-    }
-    .diff-einstieg  { background: #d1fae5; color: #065f46; }
-    .diff-mittel    { background: #fef3c7; color: #92400e; }
-    .diff-fortgesch { background: #fee2e2; color: #991b1b; }
-    .lab-cta { font-size: 0.82rem; font-weight: 700; color: #E87722; }
+.lab-card{
+  background:#fff;
+  padding:32px 28px;
+  display:flex;flex-direction:column;
+  min-height:220px;
+  transition:background .15s;
+  position:relative;
+}
+.lab-card:hover{background:#F8F9FA}
+.lab-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;
+  height:3px;background:#E9ECEF;
+  transition:background .15s;
+}
+.lab-card:hover::before{background:#E87722}
+.lab-card__num{
+  font-size:11px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:#9CA3AF;margin-bottom:8px;
+}
+.lab-card__icon{
+  width:32px;height:32px;
+  margin-bottom:16px;color:#005B9A;
+  flex-shrink:0;
+}
+.lab-card__title{
+  font-size:15px;font-weight:800;
+  color:#212529;line-height:1.3;
+  margin-bottom:8px;
+}
+.lab-card__desc{
+  font-size:13px;color:#6C757D;
+  line-height:1.65;flex:1;
+}
+.lab-card__footer{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  margin-top:24px;padding-top:16px;
+  border-top:1px solid #F1F3F5;
+}
+.lab-card__diff{
+  font-size:10px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;
+}
+.diff--e{background:#D1FAE5;color:#065F46}
+.diff--m{background:#FEF3C7;color:#92400E}
+.diff--f{background:#FEE2E2;color:#991B1B}
+.lab-card__cta{
+  font-size:12px;font-weight:700;
+  color:#E87722;letter-spacing:.04em;
+  display:flex;align-items:center;gap:4px;
+}
 
-    /* ── Workflow ── */
-    .workflow-row {
-      display: flex; align-items: center;
-      gap: 0; flex-wrap: nowrap; overflow-x: auto;
-      padding-bottom: 4px; margin-top: 32px;
-    }
-    .wf-box {
-      background: #fff;
-      border: 1.5px solid rgba(0,91,154,0.25);
-      padding: 14px 20px;
-      font-weight: 700; font-size: 0.85rem;
-      color: #005B9A; white-space: nowrap;
-      flex: 1; text-align: center; min-width: 110px;
-    }
-    .wf-arrow {
-      color: #E87722; font-size: 1.4rem; font-weight: 900;
-      flex-shrink: 0; padding: 0 8px;
-      animation: arrowPulse 2.5s ease-in-out infinite;
-    }
-    @keyframes arrowPulse {
-      0%,100% { opacity:1; transform:translateX(0); }
-      50%      { opacity:0.5; transform:translateX(3px); }
-    }
+/* ── INSTRUCTOR ── */
+.instructor{
+  display:grid;
+  grid-template-columns:320px 1fr;
+  gap:64px;align-items:start;
+  margin-top:48px;
+}
+@media(max-width:800px){.instructor{grid-template-columns:1fr;gap:32px}}
 
-    /* ── Eva Klenk card (LinkedIn style) ── */
-    .instructor-card {
-      background: #fff;
-      border: 1.5px solid #E9ECEF;
-      border-radius: 12px;
-      overflow: hidden;
-      max-width: 480px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-    }
-    .instructor-cover {
-      height: 80px;
-      background: linear-gradient(135deg, #005B9A 0%, #003d6b 100%);
-      position: relative;
-    }
-    .instructor-cover::after {
-      content: '';
-      position: absolute; bottom: 0; left: 0; right: 0; top: 0;
-      background-image: repeating-linear-gradient(
-        45deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px,
-        transparent 1px, transparent 12px
-      );
-    }
-    .instructor-avatar-wrap {
-      padding: 0 24px;
-      margin-top: -36px;
-      position: relative; z-index: 2;
-    }
-    .instructor-avatar {
-      width: 80px; height: 80px; border-radius: 50%;
-      border: 3px solid #fff;
-      background: #E9ECEF;
-      object-fit: cover;
-      display: block;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-    .instructor-avatar-placeholder {
-      width: 80px; height: 80px; border-radius: 50%;
-      border: 3px solid #fff;
-      background: #005B9A;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      font-size: 2rem; color: #fff; font-weight: 800;
-    }
-    .instructor-body { padding: 12px 24px 24px; }
-    .instructor-name { font-size: 1.1rem; font-weight: 800; color: #212529; }
-    .instructor-title { font-size: 0.84rem; color: #6C757D; margin-top: 2px; line-height: 1.5; }
-    .instructor-org {
-      display: flex; align-items: center; gap: 8px;
-      margin-top: 12px; font-size: 0.8rem; color: #005B9A; font-weight: 600;
-    }
-    .instructor-tags {
-      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px;
-    }
-    .instructor-tag {
-      background: rgba(0,91,154,0.08);
-      color: #005B9A; font-size: 0.72rem; font-weight: 700;
-      padding: 3px 10px; border-radius: 20px;
-    }
-    .instructor-contact {
-      margin-top: 16px; font-size: 0.78rem; color: #6C757D;
-      display: flex; align-items: center; gap: 6px;
-    }
+.instructor-card{
+  border:1px solid #E9ECEF;
+  overflow:hidden;
+}
+.instructor-card__cover{
+  height:64px;background:#005B9A;
+  position:relative;
+}
+.instructor-card__cover::after{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    -45deg,
+    rgba(255,255,255,0) 0,
+    rgba(255,255,255,0) 6px,
+    rgba(255,255,255,.04) 6px,
+    rgba(255,255,255,.04) 7px
+  );
+}
+.instructor-card__avatar-row{
+  padding:0 24px;
+  margin-top:-36px;
+  position:relative;z-index:1;
+}
+.instructor-card__avatar{
+  width:72px;height:72px;border-radius:50%;
+  border:3px solid #fff;
+  object-fit:cover;object-position:top;
+}
+.instructor-card__body{padding:12px 24px 24px}
+.instructor-card__name{
+  font-size:16px;font-weight:800;color:#212529;
+  line-height:1.2;
+}
+.instructor-card__role{
+  font-size:13px;color:#6C757D;
+  line-height:1.5;margin-top:4px;
+}
+.instructor-card__org{
+  display:flex;align-items:center;gap:8px;
+  margin-top:12px;
+  font-size:12px;font-weight:700;color:#005B9A;
+}
+.instructor-card__tags{
+  display:flex;flex-wrap:wrap;gap:6px;
+  margin-top:12px;
+}
+.instructor-card__tag{
+  background:rgba(0,91,154,.08);
+  color:#005B9A;
+  font-size:11px;font-weight:700;
+  padding:3px 10px;
+  border-radius:20px;
+}
+.instructor-card__contact{
+  display:flex;align-items:center;gap:8px;
+  margin-top:16px;
+  font-size:12px;color:#6C757D;
+  border-top:1px solid #F1F3F5;
+  padding-top:16px;
+}
+.instructor-card__contact a{color:#005B9A;font-weight:600}
 
-    /* ── AI Section ── */
-    .ai-card {
-      background: #F1F3F5;
-      border-left: 3px solid #E87722;
-      padding: 24px 28px;
-      margin-bottom: 16px;
-    }
-    .ai-card-title { font-size: 0.9rem; font-weight: 800; color: #212529; margin-bottom: 8px; }
-    .ai-card-body { font-size: 0.84rem; color: #6C757D; line-height: 1.65; }
-    .code-block {
-      background: #0f172a;
-      border-left: 3px solid #E87722;
-      color: #e2e8f0;
-      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-      font-size: 0.78rem; line-height: 1.7;
-      padding: 16px 20px;
-      overflow-x: auto;
-    }
-    .code-comment { color: #64748b; }
-    .code-key { color: #93c5fd; }
-    .code-str { color: #86efac; }
+.instructor__bio p{
+  font-size:15px;color:#6C757D;
+  line-height:1.75;margin-bottom:16px;
+}
+.instructor__bio p:last-child{margin-bottom:0}
 
-    /* ── Footer ── */
-    .footer {
-      background: #212529;
-      padding: 48px 32px;
-      text-align: center;
-    }
-    .footer-inner { max-width: 960px; margin: 0 auto; }
-    .footer-title { font-size: 0.78rem; font-weight: 700; color: rgba(255,255,255,0.4);
-      text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px; }
-    .footer-text { font-size: 0.84rem; color: rgba(255,255,255,0.55); line-height: 1.7; }
-    .footer-link { color: #E87722; text-decoration: none; }
-    .footer-link:hover { text-decoration: underline; }
+/* ── AI SECTION ── */
+.ai-cards{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:24px;margin-top:40px;
+}
+@media(max-width:800px){.ai-cards{grid-template-columns:1fr}}
+.ai-card{
+  background:#F8F9FA;
+  border-left:3px solid #E87722;
+  padding:24px;
+}
+.ai-card__title{
+  font-size:13px;font-weight:800;
+  color:#212529;margin-bottom:8px;
+}
+.ai-card__body{
+  font-size:13px;color:#6C757D;
+  line-height:1.65;
+}
+.code-block{
+  background:#0F172A;
+  border-left:3px solid #E87722;
+  padding:24px;
+  margin-top:32px;
+  overflow-x:auto;
+}
+.code-block code{
+  font-family:'Consolas','Monaco','Courier New',monospace;
+  font-size:12px;color:#E2E8F0;
+  line-height:1.8;
+  white-space:pre;
+  display:block;
+}
+.code-block .c{color:#64748B}
+.code-block .s{color:#86EFAC}
 
-    /* ── Scroll reveal ── */
-    .sr {
-      opacity: 0; transform: translateY(16px);
-      transition: opacity 0.55s ease, transform 0.55s ease;
-    }
-    .sr.visible { opacity: 1; transform: translateY(0); }
+/* ── FOOTER ── */
+.footer{
+  background:#212529;
+  padding:56px 0;
+}
+.footer__inner{
+  max-width:1200px;margin:0 auto;padding:0 32px;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:64px;align-items:start;
+}
+@media(max-width:700px){.footer__inner{grid-template-columns:1fr;gap:32px}}
+.footer__brand{}
+.footer__thws{filter:brightness(0) invert(1) opacity(.6);height:20px;width:auto}
+.footer__title{
+  font-size:13px;font-weight:700;color:rgba(255,255,255,.9);
+  margin-top:16px;
+}
+.footer__sub{
+  font-size:12px;color:rgba(255,255,255,.4);
+  margin-top:6px;line-height:1.6;
+}
+.footer__links{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+@media(max-width:700px){.footer__links{align-items:flex-start}}
+.footer__link{
+  font-size:12px;font-weight:600;
+  color:rgba(255,255,255,.45);
+  transition:color .15s;
+}
+.footer__link:hover{color:#E87722}
+.footer__disclaimer{
+  grid-column:1/-1;
+  font-size:11px;color:rgba(255,255,255,.2);
+  line-height:1.6;padding-top:32px;
+  border-top:1px solid rgba(255,255,255,.08);
+}
 
-    /* ── BG alternating ── */
-    .bg-alt { background: #F1F3F5; }
+/* ── SCROLL REVEAL ── */
+.sr{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease}
+.sr.visible{opacity:1;transform:none}
 
-    /* ── Responsive ── */
-    @media (max-width: 640px) {
-      .hero { padding: 64px 20px 48px; }
-      .section { padding: 48px 20px; }
-      .navbar { padding: 0 20px; }
-      .deming-section { padding: 32px 24px; }
-      .labs-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+/* ── RESPONSIVE HELPERS ── */
+@media(max-width:640px){
+  .hero{padding:56px 0 48px}
+  .section{padding:56px 0}
+  .hero__inner{grid-template-columns:1fr}
+  .stat{min-width:120px;padding:20px 12px}
+  .stat__num{font-size:28px}
+}
+</style>
 </head>
 <body>
 
-<div class="top-bar"></div>
+<div class="topbar"></div>
 
-<div id="root"></div>
+<!-- NAVBAR -->
+<nav class="navbar" id="top">
+  <div class="navbar__inner">
+    <div class="navbar__brand">
+      <svg class="navbar__logo" viewBox="0 0 274.3 91.2" xmlns="http://www.w3.org/2000/svg"><style>.st0{fill:#FF6A00}</style><g><g><path class="st0" d="M15,32.6h2.6c1.1,0,2-0.9,2-2v-9.1c0-1.1,0.9-2,2-2h15.6c1.1,0,2-0.9,2-2v-2.6c0-1.1-0.9-2-2-2H21.5 c-1.1,0-2,0.9-2,2v2.6c0,1.1-0.9,2-2,2H15c-1.1,0-2,0.9-2,2v9.1C13,31.7,13.9,32.6,15,32.6z"/><path class="st0" d="M63.1,0H47.5c-1.1,0-2,0.9-2,2v2.6c0,1.1,0.9,2,2,2h15.6c1.1,0,2-0.9,2-2V2C65.1,0.9,64.2,0,63.1,0z"/><path class="st0" d="M76.1,13h-2.6c-1.1,0-2,0.9-2,2v9.1c0,1.1,0.9,2,2,2h2.6c1.1,0,2-0.9,2-2V15C78.1,13.9,77.2,13,76.1,13z"/><path class="st0" d="M76.1,32.6h-2.6c-1.1,0-2,0.9-2,2v2.5c0,1.1,0.9,2,2,2h2.6c1.1,0,2-0.9,2-2v-2.6 C78.1,33.4,77.2,32.6,76.1,32.6z"/><path class="st0" d="M52.1,34.5c0-1.1-0.9-2-2-2h-2.6c-1.1,0-2,0.9-2,2v22.1c0,1.1-0.9,2-2,2h-9.1c-1.1,0-2-0.9-2-2V34.5 c0-1.1,0.9-2,2-2H37c1.1,0,2-0.9,2-2v-2.6c0-1.1-0.9-2-2-2h-2.6c-1.1,0-2,0.9-2,2v2.6c0,1.1-0.9,2-2,2H28c-1.1,0-2,0.9-2,2v28.6 c0,1.1,0.9,2,2,2h15.6c1.1,0,2-0.9,2-2v-2.6c0-1.1,0.9-2,2-2h2.6c1.1,0,2-0.9,2-2L52.1,34.5L52.1,34.5z"/><path class="st0" d="M63.1,13H47.5c-1.1,0-2,0.9-2,2v2.6c0,1.1,0.9,2,2,2h9.1c1.1,0,2,0.9,2,2v15.5c0,1.1,0.9,2,2,2h2.6 c1.1,0,2-0.9,2-2V15C65.1,13.9,64.2,13,63.1,13z"/><path class="st0" d="M63.1,45.6h-2.6c-1.1,0-2,0.9-2,2v22.1c0,1.1-0.9,2-2,2H54c-1.1,0-2,0.9-2,2v2.6c0,1.1,0.9,2,2,2h2.6 c1.1,0,2-0.9,2-2v-2.6c0-1.1,0.9-2,2-2h2.6c1.1,0,2-0.9,2-2V47.5C65.1,46.5,64.2,45.6,63.1,45.6z"/><path class="st0" d="M43.6,71.6H21.5c-1.1,0-2-0.9-2-2V47.5c0-1.1-0.9-2-2-2H15c-1.1,0-2,0.9-2,2v22.1c0,1.1,0.9,2,2,2h2.6 c1.1,0,2,0.9,2,2v2.6c0,1.1,0.9,2,2,2h22.1c1.1,0,2-0.9,2-2v-2.6C45.5,72.5,44.7,71.6,43.6,71.6z"/><path class="st0" d="M30.6,84.6H15c-1.1,0-2,0.9-2,2v2.6c0,1.1,0.9,2,2,2h15.6c1.1,0,2-0.9,2-2v-2.6 C32.5,85.5,31.7,84.6,30.6,84.6z"/><path class="st0" d="M4.6,58.6H2c-1.1,0-2,0.9-2,2v9.1c0,1.1,0.9,2,2,2h2.6c1.1,0,2-0.9,2-2v-9.1C6.5,59.5,5.6,58.6,4.6,58.6z"/></g><g><path class="st0" d="M103.1,55.2V34.5h-10v-8.4h10V14.6h9.5v11.5h11.9v8.4h-11.9v18.6c0,2.6,1,3.7,3.7,3.7h8.2v8.3h-11.4 C106.3,65.1,103.1,62.3,103.1,55.2z"/><path class="st0" d="M131.7,9.1h9.5v20c2.5-2.8,6.2-4.2,10.6-4.2c9.6,0,15.5,6.1,15.5,16.6v23.6h-9.5V42.5c0-6.1-2.9-9-7.9-9 c-5.2,0-8.6,3.7-8.6,9.3v22.3h-9.5v-56H131.7z"/><path class="st0" d="M172.1,26.1h9.9l7.6,28.4l7.6-28.4h11l7.6,28.4l7.6-28.4h9.9l-11.7,39h-11.3l-7.6-28.3l-7.6,28.3h-11.3 L172.1,26.1z"/><path class="st0" d="M236.3,53.7h9.8c0.3,3.3,3.1,4.9,7.9,4.9c4.3,0,7-1.8,7-4.7c0-2.5-1.9-3.8-5.4-4.1l-6.2-0.6 c-7.3-0.8-11.8-5.1-11.8-11.8c0-7.8,6.2-12.6,16.2-12.6c9.8,0,16.1,4.2,16.6,12.3h-9.5c-0.2-3.1-2.9-4.6-7.2-4.6 c-4.1,0-6.6,1.6-6.6,4.3c0,2.3,1.8,3.6,5.8,4.1l6.3,0.7c7.4,0.9,11.6,5.2,11.6,11.7c0,7.8-6.5,12.9-16.9,12.9 C243.1,66.3,236.7,62,236.3,53.7z"/></g></g></svg>
+      <div class="navbar__sep"></div>
+      <span class="navbar__kurs" data-de="E-Commerce &amp; Digitale Geschäftsmodelle" data-en="E-Commerce &amp; Digital Business Models"></span>
+    </div>
+    <div class="navbar__right">
+      <button class="lang-btn is-active" onclick="setLang('de')">DE</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
 
-<script type="text/babel">
-const { useState, useEffect, useRef } = React;
+<!-- HERO -->
+<section class="hero">
+  <div class="hero__inner">
+    <div class="hero__content">
+      <p class="hero__label" data-de="Master Marken- und Medienmanagement · THWS Business School" data-en="Master Brand &amp; Media Management · THWS Business School"></p>
+      <h1 class="hero__title">
+        <span data-de="E-Commerce &amp; Digitale" data-en="E-Commerce &amp; Digital"></span>
+        <em data-de="Geschäftsmodelle" data-en="Business Models"></em>
+      </h1>
+      <p class="hero__sub" data-de="Datengetriebene Entscheidungen im E-Commerce – von der Analyse bis zur Strategie. Neun interaktive Labs mit echten Daten. Keine Vorkenntnisse nötig." data-en="Data-driven decisions in e-commerce – from analysis to strategy. Nine interactive labs with real-world data. No prior knowledge required."></p>
+      <div class="hero__badges">
+        <span class="hero__badge" data-de="9 interaktive Labs" data-en="9 interactive labs"></span>
+        <span class="hero__badge" data-de="Tableau Public" data-en="Tableau Public"></span>
+        <span class="hero__badge" data-de="15 Fragen pro Quiz" data-en="15 questions per quiz"></span>
+        <span class="hero__badge" data-de="Synthetische Echtdaten" data-en="Synthetic real-world data"></span>
+      </div>
+      <div class="hero__cta-row">
+        <a href="#labs" class="btn-primary" data-de="Labs entdecken" data-en="Explore Labs"></a>
+        <a href="#kurs" class="btn-outline-white" data-de="Über den Kurs" data-en="About the course"></a>
+      </div>
+    </div>
+  </div>
+</section>
 
-/* ── i18n ── */
-const T = {
-  de: {
-    navTitle: "E-Commerce & Digitale Geschäftsmodelle",
-    heroEyebrow: "Master Marken- und Medienmanagement · THWS Business School",
-    heroKursTag: "Interaktive Lernplattform",
-    heroTitle: ["E-Commerce", " & Digitale", " Geschäfts­modelle"],
-    heroSub: "Datengetriebene Entscheidungen im E-Commerce – von der Analyse bis zur Strategie.",
-    heroBadges: ["9 interaktive Labs", "Tableau-basiert", "Quizzes & Selbststudium", "Realitätsnahe Daten"],
-    heroCta1: "Labs entdecken",
-    heroCta2: "Über den Kurs",
-    stat1num: "9", stat1lbl: "Interaktive Labs",
-    stat2num: "15", stat2lbl: "Fragen pro Quiz",
-    stat3num: "100%", stat3lbl: "Hands-on",
-    stat4num: "0", stat4lbl: "Vorwissen nötig",
-    demingQuote: '„In God we trust. All others must bring data."',
-    demingSource: "W. Edwards Deming — Statistiker & Qualitätspionier",
-    labsEyebrow: "Kursstruktur",
-    labsTitle: "9 Labs · Ein roter Faden",
-    labsLead: "Alle Labs spielen bei UrbanCart – einem fiktiven europäischen Online-Händler für Mode, Lifestyle und Home. Du übernimmst die Rolle eines Junior Data Analysts und löst echte Business-Probleme.",
-    wfTitle: "Lernpfad pro Lab",
-    wfSteps: ["Kontext & Daten", "Tableau-Schritt­anleitung", "Analyse & Ergebnisse", "Quiz (15 Fragen)", "KI-Ausblick"],
-    instructorEyebrow: "Dozentin",
-    instructorTitle: "Prof. Dr.-Ing.",
-    instructorName: "Eva Klenk",
-    instructorSub: "Wirtschaftsinformatik · ERP-Systeme · Process Mining · RPA",
-    instructorOrg: "THWS Business School · Würzburg",
-    instructorTags: ["Wirtschaftsinformatik", "ERP-Systeme", "Process Mining", "RPA", "E-Commerce"],
-    instructorContact: "eva.klenk@thws.de",
-    aiEyebrow: "KI & Python",
-    aiTitle: "Wie würde das mit KI & Python aussehen?",
-    aiLead: "Jedes Lab enthält einen optionalen Ausblick: Wie lässt sich diese Analyse mit modernen KI-Tools und Python reproduzieren? Kein Code nötig – nur das Verständnis, was möglich ist.",
-    aiCard1Title: "Technischer Stack",
-    aiCard1Body: "Python · Plotly Dash · pandas · scikit-learn · VADER (Sentiment) · Jupyter Notebooks",
-    aiCard2Title: "Prompting-Anleitung",
-    aiCard2Body: "Jeder Ausblick enthält einen konkreten Prompt, mit dem du einen KI-Assistenten anweisen kannst, die Analyse zu reproduzieren – inklusive Datenpipeline und Dashboard.",
-    aiCard3Title: "Referenz-Dashboard",
-    aiCard3Body: "Gestalterische Grundlage ist das WHI-Dashboard (whi-dashboard.butscher.cloud) – interaktiv, responsiv, Plotly Dash.",
-    footerText: "Master Marken- und Medienmanagement · THWS Business School Würzburg",
-    footerSub: "Kurs konzipiert und durchgeführt von Prof. Dr.-Ing. Eva Klenk",
-    startLab: "Lab starten →",
-  },
-  en: {
-    navTitle: "E-Commerce & Digital Business Models",
-    heroEyebrow: "Master Brand & Media Management · THWS Business School",
-    heroKursTag: "Interactive Learning Platform",
-    heroTitle: ["E-Commerce", " & Digital", " Business Models"],
-    heroSub: "Data-driven decisions in e-commerce – from analysis to strategy.",
-    heroBadges: ["9 interactive labs", "Tableau-based", "Quizzes & self-study", "Real-world data"],
-    heroCta1: "Explore Labs",
-    heroCta2: "About the Course",
-    stat1num: "9", stat1lbl: "Interactive Labs",
-    stat2num: "15", stat2lbl: "Questions per Quiz",
-    stat3num: "100%", stat3lbl: "Hands-on",
-    stat4num: "0", stat4lbl: "Prior Knowledge Needed",
-    demingQuote: '“In God we trust. All others must bring data.”',
-    demingSource: "W. Edwards Deming — Statistician & Quality Pioneer",
-    labsEyebrow: "Course Structure",
-    labsTitle: "9 Labs · One Story",
-    labsLead: "All labs take place at UrbanCart – a fictional European online retailer for fashion, lifestyle and home goods. You take the role of a Junior Data Analyst solving real business problems.",
-    wfTitle: "Learning Path per Lab",
-    wfSteps: ["Context & Data", "Tableau Step-by-Step", "Analysis & Results", "Quiz (15 Questions)", "AI Outlook"],
-    instructorEyebrow: "Instructor",
-    instructorTitle: "Prof. Dr.-Ing.",
-    instructorName: "Eva Klenk",
-    instructorSub: "Business Informatics · ERP Systems · Process Mining · RPA",
-    instructorOrg: "THWS Business School · Würzburg",
-    instructorTags: ["Business Informatics", "ERP Systems", "Process Mining", "RPA", "E-Commerce"],
-    instructorContact: "eva.klenk@thws.de",
-    aiEyebrow: "AI & Python",
-    aiTitle: "How would this look with AI & Python?",
-    aiLead: "Each lab includes an optional outlook: how can this analysis be reproduced with modern AI tools and Python? No coding required – just understanding what's possible.",
-    aiCard1Title: "Technical Stack",
-    aiCard1Body: "Python · Plotly Dash · pandas · scikit-learn · VADER (Sentiment) · Jupyter Notebooks",
-    aiCard2Title: "Prompting Guide",
-    aiCard2Body: "Each outlook includes a concrete prompt you can use to instruct an AI assistant to reproduce the analysis – including data pipeline and dashboard.",
-    aiCard3Title: "Reference Dashboard",
-    aiCard3Body: "The design reference is the WHI Dashboard (whi-dashboard.butscher.cloud) – interactive, responsive, Plotly Dash.",
-    footerText: "Master Brand & Media Management · THWS Business School Würzburg",
-    footerSub: "Course designed and taught by Prof. Dr.-Ing. Eva Klenk",
-    startLab: "Start Lab →",
-  }
-};
+<!-- STATS BAR -->
+<div class="statsbar">
+  <div class="statsbar__inner">
+    <div class="stat sr">
+      <div class="stat__num">9</div>
+      <div class="stat__lbl" data-de="Interaktive Labs" data-en="Interactive Labs"></div>
+    </div>
+    <div class="stat sr" style="transition-delay:60ms">
+      <div class="stat__num">15</div>
+      <div class="stat__lbl" data-de="Fragen pro Quiz" data-en="Questions per Quiz"></div>
+    </div>
+    <div class="stat sr" style="transition-delay:120ms">
+      <div class="stat__num">7</div>
+      <div class="stat__lbl" data-de="Datensätze" data-en="Datasets"></div>
+    </div>
+    <div class="stat sr" style="transition-delay:180ms">
+      <div class="stat__num">0</div>
+      <div class="stat__lbl" data-de="Vorwissen nötig" data-en="Prior Knowledge Needed"></div>
+    </div>
+  </div>
+</div>
 
-/* ── Lab data ── */
-const LABS = [
-  {
-    id: 1,
-    diff: "einstieg",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-        <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-      </svg>
-    ),
-    de: { kw: "Lab 01 · Einführung", title: "Erste Schritte mit Tableau", desc: "Verbinde dich mit dem UrbanCart-Datensatz und baue dein erstes Sales-Dashboard: Umsatz, Bestellanzahl und Ø Warenkorbwert auf einen Blick.", diff: "Einstieg" },
-    en: { kw: "Lab 01 · Introduction", title: "Getting Started with Tableau", desc: "Connect to the UrbanCart dataset and build your first sales dashboard: revenue, order count and average basket value at a glance.", diff: "Beginner" },
-  },
-  {
-    id: 2,
-    diff: "einstieg",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-        <circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-      </svg>
-    ),
-    de: { kw: "Lab 02 · Kunden", title: "Wer kauft bei uns?", desc: "Analysiere Kunden nach Region, Altersgruppe und Gerät. Identifiziere das wertvollste Segment und visualisiere demografische Unterschiede.", diff: "Einstieg" },
-    en: { kw: "Lab 02 · Customers", title: "Who Buys from Us?", desc: "Analyse customers by region, age group and device. Identify the most valuable segment and visualise demographic differences.", diff: "Beginner" },
-  },
-  {
-    id: 3,
-    diff: "mittel",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-      </svg>
-    ),
-    de: { kw: "Lab 03 · RFM", title: "Die besten Kunden: RFM-Analyse", desc: "Berechne Recency, Frequency und Monetary-Scores, clustere Kunden im Scatter Plot und leite konkrete Marketingmaßnahmen ab.", diff: "Mittel" },
-    en: { kw: "Lab 03 · RFM", title: "Top Customers: RFM Analysis", desc: "Calculate Recency, Frequency and Monetary scores, cluster customers in a scatter plot and derive concrete marketing actions.", diff: "Intermediate" },
-  },
-  {
-    id: 4,
-    diff: "mittel",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/>
-        <line x1="6" y1="20" x2="6" y2="16"/>
-      </svg>
-    ),
-    de: { kw: "Lab 04 · Produkte", title: "Was verkauft sich? ABC-Analyse", desc: "Wende das Pareto-Prinzip an, baue ein Pareto-Diagramm und identifiziere Bestseller, Ladenhüter und Streichungskandidaten.", diff: "Mittel" },
-    en: { kw: "Lab 04 · Products", title: "What Sells? ABC Analysis", desc: "Apply the Pareto principle, build a Pareto chart and identify bestsellers, slow-movers and candidates for delisting.", diff: "Intermediate" },
-  },
-  {
-    id: 5,
-    diff: "mittel",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-      </svg>
-    ),
-    de: { kw: "Lab 05 · Zeitreihen", title: "Wann läuft's? Saisonalität & Trends", desc: "Visualisiere 2 Jahre Umsatzdaten, erkenne Black-Friday- und Weihnachts-Peaks und nutze Tableaus eingebaute Forecast-Funktion.", diff: "Mittel" },
-    en: { kw: "Lab 05 · Time Series", title: "When Does It Peak? Seasonality & Trends", desc: "Visualise 2 years of revenue data, identify Black Friday and Christmas peaks and use Tableau's built-in forecast function.", diff: "Intermediate" },
-  },
-  {
-    id: 6,
-    diff: "mittel",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-      </svg>
-    ),
-    de: { kw: "Lab 06 · Conversion", title: "Warum brechen Kunden ab?", desc: "Baue einen Sales Funnel (Besuch → Warenkorb → Checkout → Kauf), berechne Conversion Rates und identifiziere den größten Drop-off.", diff: "Mittel" },
-    en: { kw: "Lab 06 · Conversion", title: "Why Do Customers Drop Off?", desc: "Build a sales funnel (visit → cart → checkout → purchase), calculate conversion rates and identify the biggest drop-off point.", diff: "Intermediate" },
-  },
-  {
-    id: 7,
-    diff: "fortgesch",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-      </svg>
-    ),
-    de: { kw: "Lab 07 · Sentiment", title: "Was sagen die Kunden?", desc: "Importiere vorverarbeitete Review-Daten (pos/neutral/neg), visualisiere das Stimmungsbild nach Kategorie und Region und leite Handlungsmaßnahmen ab.", diff: "Fortgeschritten" },
-    en: { kw: "Lab 07 · Sentiment", title: "What Do Customers Say?", desc: "Import pre-processed review data (pos/neutral/neg), visualise sentiment by category and region and derive action items.", diff: "Advanced" },
-  },
-  {
-    id: 8,
-    diff: "fortgesch",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-      </svg>
-    ),
-    de: { kw: "Lab 08 · Marketing", title: "Woher kommen unsere Kunden?", desc: "Vergleiche Marketingkanäle (SEA, Social, E-Mail, Organic) nach Umsatz, CPA und ROAS. Baue eine Treemap der Kanalperformance.", diff: "Fortgeschritten" },
-    en: { kw: "Lab 08 · Marketing", title: "Where Do Our Customers Come From?", desc: "Compare marketing channels (SEA, social, email, organic) by revenue, CPA and ROAS. Build a treemap of channel performance.", diff: "Advanced" },
-  },
-  {
-    id: 9,
-    diff: "fortgesch",
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-        <line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
-      </svg>
-    ),
-    de: { kw: "Lab 09 · Synthese", title: "Das große Bild: Executive Dashboard", desc: "Führe alle KPIs zusammen, baue eine Tableau Story und präsentiere deine Ergebnisse im Peer-Review. Das Abschluss-Lab.", diff: "Fortgeschritten" },
-    en: { kw: "Lab 09 · Synthesis", title: "The Big Picture: Executive Dashboard", desc: "Consolidate all KPIs, build a Tableau story and present your findings in a peer review. The final capstone lab.", diff: "Advanced" },
-  },
-];
+<!-- QUOTE SECTION -->
+<section class="section" id="kurs">
+  <div class="container">
+    <div class="quote sr">
+      <p class="quote__text" data-de="„In God we trust. All others must bring data."" data-en="&ldquo;In God we trust. All others must bring data.&rdquo;"></p>
+      <p class="quote__source">W. Edwards Deming &mdash; <span data-de="Statistiker &amp; Qualitätspionier" data-en="Statistician &amp; Quality Pioneer"></span></p>
+    </div>
+  </div>
+</section>
 
-/* ── Scroll Reveal Hook ── */
-function useScrollReveal() {
-  useEffect(() => {
-    const els = document.querySelectorAll('.sr');
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
-    }, { threshold: 0.1 });
-    els.forEach(el => obs.observe(el));
-    return () => obs.disconnect();
-  }, []);
-}
+<!-- LABS -->
+<section class="section section--alt" id="labs">
+  <div class="container">
+    <p class="section__eyebrow sr" data-de="Kursstruktur" data-en="Course Structure"></p>
+    <h2 class="section__title sr" data-de="9 Labs · Ein roter Faden" data-en="9 Labs · One Story"></h2>
+    <div class="divider sr"></div>
+    <p class="section__lead sr" data-de="Alle Labs spielen bei UrbanCart – einem fiktiven europäischen Online-Händler. Du übernimmst die Rolle des Junior Data Analyst und löst echte Business-Probleme mit Tableau." data-en="All labs take place at UrbanCart – a fictional European online retailer. You take the role of Junior Data Analyst and solve real business problems with Tableau."></p>
 
-/* ── Lucide inline icons ── */
-const IconMail = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-    <polyline points="22,6 12,13 2,6"/>
-  </svg>
-);
-const IconBuilding = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-  </svg>
-);
-
-/* ── Main App ── */
-function App() {
-  const [lang, setLang] = useState('de');
-  const t = T[lang];
-  useScrollReveal();
-
-  const diffClass = (d) => d === 'einstieg' ? 'diff-einstieg' : d === 'mittel' ? 'diff-mittel' : 'diff-fortgesch';
-
-  return (
-    <>
-      {/* Navbar */}
-      <nav className="navbar">
-        <div className="navbar-brand">
-          <img
-            src={"data:image/png;base64,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"}
-            alt="THWS Business School"
-            style={{height:'36px', width:'auto'}}
-          />
-          <div className="navbar-divider"/>
-          <span className="navbar-title">{t.navTitle}</span>
+    <!-- Workflow -->
+    <div class="sr" style="margin-top:40px;overflow-x:auto">
+      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9CA3AF;margin-bottom:12px" data-de="Ablauf pro Lab" data-en="Structure per Lab"></p>
+      <div class="workflow">
+        <div class="wf-step">
+          <div class="wf-step__num">01</div>
+          <div class="wf-step__label" data-de="Kontext &amp; Daten" data-en="Context &amp; Data"></div>
+          <div class="wf-step__arrow"></div>
         </div>
-        <div className="lang-wrap">
-          <button className={`lang-btn${lang==='de'?' active':''}`} onClick={()=>setLang('de')}>DE</button>
-          <button className={`lang-btn${lang==='en'?' active':''}`} onClick={()=>setLang('en')}>EN</button>
+        <div class="wf-step">
+          <div class="wf-step__num">02</div>
+          <div class="wf-step__label" data-de="Schritt-für-Schritt" data-en="Step by Step"></div>
+          <div class="wf-step__arrow"></div>
         </div>
-      </nav>
-
-      {/* Hero */}
-      <section className="hero">
-        <div className="hero-geo-1"/>
-        <div className="hero-geo-2"/>
-        <div className="hero-content">
-          <p className="hero-eyebrow">{t.heroEyebrow}</p>
-          <div className="hero-kurs-tag">{t.heroKursTag}</div>
-          <h1 className="hero-title">
-            {t.heroTitle[0]}
-            <span>{t.heroTitle[1]}</span>
-            {t.heroTitle[2]}
-          </h1>
-          <p className="hero-subtitle">{t.heroSub}</p>
-          <div className="hero-badges">
-            {t.heroBadges.map((b,i) => <span key={i} className="hero-badge">{b}</span>)}
-            <a href="urbancart.html" className="hero-badge" style={{textDecoration:'none', cursor:'pointer', borderColor:'rgba(232,119,34,0.7)', color:'#E87722'}}>
-              {lang==='de'?'↗ UrbanCart Webshop':'↗ UrbanCart Shop'}
-            </a>
-          </div>
-          <div className="hero-cta-row">
-            <a href="#labs" className="btn-primary">{t.heroCta1}</a>
-            <a href="#kurs" className="btn-outline">{t.heroCta2}</a>
-          </div>
+        <div class="wf-step">
+          <div class="wf-step__num">03</div>
+          <div class="wf-step__label" data-de="Visualisierung" data-en="Visualisation"></div>
+          <div class="wf-step__arrow"></div>
         </div>
-      </section>
-
-      {/* Stats */}
-      <div className="stats-bar">
-        <div className="stats-inner">
-          {[
-            [t.stat1num, t.stat1lbl],
-            [t.stat2num, t.stat2lbl],
-            [t.stat3num, t.stat3lbl],
-            [t.stat4num, t.stat4lbl],
-          ].map(([n,l],i) => (
-            <div key={i} className="stat-item">
-              <div className="stat-num">{n}</div>
-              <div className="stat-lbl">{l}</div>
-            </div>
-          ))}
+        <div class="wf-step">
+          <div class="wf-step__num">04</div>
+          <div class="wf-step__label" data-de="Quiz (15 Fragen)" data-en="Quiz (15 Questions)"></div>
+          <div class="wf-step__arrow"></div>
+        </div>
+        <div class="wf-step">
+          <div class="wf-step__num">05</div>
+          <div class="wf-step__label" data-de="KI-Ausblick" data-en="AI Outlook"></div>
         </div>
       </div>
+    </div>
 
-      {/* Deming Quote */}
-      <section className="section" id="kurs">
-        <div className="section-inner">
-          <div className="deming-section sr">
-            <p className="deming-quote">{t.demingQuote}</p>
-            <p className="deming-source">{t.demingSource}</p>
+    <!-- Lab Cards -->
+    <div class="lab-grid">
+
+      <a href="lab01.html" class="lab-card sr">
+        <div class="lab-card__num" data-de="Lab 01 · Einstieg" data-en="Lab 01 · Beginner"></div>
+        <svg class="lab-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <div class="lab-card__title" data-de="Erste Schritte mit Tableau" data-en="Getting Started with Tableau"></div>
+        <div class="lab-card__desc" data-de="Verbinde den UrbanCart-Datensatz und baue dein erstes Sales-Dashboard: Umsatz, Bestellanzahl, Ø Warenkorbwert." data-en="Connect the UrbanCart dataset and build your first sales dashboard: revenue, order count, average basket value."></div>
+        <div class="lab-card__footer">
+          <span class="lab-card__diff diff--e" data-de="Einstieg" data-en="Beginner"></span>
+          <span class="lab-card__cta">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </div>
+      </a>
+
+      <a href="lab02.html" class="lab-card sr" style="transition-delay:40ms">
+        <div class="lab-card__num" data-de="Lab 02 · Einstieg" data-en="Lab 02 · Beginner"></div>
+        <svg class="lab-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <div class="lab-card__title" data-de="Kundenstruktur &amp; Demografie" data-en="Customer Structure &amp; Demographics"></div>
+        <div class="lab-card__desc" data-de="Analysiere Kunden nach Region, Altersgruppe und Gerät. Identifiziere das wertvollste Segment." data-en="Analyse customers by region, age group and device. Identify the most valuable segment."></div>
+        <div class="lab-card__footer">
+          <span class="lab-card__diff diff--e" data-de="Einstieg" data-en="Beginner"></span>
+          <span class="lab-card__cta"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </a>
+
+      <a href="lab03.html" class="lab-card sr" style="transition-delay:80ms">
+        <div class="lab-card__num" data-de="Lab 03 · Mittel" data-en="Lab 03 · Intermediate"></div>
+        <svg class="lab-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <div class="lab-card__title" data-de="RFM-Analyse" data-en="RFM Analysis"></div>
+        <div class="lab-card__desc" data-de="Berechne Recency, Frequency und Monetary-Scores. Clustere Kunden und leite Marketingmaßnahmen ab." data-en="Calculate Recency, Frequency and Monetary scores. Cluster customers and derive marketing actions."></div>
+        <div class="lab-card__footer">
+          <span class="lab-card__diff diff--m" data-de="Mittel" data-en="Intermediate"></span>
+          <span class="lab-card__cta"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </a>
+
+      <a href="lab04.html" class="lab-card sr" style="transition-delay:120ms">
+        <div class="lab-card__num" data-de="Lab 04 · Mittel" data-en="Lab 04 · Intermediate"></div>
+        <svg class="lab-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+        <div class="lab-card__title" data-de="ABC-Analyse &amp; Pareto" data-en="ABC Analysis &amp; Pareto"></div>
+        <div class="lab-card__desc" data-de="Wende das Pareto-Prinzip an. Baue ein Pareto-Diagramm und identifiziere Bestseller und Ladenhüter." data-en="Apply the Pareto principle. Build a Pareto chart and identify bestsellers and slow-movers."></div>
+        <div class="lab-card__footer">
+          <span class="lab-card__diff diff--m" data-de="Mittel" data-en="Intermediate"></span>
+          <span class="lab-card__cta"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </a>
+
+      <a href="lab05.html" class="lab-card sr" style="transition-delay:160ms">
+        <div class="lab-card__num" data-de="Lab 05 · Mittel" data-en="Lab 05 · Intermediate"></div>
+        <svg class="lab-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <div class="lab-card__title" data-de="Saisonalität &amp; Zeitreihen" data-en="Seasonality &amp; Time Series"></div>
+        <div class="lab-card__desc" data-de="Visualisiere 2 Jahre Umsatzdaten. Erkenne Black-Friday-Peaks und nutze Tableaus Forecast-Funktion." data-en="Visualise 2 years of revenue data. Identify Black Friday peaks and use Tableau's forecast function."></div>
+        <div class="lab-card__footer">
+          <span class="lab-card__diff diff--m" data-de="Mittel" data-en="Intermediate"></span>
+          <span class="lab-card__cta"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </a>
+
+      <a href="lab06.html" class="lab-card sr" style="transition-delay:200ms">
+        <div class="lab-card__num" data-de="Lab 06 · Mittel" data-en="Lab 06 · Intermediate"></div>
+        <svg class="lab-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        <div class="lab-card__title" data-de="Conversion Funnel" data-en="Conversion Funnel"></div>
+        <div class="lab-card__desc" data-de="Baue einen Sales Funnel, berechne Conversion Rates und identifiziere den größten Drop-off-Punkt." data-en="Build a sales funnel, calculate conversion rates and identify the biggest drop-off point."></div>
+        <div class="lab-card__footer">
+          <span class="lab-card__diff diff--m" data-de="Mittel" data-en="Intermediate"></span>
+          <span class="lab-card__cta"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </a>
+
+      <a href="lab07.html" class="lab-card sr" style="transition-delay:240ms">
+        <div class="lab-card__num" data-de="Lab 07 · Fortgeschritten" data-en="Lab 07 · Advanced"></div>
+        <svg class="lab-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <div class="lab-card__title" data-de="Sentiment-Analyse" data-en="Sentiment Analysis"></div>
+        <div class="lab-card__desc" data-de="Importiere Review-Daten mit Sentiment-Labels. Identifiziere Problemkategorien und leite Maßnahmen ab." data-en="Import review data with sentiment labels. Identify problem categories and derive action items."></div>
+        <div class="lab-card__footer">
+          <span class="lab-card__diff diff--f" data-de="Fortgeschritten" data-en="Advanced"></span>
+          <span class="lab-card__cta"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </a>
+
+      <a href="lab08.html" class="lab-card sr" style="transition-delay:280ms">
+        <div class="lab-card__num" data-de="Lab 08 · Fortgeschritten" data-en="Lab 08 · Advanced"></div>
+        <svg class="lab-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <div class="lab-card__title" data-de="Marketing-Kanalanalyse" data-en="Marketing Channel Analysis"></div>
+        <div class="lab-card__desc" data-de="Vergleiche Kanäle nach ROAS und CPA. Baue eine Treemap der Kanalperformance und leite Budgetempfehlungen ab." data-en="Compare channels by ROAS and CPA. Build a treemap of channel performance and derive budget recommendations."></div>
+        <div class="lab-card__footer">
+          <span class="lab-card__diff diff--f" data-de="Fortgeschritten" data-en="Advanced"></span>
+          <span class="lab-card__cta"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </a>
+
+      <a href="lab09.html" class="lab-card sr" style="transition-delay:320ms;border-top:3px solid #E87722!important">
+        <div class="lab-card__num" data-de="Lab 09 · Abschluss" data-en="Lab 09 · Capstone"></div>
+        <svg class="lab-card__icon" viewBox="0 0 24 24" fill="none" stroke="#E87722" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        <div class="lab-card__title" style="color:#E87722" data-de="Executive Dashboard" data-en="Executive Dashboard"></div>
+        <div class="lab-card__desc" data-de="Führe alle KPIs zusammen. Baue eine Tableau Story und präsentiere deine Ergebnisse im Peer-Review." data-en="Consolidate all KPIs. Build a Tableau story and present your findings in a peer review."></div>
+        <div class="lab-card__footer">
+          <span class="lab-card__diff diff--f" data-de="Fortgeschritten" data-en="Advanced"></span>
+          <span class="lab-card__cta" style="color:#E87722"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
+      </a>
+
+    </div><!-- /lab-grid -->
+
+    <!-- Webshop link -->
+    <div class="sr" style="margin-top:24px;padding-top:24px;border-top:1px solid #E9ECEF;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+      <p style="font-size:13px;color:#6C757D" data-de="Alle Labs basieren auf Daten von UrbanCart – einem fiktiven E-Commerce-Händler." data-en="All labs are based on data from UrbanCart – a fictional e-commerce retailer."></p>
+      <a href="urbancart.html" style="font-size:12px;font-weight:700;color:#005B9A;letter-spacing:.04em;display:flex;align-items:center;gap:6px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span data-de="UrbanCart Webshop ansehen" data-en="View UrbanCart webshop"></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- INSTRUCTOR -->
+<section class="section" id="dozentin">
+  <div class="container">
+    <p class="section__eyebrow sr" data-de="Dozentin" data-en="Instructor"></p>
+    <h2 class="section__title sr" data-de="Prof. Dr.-Ing. Eva Klenk" data-en="Prof. Dr.-Ing. Eva Klenk"></h2>
+    <div class="divider sr"></div>
+
+    <div class="instructor sr">
+      <div class="instructor-card">
+        <div class="instructor-card__cover"></div>
+        <div class="instructor-card__avatar-row">
+          <img src="assets/eva-klenk.jpg" alt="Prof. Dr.-Ing. Eva Klenk" class="instructor-card__avatar"/>
+        </div>
+        <div class="instructor-card__body">
+          <div class="instructor-card__name">Prof. Dr.-Ing. Eva Klenk</div>
+          <div class="instructor-card__role" data-de="Wirtschaftsinformatik · ERP-Systeme · Process Mining · RPA" data-en="Business Informatics · ERP Systems · Process Mining · RPA"></div>
+          <div class="instructor-card__org">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            THWS Business School · Würzburg
+          </div>
+          <div class="instructor-card__tags">
+            <span class="instructor-card__tag">Wirtschaftsinformatik</span>
+            <span class="instructor-card__tag">ERP</span>
+            <span class="instructor-card__tag">Process Mining</span>
+            <span class="instructor-card__tag">RPA</span>
+          </div>
+          <div class="instructor-card__contact">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <a href="mailto:eva.klenk@thws.de">eva.klenk@thws.de</a>
           </div>
         </div>
-      </section>
+      </div>
+      <div class="instructor__bio">
+        <p data-de="Prof. Dr.-Ing. Eva Klenk lehrt an der THWS Business School Würzburg im Schwerpunkt Wirtschaftsinformatik und Digital Business. Ihre Lehr- und Forschungsgebiete umfassen ERP-Systeme, Process Mining sowie Robotische Prozessautomatisierung (RPA)." data-en="Prof. Dr.-Ing. Eva Klenk teaches at THWS Business School Würzburg in the area of Business Informatics and Digital Business. Her teaching and research areas include ERP systems, process mining and robotic process automation (RPA)."></p>
+        <p data-de="In diesem Kurs verbindet sie ihre Expertise in Geschäftsprozessen und digitalen Systemen mit dem Kontext des E-Commerce. Der Kurs richtet sich an Master-Studierende des Marken- und Medienmanagements ohne technischen Vorkenntnisse." data-en="In this course she connects her expertise in business processes and digital systems with an e-commerce context. The course is designed for Master's students in Brand and Media Management without technical backgrounds."></p>
+      </div>
+    </div>
+  </div>
+</section>
 
-      {/* Labs */}
-      <section className="section bg-alt" id="labs">
-        <div className="section-inner">
-          <p className="section-eyebrow sr">{t.labsEyebrow}</p>
-          <h2 className="section-title sr">{t.labsTitle}</h2>
-          <div className="divider-line sr"/>
-          <p className="section-lead sr">{t.labsLead}</p>
+<!-- AI SECTION -->
+<section class="section section--alt" id="ki">
+  <div class="container">
+    <p class="section__eyebrow sr" data-de="KI &amp; Python" data-en="AI &amp; Python"></p>
+    <h2 class="section__title sr" data-de="Wie würde das mit KI aussehen?" data-en="How would this look with AI?"></h2>
+    <div class="divider sr"></div>
+    <p class="section__lead sr" data-de="Jedes Lab enthält einen Ausblick: Wie lässt sich diese Analyse mit Python, Plotly Dash und KI reproduzieren? Kein Code nötig – nur das Verständnis, was möglich ist." data-en="Each lab includes an outlook: how can this analysis be reproduced with Python, Plotly Dash and AI? No coding required – just understanding what's possible."></p>
 
-          {/* Workflow */}
-          <div className="sr" style={{marginTop:'40px'}}>
-            <p style={{fontSize:'0.72rem',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',color:'#6C757D',marginBottom:'16px'}}>{t.wfTitle}</p>
-            <div className="workflow-row">
-              {t.wfSteps.map((s,i) => (
-                <React.Fragment key={i}>
-                  <div className="wf-box">{s}</div>
-                  {i < t.wfSteps.length - 1 && <div className="wf-arrow">›</div>}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
+    <div class="ai-cards">
+      <div class="ai-card sr">
+        <div class="ai-card__title" data-de="Technischer Stack" data-en="Technical Stack"></div>
+        <div class="ai-card__body">Python · Plotly Dash · pandas · scikit-learn · VADER · Prophet · Jupyter</div>
+      </div>
+      <div class="ai-card sr" style="transition-delay:60ms">
+        <div class="ai-card__title" data-de="Prompting-Anleitung" data-en="Prompting Guide"></div>
+        <div class="ai-card__body" data-de="Jeder Ausblick enthält einen konkreten Prompt, mit dem du die Analyse in ChatGPT oder Claude reproduzieren kannst – inklusive Datenpipeline." data-en="Each outlook includes a concrete prompt to reproduce the analysis in ChatGPT or Claude – including data pipeline."></div>
+      </div>
+      <div class="ai-card sr" style="transition-delay:120ms">
+        <div class="ai-card__title" data-de="Referenz-Dashboard" data-en="Reference Dashboard"></div>
+        <div class="ai-card__body" data-de="Gestalterische Grundlage ist das WHI-Dashboard – interaktiv, responsiv, Plotly Dash." data-en="The design reference is the WHI Dashboard – interactive, responsive, Plotly Dash."></div>
+      </div>
+    </div>
 
-          {/* Lab Cards */}
-          <div className="labs-grid">
-            {LABS.map((lab, idx) => {
-              const d = lang === 'de' ? lab.de : lab.en;
-              return (
-                <a href={`lab0${lab.id}.html`} key={lab.id} className="lab-card sr" style={{transitionDelay: `${(idx % 3) * 80}ms`, textDecoration:'none'}}>
-                  <div className="lab-card-num">0{lab.id}</div>
-                  <div className="lab-icon">{lab.icon}</div>
-                  <div className="lab-kw">{d.kw}</div>
-                  <div className="lab-title">{d.title}</div>
-                  <div className="lab-desc">{d.desc}</div>
-                  <div className="lab-footer">
-                    <span className={`diff-badge ${diffClass(lab.diff)}`}>{d.diff}</span>
-                    <span className="lab-cta">{t.startLab}</span>
-                  </div>
-                </a>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+    <div class="code-block sr" style="margin-top:32px">
+      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#64748B;margin-bottom:16px" data-de="Beispiel-Prompt — Lab 03 RFM-Analyse" data-en="Example Prompt — Lab 03 RFM Analysis"></p>
+      <code><span class="c"># Prompt für ChatGPT / Claude:</span>
 
-      {/* Instructor */}
-      <section className="section" id="dozentin">
-        <div className="section-inner">
-          <p className="section-eyebrow sr">{t.instructorEyebrow}</p>
-          <h2 className="section-title sr">{t.instructorTitle} {t.instructorName}</h2>
-          <div className="divider-line sr"/>
+<span class="s">"Erstelle eine RFM-Analyse in Python mit Plotly Dash
+für einen E-Commerce-Datensatz (CSV: customer_id,
+order_date, revenue). Berechne Recency, Frequency,
+Monetary, normalisiere Scores (1–5) und visualisiere
+als interaktiven Scatter Plot.
+Farbschema: Orange #E87722 · Blau #005B9A."</span></code>
+    </div>
+  </div>
+</section>
 
-          <div className="sr" style={{display:'flex', gap:'48px', flexWrap:'wrap', alignItems:'flex-start', marginTop:'8px'}}>
-            {/* LinkedIn Card */}
-            <div className="instructor-card">
-              <div className="instructor-cover"/>
-              <div className="instructor-avatar-wrap">
-                <img src="assets/eva-klenk.jpg" alt="Prof. Dr.-Ing. Eva Klenk" className="instructor-avatar"/>
-              </div>
-              <div className="instructor-body">
-                <div className="instructor-name">{t.instructorTitle} {t.instructorName}</div>
-                <div className="instructor-title">{t.instructorSub}</div>
-                <div className="instructor-org">
-                  <IconBuilding/>
-                  {t.instructorOrg}
-                </div>
-                <div className="instructor-tags">
-                  {t.instructorTags.map((tag,i) => <span key={i} className="instructor-tag">{tag}</span>)}
-                </div>
-                <div className="instructor-contact">
-                  <IconMail/>
-                  <a href={`mailto:${t.instructorContact}`} style={{color:'#005B9A', textDecoration:'none'}}>{t.instructorContact}</a>
-                </div>
-              </div>
-            </div>
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <svg class="footer__thws" viewBox="0 0 274.3 91.2" xmlns="http://www.w3.org/2000/svg"><style>.st0{fill:#FF6A00}</style><g><g><path class="st0" d="M15,32.6h2.6c1.1,0,2-0.9,2-2v-9.1c0-1.1,0.9-2,2-2h15.6c1.1,0,2-0.9,2-2v-2.6c0-1.1-0.9-2-2-2H21.5 c-1.1,0-2,0.9-2,2v2.6c0,1.1-0.9,2-2,2H15c-1.1,0-2,0.9-2,2v9.1C13,31.7,13.9,32.6,15,32.6z"/><path class="st0" d="M63.1,0H47.5c-1.1,0-2,0.9-2,2v2.6c0,1.1,0.9,2,2,2h15.6c1.1,0,2-0.9,2-2V2C65.1,0.9,64.2,0,63.1,0z"/><path class="st0" d="M76.1,13h-2.6c-1.1,0-2,0.9-2,2v9.1c0,1.1,0.9,2,2,2h2.6c1.1,0,2-0.9,2-2V15C78.1,13.9,77.2,13,76.1,13z"/><path class="st0" d="M76.1,32.6h-2.6c-1.1,0-2,0.9-2,2v2.5c0,1.1,0.9,2,2,2h2.6c1.1,0,2-0.9,2-2v-2.6 C78.1,33.4,77.2,32.6,76.1,32.6z"/><path class="st0" d="M52.1,34.5c0-1.1-0.9-2-2-2h-2.6c-1.1,0-2,0.9-2,2v22.1c0,1.1-0.9,2-2,2h-9.1c-1.1,0-2-0.9-2-2V34.5 c0-1.1,0.9-2,2-2H37c1.1,0,2-0.9,2-2v-2.6c0-1.1-0.9-2-2-2h-2.6c-1.1,0-2,0.9-2,2v2.6c0,1.1-0.9,2-2,2H28c-1.1,0-2,0.9-2,2v28.6 c0,1.1,0.9,2,2,2h15.6c1.1,0,2-0.9,2-2v-2.6c0-1.1,0.9-2,2-2h2.6c1.1,0,2-0.9,2-2L52.1,34.5L52.1,34.5z"/><path class="st0" d="M63.1,13H47.5c-1.1,0-2,0.9-2,2v2.6c0,1.1,0.9,2,2,2h9.1c1.1,0,2,0.9,2,2v15.5c0,1.1,0.9,2,2,2h2.6 c1.1,0,2-0.9,2-2V15C65.1,13.9,64.2,13,63.1,13z"/><path class="st0" d="M63.1,45.6h-2.6c-1.1,0-2,0.9-2,2v22.1c0,1.1-0.9,2-2,2H54c-1.1,0-2,0.9-2,2v2.6c0,1.1,0.9,2,2,2h2.6 c1.1,0,2-0.9,2-2v-2.6c0-1.1,0.9-2,2-2h2.6c1.1,0,2-0.9,2-2V47.5C65.1,46.5,64.2,45.6,63.1,45.6z"/><path class="st0" d="M43.6,71.6H21.5c-1.1,0-2-0.9-2-2V47.5c0-1.1-0.9-2-2-2H15c-1.1,0-2,0.9-2,2v22.1c0,1.1,0.9,2,2,2h2.6 c1.1,0,2,0.9,2,2v2.6c0,1.1,0.9,2,2,2h22.1c1.1,0,2-0.9,2-2v-2.6C45.5,72.5,44.7,71.6,43.6,71.6z"/><path class="st0" d="M30.6,84.6H15c-1.1,0-2,0.9-2,2v2.6c0,1.1,0.9,2,2,2h15.6c1.1,0,2-0.9,2-2v-2.6 C32.5,85.5,31.7,84.6,30.6,84.6z"/><path class="st0" d="M4.6,58.6H2c-1.1,0-2,0.9-2,2v9.1c0,1.1,0.9,2,2,2h2.6c1.1,0,2-0.9,2-2v-9.1C6.5,59.5,5.6,58.6,4.6,58.6z"/></g><g><path class="st0" d="M103.1,55.2V34.5h-10v-8.4h10V14.6h9.5v11.5h11.9v8.4h-11.9v18.6c0,2.6,1,3.7,3.7,3.7h8.2v8.3h-11.4 C106.3,65.1,103.1,62.3,103.1,55.2z"/><path class="st0" d="M131.7,9.1h9.5v20c2.5-2.8,6.2-4.2,10.6-4.2c9.6,0,15.5,6.1,15.5,16.6v23.6h-9.5V42.5c0-6.1-2.9-9-7.9-9 c-5.2,0-8.6,3.7-8.6,9.3v22.3h-9.5v-56H131.7z"/><path class="st0" d="M172.1,26.1h9.9l7.6,28.4l7.6-28.4h11l7.6,28.4l7.6-28.4h9.9l-11.7,39h-11.3l-7.6-28.3l-7.6,28.3h-11.3 L172.1,26.1z"/><path class="st0" d="M236.3,53.7h9.8c0.3,3.3,3.1,4.9,7.9,4.9c4.3,0,7-1.8,7-4.7c0-2.5-1.9-3.8-5.4-4.1l-6.2-0.6 c-7.3-0.8-11.8-5.1-11.8-11.8c0-7.8,6.2-12.6,16.2-12.6c9.8,0,16.1,4.2,16.6,12.3h-9.5c-0.2-3.1-2.9-4.6-7.2-4.6 c-4.1,0-6.6,1.6-6.6,4.3c0,2.3,1.8,3.6,5.8,4.1l6.3,0.7c7.4,0.9,11.6,5.2,11.6,11.7c0,7.8-6.5,12.9-16.9,12.9 C243.1,66.3,236.7,62,236.3,53.7z"/></g></g></svg>
+      <div class="footer__title" data-de="E-Commerce &amp; Digitale Geschäftsmodelle" data-en="E-Commerce &amp; Digital Business Models"></div>
+      <div class="footer__sub" data-de="Master Marken- und Medienmanagement · THWS Business School Würzburg · Prof. Dr.-Ing. Eva Klenk" data-en="Master Brand &amp; Media Management · THWS Business School Würzburg · Prof. Dr.-Ing. Eva Klenk"></div>
+    </div>
+    <div class="footer__links">
+      <a href="https://github.com/swrobuts/e-comm" class="footer__link" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://business.thws.de" class="footer__link" target="_blank" rel="noopener">THWS Business School</a>
+      <a href="urbancart.html" class="footer__link">UrbanCart Webshop</a>
+      <a href="data/" class="footer__link" data-de="Datensätze" data-en="Datasets"></a>
+    </div>
+    <p class="footer__disclaimer" data-de="UrbanCart ist ein fiktives Unternehmen. Alle Datensätze sind synthetisch und dienen ausschließlich Lehrzwecken. Keine Verbindung zu real existierenden Unternehmen." data-en="UrbanCart is a fictional company. All datasets are synthetic and serve educational purposes only. No connection to any real company."></p>
+  </div>
+</footer>
 
-            {/* Bio text */}
-            <div style={{flex:1, minWidth:'260px'}}>
-              <p style={{fontSize:'1rem', lineHeight:'1.75', color:'#6C757D', marginBottom:'16px'}}>
-                {lang === 'de'
-                  ? 'Prof. Dr.-Ing. Eva Klenk lehrt an der THWS Business School Würzburg im Schwerpunkt Wirtschaftsinformatik und Digital Business. Ihre Lehrgebiete umfassen ERP-Systeme, Process Mining und Robotische Prozessautomatisierung (RPA).'
-                  : 'Prof. Dr.-Ing. Eva Klenk teaches at THWS Business School Würzburg in the field of Business Informatics and Digital Business. Her teaching areas include ERP systems, process mining and robotic process automation (RPA).'}
-              </p>
-              <p style={{fontSize:'1rem', lineHeight:'1.75', color:'#6C757D'}}>
-                {lang === 'de'
-                  ? 'In diesem Kurs bringt sie ihre Expertise in Geschäftsprozessen und digitalen Systemen in den Kontext des E-Commerce – praxisnah, datengetrieben und direkt anwendbar.'
-                  : 'In this course she brings her expertise in business processes and digital systems into an e-commerce context – practical, data-driven and directly applicable.'}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* AI & Python Section */}
-      <section className="section bg-alt" id="ki">
-        <div className="section-inner">
-          <p className="section-eyebrow sr">{t.aiEyebrow}</p>
-          <h2 className="section-title sr">{t.aiTitle}</h2>
-          <div className="divider-line sr"/>
-          <p className="section-lead sr">{t.aiLead}</p>
-
-          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))', gap:'16px', marginTop:'32px'}}>
-            {[
-              [t.aiCard1Title, t.aiCard1Body],
-              [t.aiCard2Title, t.aiCard2Body],
-              [t.aiCard3Title, t.aiCard3Body],
-            ].map(([title, body], i) => (
-              <div key={i} className="ai-card sr" style={{transitionDelay:`${i*80}ms`}}>
-                <div className="ai-card-title">{title}</div>
-                <div className="ai-card-body">{body}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Sample prompt block */}
-          <div className="sr" style={{marginTop:'32px'}}>
-            <p style={{fontSize:'0.72rem',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',color:'#6C757D',marginBottom:'12px'}}>
-              {lang === 'de' ? 'Beispiel: Prompt für Lab 03 – RFM-Analyse' : 'Example: Prompt for Lab 03 – RFM Analysis'}
-            </p>
-            <div className="code-block">
-              <span className="code-comment"># Prompt für KI-Assistenten (z.B. ChatGPT / Claude):</span>{"\n\n"}
-              <span className="code-str">"Erstelle mir eine RFM-Analyse in Python mit Plotly Dash{"\n"}
-für einen E-Commerce-Datensatz (CSV mit Spalten: customer_id,{"\n"}
-order_date, revenue). Berechne Recency, Frequency und Monetary,{"\n"}
-normalisiere die Scores (1–5) und visualisiere die Cluster{"\n"}
-als interaktiven 3D Scatter Plot. Nutze das Farbschema{"\n"}
-#E87722 (Orange) und #005B9A (Blau)."</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-inner">
-          <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'12px', marginBottom:'16px'}}>
-            <svg width="32" height="32" viewBox="0 0 28 28" fill="none">
-              <rect width="28" height="28" rx="3" fill="#E87722"/>
-              <rect x="6" y="6" width="6" height="6" fill="#fff" opacity="0.9"/>
-              <rect x="16" y="6" width="6" height="6" fill="#fff" opacity="0.5"/>
-              <rect x="6" y="16" width="6" height="6" fill="#fff" opacity="0.5"/>
-              <rect x="16" y="16" width="6" height="6" fill="#fff" opacity="0.9"/>
-            </svg>
-          </div>
-          <p className="footer-title">THWS Business School</p>
-          <p className="footer-text">{t.footerText}</p>
-          <p style={{marginTop:'8px', fontSize:'0.78rem', color:'rgba(255,255,255,0.35)'}}>{t.footerSub}</p>
-          <p style={{marginTop:'24px', fontSize:'0.72rem', color:'rgba(255,255,255,0.25)'}}>
-            UrbanCart ist ein fiktives Unternehmen. Alle Daten sind synthetisch und dienen ausschließlich Lehrzwecken. ·{' '}
-            <a href="https://github.com/swrobuts/e-comm" target="_blank" rel="noopener noreferrer" className="footer-link">GitHub</a>
-          </p>
-        </div>
-      </footer>
-    </>
-  );
+<script>
+// ── LANGUAGE SWITCH ──
+function setLang(lang) {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-de]').forEach(el => {
+    const val = el.getAttribute('data-' + lang);
+    if (!val) return;
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      el.value = val;
+    } else {
+      el.innerHTML = val;
+    }
+  });
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('is-active', btn.textContent.toLowerCase() === lang);
+  });
+  localStorage.setItem('lang', lang);
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+// ── SCROLL REVEAL ──
+(function() {
+  const els = document.querySelectorAll('.sr');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.08 });
+  els.forEach(el => obs.observe(el));
+})();
+
+// ── INIT ──
+(function() {
+  const lang = localStorage.getItem('lang') || 'de';
+  setLang(lang);
+})();
 </script>
+
 </body>
 </html>
-
