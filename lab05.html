@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lab 05 – Saisonalität & Zeitreihen · UrbanCart · THWS</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif; background:#fff; color:#212529; }
+    .top-bar { height:4px; background:#E87722; position:fixed; top:0; left:0; right:0; z-index:200; }
+    .navbar {
+      position:sticky; top:4px; z-index:100;
+      background:#fff; border-bottom:1px solid #E9ECEF;
+      box-shadow:0 1px 8px rgba(0,0,0,0.05);
+      height:52px; display:flex; align-items:center;
+      padding:0 32px; justify-content:space-between;
+    }
+    .nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .nav-brand-text { font-size:0.78rem; font-weight:700; color:#005B9A; letter-spacing:0.04em; text-transform:uppercase; }
+    .nav-lab-badge {
+      background:rgba(232,119,34,0.12); color:#E87722;
+      font-size:0.68rem; font-weight:700;
+      padding:3px 10px; letter-spacing:0.06em; text-transform:uppercase;
+    }
+    .lang-wrap { display:flex; gap:4px; }
+    .lang-btn {
+      padding:4px 10px; border-radius:3px;
+      border:1.5px solid #E9ECEF; background:#fff;
+      cursor:pointer; font-weight:700; font-size:0.72rem;
+      color:#6C757D; transition:all 0.15s; font-family:inherit;
+    }
+    .lang-btn.active { background:#E87722; color:#fff; border-color:#E87722; }
+    .progress-bar {
+      background:#F1F3F5; padding:12px 32px;
+      display:flex; align-items:center; gap:8px; overflow-x:auto;
+    }
+    .prog-step {
+      display:flex; align-items:center; gap:6px; white-space:nowrap;
+      font-size:0.72rem; font-weight:700; color:#9ca3af;
+    }
+    .prog-step.active { color:#E87722; }
+    .prog-step.done { color:#3D7A56; }
+    .prog-dot {
+      width:24px; height:24px; border-radius:50%;
+      background:#E9ECEF; display:flex; align-items:center;
+      justify-content:center; font-size:0.68rem; font-weight:800; flex-shrink:0;
+    }
+    .prog-dot.active { background:#E87722; color:#fff; }
+    .prog-dot.done { background:#3D7A56; color:#fff; }
+    .prog-arrow { color:#D1D5DB; font-size:0.9rem; }
+    .lab-hero { background:#005B9A; padding:48px 32px; position:relative; overflow:hidden; }
+    .lab-hero-inner { max-width:800px; }
+    .lab-num { font-size:0.72rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:8px; }
+    .lab-title { font-size:clamp(1.8rem,4vw,2.8rem); font-weight:800; color:#fff; line-height:1.1; margin-bottom:12px; }
+    .lab-title span { color:#E87722; }
+    .lab-sub { font-size:1rem; color:rgba(255,255,255,0.75); line-height:1.7; max-width:560px; }
+    .lab-meta { display:flex; gap:16px; flex-wrap:wrap; margin-top:24px; }
+    .lab-meta-item { display:flex; align-items:center; gap:6px; font-size:0.78rem; font-weight:600; color:rgba(255,255,255,0.6); }
+    .lab-meta-item strong { color:#fff; }
+    .content { max-width:800px; margin:0 auto; padding:48px 32px; }
+    .section-block { margin-bottom:48px; }
+    .block-eyebrow { font-size:0.68rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#E87722; margin-bottom:6px; }
+    .block-title { font-size:1.3rem; font-weight:800; color:#005B9A; margin-bottom:8px; }
+    .block-lead { font-size:0.95rem; color:#6C757D; line-height:1.75; margin-bottom:20px; }
+    .divider { width:40px; height:3px; background:#E87722; margin:8px 0 16px; }
+    .steps { display:flex; flex-direction:column; gap:16px; }
+    .step-card { border:1.5px solid #E9ECEF; padding:20px 24px; border-left:3px solid #005B9A; transition:border-color 0.2s; }
+    .step-card:hover { border-left-color:#E87722; }
+    .step-header { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+    .step-num { width:28px; height:28px; border-radius:50%; background:#005B9A; color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:800; flex-shrink:0; }
+    .step-title { font-size:0.95rem; font-weight:800; color:#212529; }
+    .step-body { font-size:0.87rem; color:#6C757D; line-height:1.7; margin-left:40px; }
+    .step-body code { background:#F1F3F5; padding:1px 6px; font-family:'Consolas','Monaco',monospace; font-size:0.82rem; color:#E87722; border-radius:2px; }
+    .step-tip { background:rgba(0,91,154,0.06); border-left:2px solid #005B9A; padding:10px 14px; margin-top:10px; margin-left:40px; font-size:0.82rem; color:#005B9A; line-height:1.6; }
+    .screenshot-placeholder { background:#F1F3F5; border:1.5px dashed #D1D5DB; padding:32px; text-align:center; margin:16px 0; border-radius:2px; }
+    .screenshot-placeholder-text { font-size:0.78rem; color:#9ca3af; font-weight:600; }
+    .kpi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; margin:16px 0; }
+    .kpi-card { background:#fff; border:1.5px solid #E9ECEF; border-top:3px solid #E87722; padding:20px 16px; text-align:center; }
+    .kpi-val { font-size:1.6rem; font-weight:900; color:#E87722; line-height:1; }
+    .kpi-lbl { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#005B9A; margin-top:4px; }
+    .kpi-def { font-size:0.78rem; color:#9ca3af; margin-top:6px; line-height:1.5; }
+    .quiz-section { background:#F1F3F5; padding:40px 32px; margin:0 -32px; border-radius:2px; }
+    .quiz-title { font-size:1.1rem; font-weight:800; color:#005B9A; margin-bottom:4px; }
+    .quiz-sub { font-size:0.84rem; color:#6C757D; margin-bottom:24px; }
+    .quiz-progress { font-size:0.72rem; font-weight:700; color:#9ca3af; margin-bottom:20px; text-transform:uppercase; letter-spacing:0.08em; }
+    .question-block { background:#fff; border:1.5px solid #E9ECEF; padding:24px; margin-bottom:16px; }
+    .question-num { font-size:0.68rem; font-weight:700; color:#E87722; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px; }
+    .question-text { font-size:0.95rem; font-weight:700; color:#212529; margin-bottom:16px; line-height:1.5; }
+    .options { display:flex; flex-direction:column; gap:8px; }
+    .option-btn { background:#F9FAFB; border:1.5px solid #E9ECEF; padding:10px 16px; text-align:left; font-size:0.87rem; font-weight:600; color:#374151; cursor:pointer; transition:all 0.15s; font-family:inherit; }
+    .option-btn:hover { border-color:#005B9A; color:#005B9A; background:rgba(0,91,154,0.04); }
+    .option-btn.correct { background:rgba(61,122,86,0.1); border-color:#3D7A56; color:#3D7A56; }
+    .option-btn.wrong { background:rgba(239,68,68,0.08); border-color:#ef4444; color:#ef4444; }
+    .option-btn.revealed { pointer-events:none; }
+    .feedback { margin-top:10px; padding:10px 14px; font-size:0.84rem; line-height:1.6; font-weight:600; }
+    .feedback.correct { background:rgba(61,122,86,0.1); color:#3D7A56; border-left:2px solid #3D7A56; }
+    .feedback.wrong { background:rgba(239,68,68,0.08); color:#dc2626; border-left:2px solid #dc2626; }
+    .quiz-result { background:#fff; border:1.5px solid #E9ECEF; border-top:3px solid #E87722; padding:32px; text-align:center; margin-top:16px; }
+    .quiz-result-score { font-size:3rem; font-weight:900; color:#E87722; line-height:1; }
+    .quiz-result-label { font-size:0.84rem; color:#6C757D; margin-top:6px; }
+    .quiz-result-msg { font-size:1rem; font-weight:700; color:#212529; margin-top:16px; }
+    .ai-section { background:#0f172a; padding:32px; border-left:3px solid #E87722; margin:32px 0; }
+    .ai-eyebrow { font-size:0.68rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#E87722; margin-bottom:6px; }
+    .ai-title { font-size:1.1rem; font-weight:800; color:#fff; margin-bottom:12px; }
+    .ai-text { font-size:0.87rem; color:rgba(255,255,255,0.65); line-height:1.75; margin-bottom:16px; }
+    .code-block { background:#1e293b; border-left:2px solid #E87722; color:#e2e8f0; font-family:'Consolas','Monaco',monospace; font-size:0.78rem; line-height:1.8; padding:16px 20px; overflow-x:auto; white-space:pre; }
+    .lab-nav { border-top:1px solid #E9ECEF; padding:32px; display:flex; justify-content:space-between; align-items:center; max-width:800px; margin:0 auto; }
+    .lab-nav-btn { display:flex; align-items:center; gap:8px; font-size:0.87rem; font-weight:700; color:#005B9A; text-decoration:none; cursor:pointer; transition:color 0.15s; }
+    .lab-nav-btn:hover { color:#E87722; }
+    .lab-nav-btn.primary { background:#E87722; color:#fff; padding:10px 20px; border:2px solid #E87722; }
+    .lab-nav-btn.primary:hover { background:#d06a1a; border-color:#d06a1a; }
+    .sr { opacity:0; transform:translateY(12px); transition:opacity 0.5s ease,transform 0.5s ease; }
+    .sr.visible { opacity:1; transform:translateY(0); }
+  </style>
+</head>
+<body>
+<div class="top-bar"></div>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const T = {
+  de: {
+    labNum: "Lab 05 von 09",
+    labTitle: ["Saisonalität & ", "Zeitreihen"],
+    labSub: "Wie entwickelt sich der Umsatz über die Zeit? Du lernst, Saisonalität von echten Trends zu unterscheiden, den Black-Friday-Peak zu erkennen und mit Tableau's Forecast-Funktion die Zukunft vorherzusagen.",
+    metaDauer: "75–90 Min.",
+    metaLevel: "Fortgeschritten",
+    metaData: "orders.csv",
+    metaTool: "Tableau Public",
+    progSteps: ["Einführung","Daten laden","Analyse","Visualisierung","Quiz","KI-Ausblick"],
+    s1eye: "Konzept",
+    s1title: "Zeitreihenanalyse verstehen",
+    s1lead: "Eine Zeitreihe ist eine Folge von Messwerten über die Zeit. Im E-Commerce ist das klassisch: Umsatz pro Monat. Dabei gibt es zwei grundlegende Muster: Trend (langfristige Richtung) und Saisonalität (wiederkehrende Muster). Du musst beide verstehen, bevor du voraussagen kannst.",
+    s2eye: "Schritt-für-Schritt",
+    s2title: "Tableau: Zeitreihen aufbauen",
+    s2lead: "Öffne Tableau Public und verbinde orders.csv. Dann folge diesen 5 Schritten, um ein vollständiges Sales-Trend-Dashboard zu bauen.",
+    steps: [
+      {
+        title: "orders.csv laden & Datumsfeld formatieren",
+        body: "Verbinde <code>orders.csv</code> in Tableau. Klicke auf das Datentyp-Symbol neben <code>order_date</code> und stelle sicher, dass es als <strong>Datum</strong> (nicht als Text) erkannt wird. Tableau zeigt dann das Kalender-Icon. Ziehe <code>order_date</code> auf Spalten.",
+        tip: "Tipp: Wenn order_date als Text erkannt wird, klicke das # Symbol → 'Datum' auswählen. Tableau zeigt dann automatisch Datumshierarchien (Jahr → Quartal → Monat)."
+      },
+      {
+        title: "Liniendiagramm: Monatsumsatz 2023 + 2024",
+        body: "Ziehe <code>total_revenue</code> auf Zeilen. Klicke auf <code>YEAR(order_date)</code> in den Spalten → wähle <strong>Monat (diskret)</strong>. Tableau zeigt nun alle Monate. Ziehe <code>YEAR(order_date)</code> auf 'Farbe' im Marks-Panel – du siehst 2023 und 2024 als unterschiedliche Linien.",
+        tip: "Kontinuierlich vs. diskret: Kontinuierlich (grün) zeigt eine durchgehende Linie; diskret (blau) zeigt Achsenbeschriftungen. Für YoY-Vergleiche: diskrete Monate + Farbe = Jahr."
+      },
+      {
+        title: "Dual-Line: Year over Year Vergleich",
+        body: "Für einen direkten YoY-Vergleich: Neue Arbeitsmappe. <code>MONTH(order_date)</code> (diskret) auf Spalten, <code>SUM(total_revenue)</code> auf Zeilen. Dann <code>YEAR(order_date)</code> auf Farbe ziehen. Du siehst 2023 und 2024 übereinander – perfekt für den Vergleich. Achte auf den November-Spike!",
+        tip: "YoY = Year over Year. Statt absolute Zahlen zu vergleichen, siehst du direkt: 'Im November 2024 haben wir 18% mehr verkauft als im November 2023.'"
+      },
+      {
+        title: "Forecast einschalten",
+        body: "Im Analytics-Pane (links, Reiter 'Analytics'): Ziehe <strong>Forecast</strong> auf das Diagramm. Tableau berechnet automatisch eine Vorhersage für die nächsten Perioden. Klicke mit Rechts auf den Forecast → 'Forecast-Optionen' → stelle '6 Monate' ein. Das Konfidenzintervall zeigt die Unsicherheit.",
+        tip: "Tableau nutzt exponentielles Glätten (Holt-Winters) für den Forecast. Das Konfidenzband (hellblauer Bereich) zeigt: In 95% der Fälle wird der echte Wert innerhalb dieser Grenzen liegen."
+      },
+      {
+        title: "Dashboard: UrbanCart Sales Trend & Forecast",
+        body: "Neues Dashboard. Füge ein: (1) YoY-Liniendiagramm, (2) Forecast-Chart, (3) Drei KPI-Cards oben: Stärkstes Quartal, Wachstum YoY, Forecast-Konfidenz. Titel: <strong>UrbanCart Sales Trend & Forecast</strong>. Nutze Filter für Channel und Region.",
+        tip: "Dashboard-Tipp: Setze das YoY-Chart oben (Überblick) und den Forecast darunter (Ausblick). So führst du den Leser von Vergangenheit in die Zukunft."
+      }
+    ],
+    s3eye: "Kennzahlen",
+    s3title: "KPIs für das Sales-Dashboard",
+    s3lead: "Diese drei KPIs stehen im Header deines Dashboards. Sie geben der Geschäftsführung sofort den wichtigsten Kontext.",
+    kpis: [
+      { icon:"📈", val:"Q4 2024", lbl:"Stärkstes Quartal", def:"Oktober–Dezember: Black Friday + Weihnachtsgeschäft treiben den Umsatz auf Jahreshöchststand." },
+      { icon:"📊", val:"+12,4%", lbl:"Wachstum YoY", def:"2024 vs. 2023: UrbanCart wächst im Jahresvergleich. Zeigt echter Trend oder nur Saisoneffekt?" },
+      { icon:"🎯", val:"85%", lbl:"Forecast-Konfidenz", def:"Tableau's Vorhersage-Konfidenzintervall: Mit 85% Wahrscheinlichkeit liegt der echte Wert im Band." }
+    ],
+    s4eye: "Konzepte",
+    s4title: "Saisonalität vs. Trend – der Unterschied",
+    concepts: [
+      {
+        title: "Was ist Saisonalität?",
+        body: "Saisonalität = regelmäßig wiederkehrende Muster in festen Zeitabständen. Im E-Commerce: jedes Jahr im November steigt der Umsatz (Black Friday). Im Dezember ebenfalls (Weihnachten). Im Januar sinkt er (Post-Holiday-Blues). Diese Muster wiederholen sich – das ist Saisonalität.",
+        tip: null
+      },
+      {
+        title: "Was ist ein Trend?",
+        body: "Ein Trend ist die langfristige Grundrichtung einer Zeitreihe. UrbanCart wächst: Die Basislinie steigt Jahr für Jahr, unabhängig von saisonalen Schwankungen. Trend und Saisonalität überlagern sich – Tableau's Decomposition kann beides trennen.",
+        tip: "Praxistest: Wenn du den Saisonalitätsmuster herausnimmst und der Umsatz immer noch steigt – das ist der Trend."
+      },
+      {
+        title: "Ausreißer erkennen und behandeln",
+        body: "Ein Ausreißer ist ein Datenpunkt, der stark vom erwarteten Muster abweicht. Ursachen: Marketingkampagne, technischer Fehler, externe Ereignisse. Im UrbanCart-Datensatz: prüfe ungewöhnliche Spikes außerhalb von Nov/Dez. Ausreißer sollten erklärt, nicht einfach gelöscht werden.",
+        tip: "Bei echten Ausreißern: Kommentiere im Dashboard ('Systemausfall 15. März'). So weiß das Management, warum der Wert abweicht."
+      }
+    ],
+    quizTitle: "Quiz: Lab 05 – Zeitreihen & Saisonalität",
+    quizSub: "15 Fragen · Beantworte alle, bevor du zum nächsten Lab gehst.",
+    questions: [
+      {
+        q: "Was ist Saisonalität in einer Zeitreihe?",
+        options: ["Ein langfristiger Aufwärtstrend","Regelmäßig wiederkehrende Muster in festen Zeitabständen","Zufällige Schwankungen der Daten","Ein technischer Fehler im Datensatz"],
+        correct: 1,
+        explain: "Saisonalität = wiederkehrende Muster in festen Intervallen (z.B. jedes Jahr im November steigen die E-Commerce-Umsätze durch Black Friday)."
+      },
+      {
+        q: "Was ist ein Trend in einer Zeitreihe?",
+        options: ["Ein kurzfristiger Spike","Die langfristige Grundrichtung (steigend oder fallend)","Das Konfidenzintervall des Forecasts","Die Differenz zwischen zwei Monaten"],
+        correct: 1,
+        explain: "Ein Trend beschreibt die langfristige Richtung einer Zeitreihe, unabhängig von kurzfristigen Schwankungen oder Saisonalität."
+      },
+      {
+        q: "Wie berechnet man Year-over-Year (YoY) Wachstum?",
+        options: ["(Monat_aktuell - Monat_vorjahr) / Monat_vorjahr × 100","Summe aller Monate / 12","Differenz zwischen Jahresanfang und Jahresende","Durchschnitt aller Monate"],
+        correct: 0,
+        explain: "YoY-Wachstum = (aktueller Wert - Vorjahreswert) / Vorjahreswert × 100. Beispiel: Nov 2024 = 120k, Nov 2023 = 100k → YoY = +20%."
+      },
+      {
+        q: "In welchem Monat findet Black Friday statt?",
+        options: ["Oktober","November","Dezember","Januar"],
+        correct: 1,
+        explain: "Black Friday ist immer der vierte Freitag im November (Tag nach US-Thanksgiving). Er ist der umsatzstärkste Einzeltag im E-Commerce weltweit."
+      },
+      {
+        q: "Was ist ein Konfidenzintervall beim Forecast?",
+        options: ["Die genaue Vorhersage des Umsatzes","Der Bereich, in dem der echte Wert mit einer bestimmten Wahrscheinlichkeit liegt","Die Abweichung vom Vorjahr","Die maximale Schwankungsbreite der Vergangenheit"],
+        correct: 1,
+        explain: "Das Konfidenzintervall (z.B. 95%) zeigt: In 95% der Fälle wird der tatsächliche Wert innerhalb dieser Bandbreite liegen. Je breiter das Band, desto unsicherer die Prognose."
+      },
+      {
+        q: "Wann ist ein Liniendiagramm besser als ein Balkendiagramm?",
+        options: ["Für Kategorievergleiche (z.B. Region vs. Region)","Für zeitliche Verläufe und Trends über Perioden","Für Anteile am Gesamtumsatz","Für geografische Verteilungen"],
+        correct: 1,
+        explain: "Liniendiagramme sind ideal für Zeitreihen: Sie betonen den Verlauf und die Richtung. Balkendiagramme eignen sich besser für Vergleiche zwischen diskreten Kategorien."
+      },
+      {
+        q: "Was macht die MONTH()-Funktion in Tableau?",
+        options: ["Gibt den Jahresumsatz zurück","Extrahiert die Monatsnummer (1-12) aus einem Datum","Berechnet den monatlichen Durchschnitt","Filtert Daten nach Monat"],
+        correct: 1,
+        explain: "MONTH([order_date]) gibt eine Zahl von 1 (Januar) bis 12 (Dezember) zurück. Damit kannst du alle Januar-Werte gruppieren, unabhängig vom Jahr."
+      },
+      {
+        q: "Was bedeutet 'Granularität' in einer Zeitreihe?",
+        options: ["Die Anzahl der Datenquellen","Der zeitliche Detailgrad der Auflösung (Tag / Monat / Quartal / Jahr)","Die Genauigkeit der Umsatzdaten","Die Farbabstufung im Diagramm"],
+        correct: 1,
+        explain: "Granularität = zeitliche Auflösung. Tagesebene zeigt Details und Ausreißer; Monatsebene zeigt Trends; Jahresebene zeigt Gesamtentwicklung."
+      },
+      {
+        q: "Was ist ein Rolling Average (gleitender Durchschnitt)?",
+        options: ["Der Durchschnitt aller Datenpunkte","Ein Durchschnitt über ein gleitendes Zeitfenster (z.B. letzte 3 Monate)","Die Summe aller Umsätze","Der Forecast für den nächsten Monat"],
+        correct: 1,
+        explain: "Rolling Average = gleitender Durchschnitt über ein fixes Zeitfenster. Beispiel: 3-Monats-Rolling-Avg glättet kurzfristige Schwankungen und macht Trends sichtbarer."
+      },
+      {
+        q: "Was sollte man bei starken Ausreißern in einer Zeitreihe tun?",
+        options: ["Immer löschen, damit der Forecast stimmt","Ursache klären, im Dashboard kommentieren, dann entscheiden ob Bereinigung sinnvoll ist","Ignorieren, da sie statistisch irrelevant sind","Durch den Durchschnitt ersetzen"],
+        correct: 1,
+        explain: "Ausreißer haben immer eine Ursache (Kampagne, Systemfehler, Ereignis). Versteh sie erst, dann entscheide: Kommentar im Dashboard ('Systemausfall') oder Bereinigung für Prognose."
+      },
+      {
+        q: "Was zeigt ein Forecast in Tableau?",
+        options: ["Den Rückblick auf die Vergangenheit","Eine statistische Vorhersage künftiger Werte basierend auf Mustern der Vergangenheit","Den Vergleich zwischen zwei Jahren","Die kumulierte Summe aller Umsätze"],
+        correct: 1,
+        explain: "Tableau's Forecast nutzt exponentielles Glätten (Holt-Winters-Methode) und berechnet eine Prognose für zukünftige Perioden mit Konfidenzintervall."
+      },
+      {
+        q: "Was ist eine Zeitreihe?",
+        options: ["Eine Tabelle mit allen Produkten sortiert nach Preis","Eine Folge von Messwerten, die in zeitlicher Reihenfolge aufgezeichnet wurden","Eine geografische Karte der Verkäufe","Ein Diagramm mit mehreren Kategorien"],
+        correct: 1,
+        explain: "Eine Zeitreihe ist eine geordnete Folge von Datenpunkten, die über die Zeit aufgezeichnet wurden (z.B. Umsatz pro Tag/Monat/Jahr)."
+      },
+      {
+        q: "Warum ist der November oft der umsatzstärkste Monat im E-Commerce?",
+        options: ["Weil im November das neue Schuljahr beginnt","Wegen Black Friday und Cyber Monday – die größten Shopping-Events des Jahres","Weil Winterkleidung teurer ist","Weil im November weniger Retouren anfallen"],
+        correct: 1,
+        explain: "Black Friday (letzter Freitag im November) und Cyber Monday (folgender Montag) sind die umsatzstärksten Shopping-Tage weltweit. Sie treiben den November-Peak im E-Commerce."
+      },
+      {
+        q: "Was ist der Unterschied zwischen kontinuierlichem und diskretem Datum in Tableau?",
+        options: ["Kein Unterschied, nur Darstellung","Kontinuierlich zeigt eine Zeitachse; diskret zeigt einzelne Datumspunkte als Kategorien","Diskret ist ungenauer","Kontinuierlich kann nicht gefiltert werden"],
+        correct: 1,
+        explain: "Kontinuierlich (grüne Datumspille): Erstellt eine fortlaufende Achse – ideal für Zeitreihen. Diskret (blaue Datumspille): Gruppiert nach Periode – ideal für Vergleiche wie 'alle Januar-Werte'."
+      },
+      {
+        q: "Was ist 'Dual-Axis' in Tableau und wofür nutzt man es bei Zeitreihen?",
+        options: ["Zwei Farbskalen für ein Diagramm","Zwei übereinandergelegte Y-Achsen für unterschiedliche Maßeinheiten","Ein zweites Datenblatt","Zwei Filter gleichzeitig"],
+        correct: 1,
+        explain: "Dual-Axis erlaubt zwei Y-Achsen: z.B. Umsatz (links) und Anzahl Bestellungen (rechts) in einem Chart. Ideal für YoY-Vergleiche mit unterschiedlichen Skalen."
+      }
+    ],
+    aiEye: "KI-Ausblick",
+    aiTitle: "Zeitreihen in Python: pandas + Prophet Forecast",
+    aiText: "Das, was du in Tableau mit Klicks gebaut hast, lässt sich in Python automatisieren – und mit Facebook Prophet sogar bessere Forecasts erstellen. Hier der Prompt und der Code-Einstieg:",
+    aiPrompt: `# Prompt für ChatGPT / Claude:
+"Ich habe orders.csv mit Spalten: order_date, total_revenue.
+Schreibe Python-Code der:
+1. Die Daten mit pandas lädt und auf Monat resampelt (resample('ME'))
+2. Ein Plotly-Liniendiagramm erstellt mit 2023 vs. 2024 YoY
+3. Facebook Prophet installiert (pip install prophet) und einen
+   6-Monats-Forecast mit Konfidenzintervall erstellt
+4. Alles in einem Plotly-Dashboard zusammenfasst
+Farbschema: Orange #E87722 für 2024, Blau #005B9A für 2023."
+
+# Technischer Stack:
+import pandas as pd
+import plotly.graph_objects as go
+from prophet import Prophet
+
+df = pd.read_csv('orders.csv', parse_dates=['order_date'])
+monthly = df.resample('ME', on='order_date')['total_revenue'].sum().reset_index()
+
+# Prophet Forecast:
+prophet_df = monthly.rename(columns={'order_date':'ds','total_revenue':'y'})
+model = Prophet(yearly_seasonality=True, weekly_seasonality=False)
+model.fit(prophet_df)
+future = model.make_future_dataframe(periods=6, freq='ME')
+forecast = model.predict(future)`,
+    nextLab: "Lab 06: Conversion Funnel →",
+    prevLab: "← Lab 04: Produktanalyse"
+  },
+  en: {
+    labNum: "Lab 05 of 09",
+    labTitle: ["Seasonality & ", "Time Series"],
+    labSub: "How does revenue develop over time? You'll learn to distinguish seasonality from real trends, identify the Black Friday peak and use Tableau's Forecast function to predict the future.",
+    metaDauer: "75–90 min.",
+    metaLevel: "Intermediate",
+    metaData: "orders.csv",
+    metaTool: "Tableau Public",
+    progSteps: ["Introduction","Load Data","Analysis","Visualisation","Quiz","AI Outlook"],
+    s1eye: "Concept",
+    s1title: "Understanding Time Series Analysis",
+    s1lead: "A time series is a sequence of measurements over time. In e-commerce that's classic: revenue per month. There are two fundamental patterns: trend (long-term direction) and seasonality (recurring patterns). You must understand both before you can forecast.",
+    s2eye: "Step by Step",
+    s2title: "Tableau: Building Time Series",
+    s2lead: "Open Tableau Public and connect orders.csv. Then follow these 5 steps to build a complete sales trend dashboard.",
+    steps: [
+      {
+        title: "Load orders.csv & format date field",
+        body: "Connect <code>orders.csv</code> in Tableau. Click the data type icon next to <code>order_date</code> and ensure it's recognised as <strong>Date</strong> (not text). Tableau shows a calendar icon. Drag <code>order_date</code> to Columns.",
+        tip: "If order_date is read as text, click the # symbol → select 'Date'. Tableau will then automatically show date hierarchies (Year → Quarter → Month)."
+      },
+      {
+        title: "Line chart: monthly revenue 2023 + 2024",
+        body: "Drag <code>total_revenue</code> to Rows. Click <code>YEAR(order_date)</code> in Columns → choose <strong>Month (discrete)</strong>. Tableau now shows all months. Drag <code>YEAR(order_date)</code> to 'Color' in the Marks panel – you'll see 2023 and 2024 as different lines.",
+        tip: "Continuous vs. discrete: Continuous (green) shows a flowing line; discrete (blue) shows axis labels. For YoY comparisons: discrete months + Color = Year."
+      },
+      {
+        title: "Dual-Line: Year over Year comparison",
+        body: "For a direct YoY comparison: New worksheet. <code>MONTH(order_date)</code> (discrete) on Columns, <code>SUM(total_revenue)</code> on Rows. Then drag <code>YEAR(order_date)</code> to Color. You'll see 2023 and 2024 overlaid – perfect for comparison. Note the November spike!",
+        tip: "YoY = Year over Year. Instead of comparing absolute numbers, you directly see: 'In November 2024 we sold 18% more than in November 2023.'"
+      },
+      {
+        title: "Enable Forecast",
+        body: "In the Analytics pane (left, 'Analytics' tab): Drag <strong>Forecast</strong> onto the chart. Tableau automatically calculates a prediction. Right-click the Forecast → 'Forecast Options' → set '6 months'. The confidence interval shows uncertainty.",
+        tip: "Tableau uses exponential smoothing (Holt-Winters) for forecasting. The confidence band (light blue area) means: in 95% of cases, the real value will be within these bounds."
+      },
+      {
+        title: "Dashboard: UrbanCart Sales Trend & Forecast",
+        body: "New dashboard. Add: (1) YoY line chart, (2) Forecast chart, (3) Three KPI cards at top: Strongest Quarter, YoY Growth, Forecast Confidence. Title: <strong>UrbanCart Sales Trend & Forecast</strong>. Use filters for Channel and Region.",
+        tip: "Dashboard tip: Put the YoY chart on top (overview) and the forecast below (outlook). This leads the reader from past to future."
+      }
+    ],
+    s3eye: "Key Metrics",
+    s3title: "KPIs for the Sales Dashboard",
+    s3lead: "These three KPIs appear in your dashboard header. They give management the most important context immediately.",
+    kpis: [
+      { icon:"📈", val:"Q4 2024", lbl:"Strongest Quarter", def:"October–December: Black Friday + Christmas drive revenue to the annual high." },
+      { icon:"📊", val:"+12.4%", lbl:"YoY Growth", def:"2024 vs. 2023: UrbanCart grows year-over-year. Is this a real trend or just a seasonal effect?" },
+      { icon:"🎯", val:"85%", lbl:"Forecast Confidence", def:"Tableau's prediction confidence interval: with 85% probability the real value falls within the band." }
+    ],
+    s4eye: "Concepts",
+    s4title: "Seasonality vs. Trend – the difference",
+    concepts: [
+      {
+        title: "What is seasonality?",
+        body: "Seasonality = regularly recurring patterns at fixed intervals. In e-commerce: every November revenue rises (Black Friday). December too (Christmas). January falls (post-holiday blues). These patterns repeat – that's seasonality.",
+        tip: null
+      },
+      {
+        title: "What is a trend?",
+        body: "A trend is the long-term underlying direction of a time series. UrbanCart is growing: the baseline rises year after year, independent of seasonal fluctuations. Trend and seasonality overlap – Tableau's Decomposition can separate them.",
+        tip: "Reality check: If you remove the seasonal pattern and revenue still rises – that's the trend."
+      },
+      {
+        title: "Detecting and handling outliers",
+        body: "An outlier is a data point that strongly deviates from the expected pattern. Causes: marketing campaigns, technical errors, external events. In the UrbanCart dataset: check for unusual spikes outside Nov/Dec. Outliers should be explained, not simply deleted.",
+        tip: "With real outliers: annotate in the dashboard ('System outage 15 March'). This tells management why the value deviates."
+      }
+    ],
+    quizTitle: "Quiz: Lab 05 – Time Series & Seasonality",
+    quizSub: "15 questions · Complete all before moving to the next lab.",
+    questions: [
+      { q:"What is seasonality in a time series?", options:["A long-term upward trend","Regularly recurring patterns at fixed time intervals","Random data fluctuations","A technical error in the dataset"], correct:1, explain:"Seasonality = recurring patterns at fixed intervals (e.g., every November e-commerce revenue rises due to Black Friday)." },
+      { q:"What is a trend in a time series?", options:["A short-term spike","The long-term underlying direction (rising or falling)","The forecast confidence interval","The difference between two months"], correct:1, explain:"A trend describes the long-term direction of a time series, independent of short-term fluctuations or seasonality." },
+      { q:"How do you calculate Year-over-Year (YoY) growth?", options:["(current_month - prior_year_month) / prior_year_month × 100","Sum of all months / 12","Difference between year start and year end","Average of all months"], correct:0, explain:"YoY growth = (current value - prior year value) / prior year value × 100. Example: Nov 2024 = 120k, Nov 2023 = 100k → YoY = +20%." },
+      { q:"In which month does Black Friday take place?", options:["October","November","December","January"], correct:1, explain:"Black Friday is always the fourth Friday in November (day after US Thanksgiving). It's the highest-revenue single day in e-commerce worldwide." },
+      { q:"What is a confidence interval in a forecast?", options:["The precise revenue prediction","The range within which the real value will fall with a given probability","The deviation from the previous year","The maximum historical fluctuation range"], correct:1, explain:"The confidence interval (e.g. 95%) means: in 95% of cases the actual value will be within this range. The wider the band, the more uncertain the forecast." },
+      { q:"When is a line chart better than a bar chart?", options:["For category comparisons (region vs. region)","For temporal progressions and trends over periods","For shares of total revenue","For geographic distributions"], correct:1, explain:"Line charts are ideal for time series: they emphasise progression and direction. Bar charts suit comparisons between discrete categories." },
+      { q:"What does the MONTH() function do in Tableau?", options:["Returns annual revenue","Extracts the month number (1-12) from a date","Calculates the monthly average","Filters data by month"], correct:1, explain:"MONTH([order_date]) returns a number from 1 (January) to 12 (December). This lets you group all January values regardless of year." },
+      { q:"What does 'granularity' mean in a time series?", options:["Number of data sources","The level of time detail (day / month / quarter / year)","Accuracy of revenue data","Colour gradation in the chart"], correct:1, explain:"Granularity = temporal resolution. Daily level shows detail and outliers; monthly shows trends; yearly shows overall development." },
+      { q:"What is a rolling average?", options:["The average of all data points","An average over a moving time window (e.g. last 3 months)","The sum of all revenues","The forecast for next month"], correct:1, explain:"Rolling average = moving average over a fixed time window. Example: 3-month rolling avg smooths short-term fluctuations and makes trends more visible." },
+      { q:"What should you do with strong outliers in a time series?", options:["Always delete to ensure forecast accuracy","Investigate the cause, annotate in dashboard, then decide whether cleaning makes sense","Ignore them as statistically irrelevant","Replace with the average"], correct:1, explain:"Outliers always have a cause (campaign, system error, event). Understand them first, then decide: annotate in dashboard ('system outage') or clean for forecasting." },
+      { q:"What does a Tableau Forecast show?", options:["A retrospective on the past","A statistical prediction of future values based on past patterns","The comparison between two years","The cumulative sum of all revenues"], correct:1, explain:"Tableau's Forecast uses exponential smoothing (Holt-Winters method) to calculate predictions for future periods with confidence intervals." },
+      { q:"What is a time series?", options:["A table of all products sorted by price","A sequence of measurements recorded in chronological order","A geographic sales map","A chart with multiple categories"], correct:1, explain:"A time series is an ordered sequence of data points recorded over time (e.g. revenue per day/month/year)." },
+      { q:"Why is November often the highest-revenue month in e-commerce?", options:["Because the new school year starts in November","Because of Black Friday and Cyber Monday – the biggest shopping events of the year","Because winter clothing is more expensive","Because fewer returns occur in November"], correct:1, explain:"Black Friday (last Friday in November) and Cyber Monday (following Monday) are the highest-revenue shopping days worldwide, driving the November peak in e-commerce." },
+      { q:"What's the difference between continuous and discrete dates in Tableau?", options:["No difference, just appearance","Continuous shows a time axis; discrete shows individual date points as categories","Discrete is less accurate","Continuous cannot be filtered"], correct:1, explain:"Continuous (green date pill): Creates a running axis – ideal for time series. Discrete (blue date pill): Groups by period – ideal for comparisons like 'all January values'." },
+      { q:"What is 'Dual-Axis' in Tableau and why use it for time series?", options:["Two colour scales for one chart","Two overlaid Y-axes for different units of measure","A second data sheet","Two simultaneous filters"], correct:1, explain:"Dual-Axis allows two Y-axes: e.g. revenue (left) and number of orders (right) in one chart. Ideal for YoY comparisons with different scales." }
+    ],
+    aiEye: "AI Outlook",
+    aiTitle: "Time Series in Python: pandas + Prophet Forecast",
+    aiText: "What you built in Tableau with clicks can be automated in Python – and with Facebook Prophet you can create even better forecasts. Here's the prompt and code starter:",
+    aiPrompt: `# Prompt for ChatGPT / Claude:
+"I have orders.csv with columns: order_date, total_revenue.
+Write Python code that:
+1. Loads the data with pandas and resamples to monthly (resample('ME'))
+2. Creates a Plotly line chart with 2023 vs. 2024 YoY
+3. Installs Facebook Prophet (pip install prophet) and creates a
+   6-month forecast with confidence interval
+4. Combines everything in a Plotly dashboard
+Colour scheme: Orange #E87722 for 2024, Blue #005B9A for 2023."
+
+# Technical stack:
+import pandas as pd
+import plotly.graph_objects as go
+from prophet import Prophet
+
+df = pd.read_csv('orders.csv', parse_dates=['order_date'])
+monthly = df.resample('ME', on='order_date')['total_revenue'].sum().reset_index()
+
+# Prophet Forecast:
+prophet_df = monthly.rename(columns={'order_date':'ds','total_revenue':'y'})
+model = Prophet(yearly_seasonality=True, weekly_seasonality=False)
+model.fit(prophet_df)
+future = model.make_future_dataframe(periods=6, freq='ME')
+forecast = model.predict(future)`,
+    nextLab: "Lab 06: Conversion Funnel →",
+    prevLab: "← Lab 04: Product Analysis"
+  }
+};
+
+function Quiz({ questions, t, lang }) {
+  const [answers, setAnswers] = useState({});
+  const [revealed, setRevealed] = useState({});
+  const done = Object.keys(revealed).length === questions.length;
+  const score = Object.entries(answers).filter(([i, a]) => a === questions[i].correct).length;
+  const handleAnswer = (qi, oi) => {
+    if (revealed[qi] !== undefined) return;
+    setAnswers(prev => ({ ...prev, [qi]: oi }));
+    setRevealed(prev => ({ ...prev, [qi]: true }));
+  };
+  return (
+    <div className="quiz-section">
+      <h3 className="quiz-title">{t.quizTitle}</h3>
+      <p className="quiz-sub">{t.quizSub}</p>
+      <div className="quiz-progress">{Object.keys(revealed).length} / {questions.length} {lang==='de'?'beantwortet':'answered'}</div>
+      {questions.map((q, qi) => (
+        <div key={qi} className="question-block">
+          <div className="question-num">{lang==='de'?'Frage':'Question'} {qi + 1}</div>
+          <div className="question-text">{q.q}</div>
+          <div className="options">
+            {q.options.map((opt, oi) => {
+              let cls = "option-btn";
+              if (revealed[qi] !== undefined) {
+                cls += " revealed";
+                if (oi === q.correct) cls += " correct";
+                else if (oi === answers[qi]) cls += " wrong";
+              }
+              return (
+                <button key={oi} className={cls} onClick={() => handleAnswer(qi, oi)}>
+                  <span style={{marginRight:'8px',fontWeight:800}}>{String.fromCharCode(65+oi)}.</span>{opt}
+                </button>
+              );
+            })}
+          </div>
+          {revealed[qi] !== undefined && (
+            <div className={`feedback ${answers[qi] === q.correct ? 'correct' : 'wrong'}`}>
+              {answers[qi] === q.correct ? (lang==='de'?"✓ Richtig! ":"✓ Correct! ") : (lang==='de'?"✗ Nicht ganz. ":"✗ Not quite. ")}
+              {q.explain}
+            </div>
+          )}
+        </div>
+      ))}
+      {done && (
+        <div className="quiz-result">
+          <div className="quiz-result-score">{score}/{questions.length}</div>
+          <div className="quiz-result-label">{lang==='de'?'Punkte':'Points'}</div>
+          <div className="quiz-result-msg">
+            {score >= 13 ? (lang==='de'?'🎉 Ausgezeichnet! Weiter zu Lab 06.':'🎉 Excellent! Continue to Lab 06.') :
+             score >= 10 ? (lang==='de'?'👍 Gut! Lies die Erklärungen nochmal durch.':'👍 Good! Review the explanations.') :
+             (lang==='de'?'💪 Noch einmal! Schau dir die Erklärungen an.':'💪 Try again! Check the explanations.')}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  const [lang, setLang] = useState('de');
+  const t = T[lang];
+  useEffect(() => {
+    const els = document.querySelectorAll('.sr');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    els.forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  }, [lang]);
+  const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARgAAABtCAYAAAB6Fn5KAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH6gMUERgZGETRggAAABBjYU52AAABGAAAAMwAAAAAAAAAMrYZErEAAEPZSURBVHja7Z13eBzV1YffO7N9tbvq1ZJcuwNsMJjeMJjeMJhTBkMJhOIsSOBERUFUERMV0VEVKlUNIVSURWBSqkLCcSuVMV5SiiiiiiiiiiiiiiiiiijzROL+VvnP3nON+wz4j5Q7t/AAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH6gMUERgZGETRggAAABBjYU52AAABGAAAAMwAAAAAAAAAMrYZErEAAEPZSURBVHja7Z13eBzV1Ydfd+/O7KxW1apIlgRCYEMoGIMJEEgIkJCQkJCQkITk5f3n/b8v7/v/f//v93ie53mSJUmWJVuWZVu2bNmWbdu2bdu2bdu2bdu2bfu27e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3
