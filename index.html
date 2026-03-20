@@ -688,6 +688,9 @@ function App() {
           <p className="hero-subtitle">{t.heroSub}</p>
           <div className="hero-badges">
             {t.heroBadges.map((b,i) => <span key={i} className="hero-badge">{b}</span>)}
+            <a href="urbancart.html" className="hero-badge" style={{textDecoration:'none', cursor:'pointer', borderColor:'rgba(232,119,34,0.7)', color:'#E87722'}}>
+              {lang==='de'?'🛒 UrbanCart Webshop':'🛒 UrbanCart Shop'}
+            </a>
           </div>
           <div className="hero-cta-row">
             <a href="#labs" className="btn-primary">{t.heroCta1}</a>
@@ -749,7 +752,7 @@ function App() {
             {LABS.map((lab, idx) => {
               const d = lang === 'de' ? lab.de : lab.en;
               return (
-                <div key={lab.id} className="lab-card sr" style={{transitionDelay: `${(idx % 3) * 80}ms`}}>
+                <a href={`lab0${lab.id}.html`} key={lab.id} className="lab-card sr" style={{transitionDelay: `${(idx % 3) * 80}ms`, textDecoration:'none'}}>
                   <div className="lab-card-num">0{lab.id}</div>
                   <div className="lab-icon">{lab.icon}</div>
                   <div className="lab-kw">{d.kw}</div>
@@ -759,7 +762,7 @@ function App() {
                     <span className={`diff-badge ${diffClass(lab.diff)}`}>{d.diff}</span>
                     <span className="lab-cta">{t.startLab}</span>
                   </div>
-                </div>
+                </a>
               );
             })}
           </div>
