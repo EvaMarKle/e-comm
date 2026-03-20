@@ -1,417 +1,1072 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>UrbanCart – Mode, Lifestyle & Home</title>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #fff; color: #1a1a1a; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UrbanCart – Mode, Lifestyle & Home</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{
+  font-family:'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;
+  background:#fff;color:#212529;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;line-height:1.5
+}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:0;background:none}
+img{display:block;max-width:100%}
 
-    /* Top announcement bar */
-    .topbar {
-      background: #1a1a1a; color: #fff;
-      text-align: center; padding: 8px 16px;
-      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em;
-    }
-    .topbar span { color: #E87722; }
+/* TOPBAR */
+.topbar{
+  background:#212529;
+  padding:8px 0;text-align:center;
+  font-size:11px;font-weight:600;
+  letter-spacing:.06em;color:rgba(255,255,255,.7);
+}
+.topbar strong{color:#E87722}
 
-    /* Navbar */
-    .navbar {
-      background: #fff; border-bottom: 1px solid #e5e7eb;
-      position: sticky; top: 0; z-index: 100;
-      padding: 0 32px; height: 64px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .nav-logo {
-      font-size: 1.6rem; font-weight: 900; color: #1a1a1a;
-      letter-spacing: -0.03em;
-    }
-    .nav-logo span { color: #E87722; }
-    .nav-links { display: flex; gap: 28px; }
-    .nav-link {
-      font-size: 0.84rem; font-weight: 600; color: #4b5563;
-      text-decoration: none; transition: color 0.15s;
-      cursor: pointer;
-    }
-    .nav-link:hover { color: #E87722; }
-    .nav-actions { display: flex; align-items: center; gap: 16px; }
-    .cart-btn {
-      background: #1a1a1a; color: #fff;
-      padding: 8px 20px; font-size: 0.84rem; font-weight: 700;
-      border: none; cursor: pointer; transition: background 0.15s;
-      font-family: inherit;
-    }
-    .cart-btn:hover { background: #E87722; }
+/* NAVBAR */
+.navbar{
+  position:sticky;top:0;z-index:100;
+  background:#fff;
+  border-bottom:1px solid #E9ECEF;
+}
+.navbar__main{
+  max-width:1280px;margin:0 auto;
+  padding:0 32px;height:64px;
+  display:flex;align-items:center;gap:32px;
+}
+@media(max-width:640px){.navbar__main{padding:0 16px;gap:16px}}
+.navbar__logo{
+  font-size:22px;font-weight:900;
+  letter-spacing:-.04em;color:#212529;
+  flex-shrink:0;
+}
+.navbar__logo em{color:#E87722;font-style:normal}
+.navbar__search{
+  flex:1;max-width:480px;
+  display:flex;align-items:center;
+  border:1.5px solid #E9ECEF;
+  height:40px;
+  transition:border-color .15s;
+}
+.navbar__search:focus-within{border-color:#005B9A}
+.navbar__search input{
+  flex:1;height:100%;padding:0 12px;
+  border:0;outline:0;
+  font-size:13px;color:#212529;
+  background:transparent;
+}
+.navbar__search input::placeholder{color:#9CA3AF}
+.navbar__search button{
+  width:40px;height:40px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  color:#6C757D;transition:color .15s;
+}
+.navbar__search button:hover{color:#212529}
+.navbar__actions{
+  display:flex;align-items:center;gap:8px;
+  margin-left:auto;flex-shrink:0;
+}
+.nav-icon-btn{
+  width:40px;height:40px;
+  display:flex;align-items:center;justify-content:center;
+  color:#6C757D;transition:color .15s;
+  position:relative;
+}
+.nav-icon-btn:hover{color:#212529}
+.cart-badge{
+  position:absolute;top:6px;right:6px;
+  width:16px;height:16px;border-radius:50%;
+  background:#E87722;color:#fff;
+  font-size:9px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+.nav-cta{
+  background:#212529;color:#fff;
+  padding:0 20px;height:36px;
+  font-size:12px;font-weight:700;letter-spacing:.04em;
+  display:flex;align-items:center;gap:6px;
+  transition:background .15s;
+}
+.nav-cta:hover{background:#E87722}
 
-    /* Hero */
-    .hero {
-      background: #f9fafb;
-      display: grid; grid-template-columns: 1fr 1fr;
-      min-height: 520px;
-    }
-    .hero-text {
-      display: flex; flex-direction: column;
-      justify-content: center; padding: 64px 48px;
-    }
-    .hero-tag {
-      display: inline-block;
-      background: rgba(232,119,34,0.12); color: #E87722;
-      font-size: 0.72rem; font-weight: 700;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      padding: 4px 12px; margin-bottom: 20px;
-    }
-    .hero-title {
-      font-size: clamp(2rem, 4vw, 3.2rem);
-      font-weight: 900; color: #1a1a1a;
-      line-height: 1.1; margin-bottom: 16px;
-    }
-    .hero-title em { color: #E87722; font-style: normal; }
-    .hero-sub {
-      font-size: 1rem; color: #6c757d;
-      line-height: 1.7; margin-bottom: 32px; max-width: 400px;
-    }
-    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
-    .btn-dark {
-      background: #1a1a1a; color: #fff;
-      padding: 12px 28px; font-weight: 700; font-size: 0.9rem;
-      border: 2px solid #1a1a1a; cursor: pointer; text-decoration: none;
-      transition: background 0.15s; font-family: inherit;
-    }
-    .btn-dark:hover { background: #E87722; border-color: #E87722; }
-    .btn-ghost {
-      background: transparent; color: #1a1a1a;
-      padding: 12px 28px; font-weight: 700; font-size: 0.9rem;
-      border: 2px solid #1a1a1a; cursor: pointer;
-      transition: border-color 0.15s; font-family: inherit;
-    }
-    .btn-ghost:hover { border-color: #E87722; color: #E87722; }
-    .hero-visual {
-      background: #1a1a1a;
-      display: flex; align-items: center; justify-content: center;
-      position: relative; overflow: hidden;
-      min-height: 400px;
-    }
-    .hero-visual-inner {
-      text-align: center; color: #fff; padding: 40px;
-    }
-    .hero-visual-big {
-      font-size: 6rem; font-weight: 900; line-height: 1;
-      color: rgba(232,119,34,0.9);
-    }
-    .hero-visual-sub { font-size: 1rem; color: rgba(255,255,255,0.5); margin-top: 8px; }
+/* CATEGORY NAV */
+.catnav{
+  border-bottom:1px solid #E9ECEF;
+  background:#fff;
+}
+.catnav__inner{
+  max-width:1280px;margin:0 auto;padding:0 32px;
+  display:flex;align-items:center;gap:0;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.catnav__inner::-webkit-scrollbar{display:none}
+.catnav__item{
+  padding:12px 16px;
+  font-size:12px;font-weight:700;
+  color:#6C757D;letter-spacing:.04em;
+  white-space:nowrap;
+  border-bottom:2px solid transparent;
+  transition:color .15s,border-color .15s;
+  cursor:pointer;
+}
+.catnav__item:hover{color:#212529}
+.catnav__item.is-active{color:#212529;border-bottom-color:#212529}
+.catnav__item.is-sale{color:#E87722}
+.catnav__item.is-sale.is-active{border-bottom-color:#E87722}
 
-    /* Category strip */
-    .cat-strip {
-      padding: 40px 32px;
-      display: flex; gap: 16px;
-      overflow-x: auto; max-width: 1200px; margin: 0 auto;
-    }
-    .cat-card {
-      flex: 1; min-width: 140px;
-      background: #f9fafb; border: 1.5px solid #e5e7eb;
-      padding: 24px 16px; text-align: center;
-      cursor: pointer; transition: all 0.2s;
-    }
-    .cat-card:hover { border-color: #E87722; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(232,119,34,0.1); }
-    .cat-icon { font-size: 2rem; margin-bottom: 8px; }
-    .cat-name { font-size: 0.82rem; font-weight: 700; color: #1a1a1a; }
-    .cat-count { font-size: 0.72rem; color: #9ca3af; margin-top: 2px; }
+/* HERO */
+.hero{
+  background:#0F172A;
+  min-height:560px;
+  display:grid;grid-template-columns:1fr 1fr;
+  position:relative;overflow:hidden;
+}
+@media(max-width:800px){.hero{grid-template-columns:1fr;min-height:auto}}
+.hero__content{
+  padding:80px 64px;
+  display:flex;flex-direction:column;
+  justify-content:center;position:relative;z-index:1;
+}
+@media(max-width:800px){.hero__content{padding:48px 32px}}
+.hero__season{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:10px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.45);margin-bottom:24px;
+}
+.hero__season::before{
+  content:'';display:block;
+  width:24px;height:1px;background:rgba(255,255,255,.3);
+}
+.hero__title{
+  font-size:clamp(36px,5vw,64px);
+  font-weight:900;color:#fff;
+  line-height:1.0;letter-spacing:-.03em;
+  margin-bottom:24px;
+}
+.hero__title em{
+  display:block;color:#E87722;
+  font-style:normal;
+}
+.hero__sub{
+  font-size:15px;color:rgba(255,255,255,.55);
+  line-height:1.7;margin-bottom:40px;
+  max-width:400px;
+}
+.hero__btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn-hero-primary{
+  background:#E87722;color:#fff;
+  padding:14px 28px;
+  font-size:13px;font-weight:700;letter-spacing:.04em;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:background .15s,transform .15s;
+}
+.btn-hero-primary:hover{background:#cf6a1c;transform:translateY(-1px)}
+.btn-hero-ghost{
+  background:transparent;color:#fff;
+  padding:14px 28px;
+  font-size:13px;font-weight:700;letter-spacing:.04em;
+  border:1.5px solid rgba(255,255,255,.3);
+  display:inline-flex;align-items:center;gap:8px;
+  transition:border-color .15s;
+}
+.btn-hero-ghost:hover{border-color:rgba(255,255,255,.7)}
 
-    /* Products */
-    .section { padding: 48px 32px; max-width: 1200px; margin: 0 auto; }
-    .section-header {
-      display: flex; align-items: baseline;
-      justify-content: space-between; margin-bottom: 32px;
-    }
-    .section-title { font-size: 1.4rem; font-weight: 800; color: #1a1a1a; }
-    .section-link { font-size: 0.84rem; font-weight: 700; color: #E87722; cursor: pointer; }
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-    }
-    .product-card {
-      background: #fff; border: 1.5px solid #e5e7eb;
-      cursor: pointer; transition: all 0.2s;
-      position: relative;
-    }
-    .product-card:hover { border-color: #1a1a1a; box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
-    .product-img {
-      width: 100%; aspect-ratio: 3/4;
-      background: #f3f4f6;
-      display: flex; align-items: center; justify-content: center;
-      position: relative; overflow: hidden;
-    }
-    .product-img-placeholder {
-      font-size: 3rem; opacity: 0.3;
-    }
-    .product-badge {
-      position: absolute; top: 12px; left: 12px;
-      background: #E87722; color: #fff;
-      font-size: 0.68rem; font-weight: 700;
-      padding: 3px 8px; letter-spacing: 0.06em;
-    }
-    .product-info { padding: 14px 16px; }
-    .product-cat { font-size: 0.68rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.08em; }
-    .product-name { font-size: 0.9rem; font-weight: 700; color: #1a1a1a; margin: 4px 0; line-height: 1.3; }
-    .product-price-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-    .product-price { font-size: 1rem; font-weight: 800; color: #1a1a1a; }
-    .product-price-old { font-size: 0.84rem; color: #9ca3af; text-decoration: line-through; }
-    .product-stars { font-size: 0.75rem; color: #F59E0B; margin-top: 4px; }
-    .add-btn {
-      width: 100%; background: #1a1a1a; color: #fff;
-      border: none; padding: 10px; font-weight: 700;
-      font-size: 0.84rem; cursor: pointer;
-      transition: background 0.15s; font-family: inherit;
-      margin-top: 10px;
-    }
-    .add-btn:hover { background: #E87722; }
+/* Hero visual panel */
+.hero__visual{
+  background:#1E293B;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  padding:48px;
+}
+@media(max-width:800px){.hero__visual{min-height:280px}}
+.hero__visual-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:8px;width:100%;max-width:320px;
+}
+.hero__visual-cell{
+  aspect-ratio:1;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.hero__visual-cell--large{
+  grid-column:span 2;
+  aspect-ratio:2/1;
+}
+.hero-product{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+}
 
-    /* Trust bar */
-    .trust-bar {
-      background: #f9fafb; border-top: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb;
-      padding: 24px 32px;
-    }
-    .trust-inner {
-      max-width: 1200px; margin: 0 auto;
-      display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-around;
-    }
-    .trust-item { display: flex; align-items: center; gap: 10px; }
-    .trust-icon { display:flex; align-items:center; }
-    .trust-text { font-size: 0.82rem; font-weight: 700; color: #374151; }
+/* Trust strip */
+.truststrip{
+  background:#F8F9FA;
+  border-bottom:1px solid #E9ECEF;
+  padding:0;
+}
+.truststrip__inner{
+  max-width:1280px;margin:0 auto;padding:0 32px;
+  display:flex;align-items:stretch;
+  overflow-x:auto;
+}
+.trust-item{
+  display:flex;align-items:center;gap:12px;
+  padding:20px 32px;
+  border-right:1px solid #E9ECEF;
+  flex-shrink:0;
+  flex:1;min-width:200px;
+}
+.trust-item:last-child{border-right:0}
+.trust-item__icon{color:#005B9A;flex-shrink:0}
+.trust-item__label{font-size:12px;font-weight:700;color:#212529}
+.trust-item__sub{font-size:11px;color:#9CA3AF;margin-top:1px}
 
-    /* Data note */
-    .data-note {
-      background: rgba(0,91,154,0.06);
-      border-left: 3px solid #005B9A;
-      padding: 16px 24px; margin: 0 32px 32px;
-      max-width: 1200px; margin: 0 auto 32px;
-    }
-    .data-note-title { font-size: 0.72rem; font-weight: 700; color: #005B9A; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
-    .data-note-text { font-size: 0.82rem; color: #6c757d; line-height: 1.6; }
+/* SECTION HEADER */
+.section{padding:64px 0}
+.section--compact{padding:48px 0}
+.container{max-width:1280px;margin:0 auto;padding:0 32px}
+@media(max-width:640px){.container{padding:0 16px}}
+.section__head{
+  display:flex;align-items:baseline;
+  justify-content:space-between;
+  margin-bottom:32px;gap:16px;flex-wrap:wrap;
+}
+.section__label{
+  font-size:11px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:#E87722;margin-bottom:4px;
+}
+.section__title{
+  font-size:clamp(20px,2.5vw,28px);
+  font-weight:800;color:#212529;
+}
+.section__link{
+  font-size:12px;font-weight:700;
+  color:#005B9A;letter-spacing:.04em;
+  display:flex;align-items:center;gap:4px;
+  white-space:nowrap;flex-shrink:0;
+}
+.section__link:hover{color:#E87722}
 
-    /* Footer */
-    .footer { background: #1a1a1a; color: rgba(255,255,255,0.6); padding: 40px 32px; text-align: center; }
-    .footer-logo { font-size: 1.8rem; font-weight: 900; color: #fff; margin-bottom: 8px; }
-    .footer-logo span { color: #E87722; }
-    .footer-tagline { font-size: 0.84rem; margin-bottom: 24px; }
-    .footer-links { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
-    .footer-link { font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.5); cursor: pointer; }
-    .footer-link:hover { color: #E87722; }
-    .footer-disclaimer { font-size: 0.72rem; color: rgba(255,255,255,0.25); max-width: 600px; margin: 0 auto; line-height: 1.6; }
+/* CATEGORY CARDS */
+.cat-grid{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:8px;
+}
+@media(max-width:960px){.cat-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:540px){.cat-grid{grid-template-columns:repeat(2,1fr)}}
+.cat-card{
+  aspect-ratio:1;
+  background:#F8F9FA;
+  border:1px solid #E9ECEF;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:12px;cursor:pointer;
+  transition:background .15s,border-color .15s,transform .15s;
+  padding:16px;
+}
+.cat-card:hover{
+  background:#fff;
+  border-color:#212529;
+  transform:translateY(-2px);
+}
+.cat-card__icon{color:#212529;transition:color .15s}
+.cat-card:hover .cat-card__icon{color:#E87722}
+.cat-card__name{
+  font-size:12px;font-weight:700;color:#212529;
+  text-align:center;line-height:1.3;
+}
+.cat-card__count{font-size:10px;color:#9CA3AF}
 
-    @media (max-width: 768px) {
-      .hero { grid-template-columns: 1fr; }
-      .hero-visual { min-height: 200px; }
-      .nav-links { display: none; }
-    }
-  </style>
+/* PRODUCT GRID */
+.product-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1px;background:#E9ECEF;
+  border:1px solid #E9ECEF;
+}
+@media(max-width:1000px){.product-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.product-grid{grid-template-columns:repeat(2,1fr)}}
+.product-card{
+  background:#fff;
+  display:flex;flex-direction:column;
+  cursor:pointer;
+  transition:background .15s;
+  position:relative;
+}
+.product-card:hover{background:#F8F9FA}
+.product-card:hover .product-card__img-inner{transform:scale(1.03)}
+
+/* Badges */
+.product-card__badge{
+  position:absolute;top:12px;left:12px;z-index:2;
+  font-size:10px;font-weight:800;
+  letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;
+}
+.badge--sale{background:#E87722;color:#fff}
+.badge--new{background:#005B9A;color:#fff}
+.badge--top{background:#212529;color:#fff}
+
+/* Product image */
+.product-card__img{
+  aspect-ratio:3/4;
+  overflow:hidden;
+  position:relative;
+}
+.product-card__img-inner{
+  width:100%;height:100%;
+  transition:transform .4s ease;
+}
+
+/* Product category placeholder visuals */
+.prod-visual{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+
+.product-card__info{
+  padding:16px;
+  flex:1;display:flex;flex-direction:column;
+}
+.product-card__cat{
+  font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;
+  color:#9CA3AF;margin-bottom:4px;
+}
+.product-card__name{
+  font-size:14px;font-weight:700;color:#212529;
+  line-height:1.3;margin-bottom:8px;flex:1;
+}
+.product-card__stars{
+  display:flex;align-items:center;gap:4px;
+  margin-bottom:10px;
+}
+.star{color:#9CA3AF}
+.star.is-filled{color:#E87722}
+.product-card__price-row{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:12px;
+}
+.product-card__price{
+  font-size:16px;font-weight:800;color:#212529;
+}
+.product-card__price-old{
+  font-size:13px;color:#9CA3AF;text-decoration:line-through;
+}
+.product-card__price-save{
+  font-size:11px;font-weight:700;color:#3D7A56;
+}
+.product-card__btn{
+  width:100%;
+  background:#212529;color:#fff;
+  padding:10px;
+  font-size:12px;font-weight:700;letter-spacing:.04em;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:background .15s;
+  margin-top:auto;
+}
+.product-card__btn:hover{background:#E87722}
+.product-card__btn.is-added{background:#3D7A56}
+
+/* EDITORIAL BANNER */
+.editorial{
+  background:#0F172A;
+  padding:0;
+  display:grid;grid-template-columns:1fr 1fr;
+  min-height:320px;
+}
+@media(max-width:700px){.editorial{grid-template-columns:1fr}}
+.editorial__content{
+  padding:56px 48px;
+  display:flex;flex-direction:column;
+  justify-content:center;
+}
+@media(max-width:700px){.editorial__content{padding:40px 32px}}
+.editorial__tag{
+  font-size:10px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:#E87722;margin-bottom:16px;
+}
+.editorial__title{
+  font-size:clamp(24px,3vw,36px);
+  font-weight:800;color:#fff;
+  line-height:1.15;margin-bottom:16px;
+}
+.editorial__sub{
+  font-size:13px;color:rgba(255,255,255,.5);
+  line-height:1.7;margin-bottom:32px;
+}
+.editorial__visual{
+  background:#1E293B;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* DATA NOTE */
+.data-note{
+  background:rgba(0,91,154,.04);
+  border:1px solid rgba(0,91,154,.12);
+  border-left:3px solid #005B9A;
+  padding:20px 24px;
+  display:flex;align-items:flex-start;gap:12px;
+}
+.data-note__icon{color:#005B9A;flex-shrink:0;margin-top:1px}
+.data-note__title{
+  font-size:12px;font-weight:800;color:#005B9A;
+  text-transform:uppercase;letter-spacing:.06em;
+  margin-bottom:4px;
+}
+.data-note__text{
+  font-size:13px;color:#6C757D;line-height:1.65;
+}
+.data-note__text a{color:#005B9A;font-weight:700}
+
+/* FOOTER */
+.footer{background:#0F172A;padding:64px 0 40px}
+.footer__grid{
+  max-width:1280px;margin:0 auto;padding:0 32px;
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:48px;margin-bottom:48px;
+}
+@media(max-width:900px){.footer__grid{grid-template-columns:1fr 1fr;gap:32px}}
+@media(max-width:540px){.footer__grid{grid-template-columns:1fr}}
+.footer__brand-logo{
+  font-size:24px;font-weight:900;
+  letter-spacing:-.04em;color:#fff;margin-bottom:12px;
+}
+.footer__brand-logo em{color:#E87722;font-style:normal}
+.footer__brand-sub{
+  font-size:12px;color:rgba(255,255,255,.35);
+  line-height:1.7;margin-bottom:24px;max-width:280px;
+}
+.footer__col-title{
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;
+  color:rgba(255,255,255,.4);margin-bottom:16px;
+}
+.footer__col-link{
+  display:block;font-size:13px;
+  color:rgba(255,255,255,.5);
+  margin-bottom:10px;transition:color .15s;
+}
+.footer__col-link:hover{color:rgba(255,255,255,.85)}
+.footer__bottom{
+  max-width:1280px;margin:0 auto;padding:24px 32px 0;
+  border-top:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;
+  justify-content:space-between;flex-wrap:wrap;gap:16px;
+}
+.footer__disclaimer{
+  font-size:11px;color:rgba(255,255,255,.2);
+  line-height:1.6;max-width:680px;
+}
+.footer__thws{
+  display:flex;align-items:center;gap:8px;
+}
+.footer__thws-svg{
+  height:16px;width:auto;
+  filter:brightness(0) invert(1);
+  opacity:.2;
+}
+
+/* CART SIDEBAR */
+.cart-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.5);
+  z-index:200;opacity:0;pointer-events:none;
+  transition:opacity .25s;
+}
+.cart-overlay.is-open{opacity:1;pointer-events:all}
+.cart-sidebar{
+  position:fixed;top:0;right:-400px;bottom:0;
+  width:400px;max-width:100vw;
+  background:#fff;z-index:201;
+  display:flex;flex-direction:column;
+  transition:right .3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow:-8px 0 48px rgba(0,0,0,.12);
+}
+.cart-sidebar.is-open{right:0}
+.cart-header{
+  padding:20px 24px;
+  border-bottom:1px solid #E9ECEF;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.cart-header__title{font-size:16px;font-weight:800;color:#212529}
+.cart-header__count{
+  font-size:11px;color:#9CA3AF;font-weight:600;margin-top:2px;
+}
+.cart-close{
+  width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  color:#6C757D;transition:color .15s;
+}
+.cart-close:hover{color:#212529}
+.cart-body{flex:1;overflow-y:auto;padding:16px 24px}
+.cart-item{
+  display:flex;gap:16px;
+  padding:16px 0;border-bottom:1px solid #F1F3F5;
+}
+.cart-item__img{
+  width:72px;height:96px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.cart-item__info{flex:1}
+.cart-item__cat{font-size:10px;color:#9CA3AF;text-transform:uppercase;letter-spacing:.08em}
+.cart-item__name{font-size:13px;font-weight:700;color:#212529;margin-top:2px;line-height:1.3}
+.cart-item__price{font-size:14px;font-weight:800;color:#212529;margin-top:8px}
+.cart-item__remove{
+  width:24px;height:24px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  color:#9CA3AF;transition:color .15s;margin-top:4px;
+}
+.cart-item__remove:hover{color:#ef4444}
+.cart-footer{
+  padding:16px 24px;
+  border-top:1px solid #E9ECEF;
+}
+.cart-total{
+  display:flex;justify-content:space-between;
+  align-items:baseline;margin-bottom:16px;
+}
+.cart-total__label{font-size:13px;font-weight:700;color:#6C757D}
+.cart-total__value{font-size:20px;font-weight:900;color:#212529}
+.cart-checkout{
+  width:100%;background:#212529;color:#fff;
+  padding:14px;font-size:13px;font-weight:700;
+  letter-spacing:.04em;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:background .15s;
+}
+.cart-checkout:hover{background:#E87722}
+.cart-empty{
+  text-align:center;padding:48px 0;color:#9CA3AF;
+}
+.cart-empty svg{margin:0 auto 16px;opacity:.3}
+.cart-empty p{font-size:13px;font-weight:600}
+
+/* ANIMATIONS */
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.animate-up{animation:slideUp .4s ease both}
+
+/* Scroll reveal */
+.sr{opacity:0;transform:translateY(12px);transition:opacity .5s ease,transform .5s ease}
+.sr.visible{opacity:1;transform:none}
+</style>
 </head>
 <body>
 
-<div id="root"></div>
+<!-- TOPBAR -->
+<div class="topbar">
+  <span data-de="Kostenloser Versand ab <strong>49 €</strong> · 30 Tage Rückgabe · Jetzt bestellen" data-en="Free shipping from <strong>€49</strong> · 30-day returns · Order now"></span>
+</div>
 
-<script type="text/babel">
-const { useState } = React;
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar__main">
+    <div class="navbar__logo">Urban<em>Cart</em></div>
 
-const CATEGORIES = [
-  { icon: "👗", name: "Damenmode", count: "1.240 Artikel" },
-  { icon: "👔", name: "Herrenmode", count: "890 Artikel" },
-  { icon: "👟", name: "Schuhe",     count: "640 Artikel" },
-  { icon: "💍", name: "Accessoires",count: "420 Artikel" },
-  { icon: "🏠", name: "Home & Living", count: "315 Artikel" },
-  { icon: "⚽", name: "Sport",      count: "280 Artikel" },
-];
+    <div class="navbar__search">
+      <input type="text" placeholder="Suchen ..." id="search-input" data-placeholder-de="Suchen ..." data-placeholder-en="Search ..."/>
+      <button aria-label="Suche">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
 
+    <div class="navbar__actions">
+      <button class="nav-icon-btn" aria-label="Konto">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </button>
+      <button class="nav-icon-btn" aria-label="Wunschliste">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+      <button class="nav-icon-btn" onclick="openCart()" aria-label="Warenkorb" id="cart-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-badge" id="cart-count" style="display:none">0</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Category Nav -->
+  <div class="catnav">
+    <div class="catnav__inner">
+      <div class="catnav__item is-active" onclick="filterCat('all')" data-de="Alle" data-en="All"></div>
+      <div class="catnav__item" onclick="filterCat('Damenmode')" data-de="Damenmode" data-en="Women"></div>
+      <div class="catnav__item" onclick="filterCat('Herrenmode')" data-de="Herrenmode" data-en="Men"></div>
+      <div class="catnav__item" onclick="filterCat('Schuhe')" data-de="Schuhe" data-en="Shoes"></div>
+      <div class="catnav__item" onclick="filterCat('Accessoires')" data-de="Accessoires" data-en="Accessories"></div>
+      <div class="catnav__item" onclick="filterCat('Home & Living')" data-de="Home & Living" data-en="Home"></div>
+      <div class="catnav__item" onclick="filterCat('Sport')" data-de="Sport" data-en="Sport"></div>
+      <div class="catnav__item is-sale" onclick="filterCat('sale')" data-de="Sale" data-en="Sale"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero__content">
+    <div class="hero__season" data-de="Frühjahrskollektion 2024" data-en="Spring Collection 2024"></div>
+    <h1 class="hero__title">
+      <span data-de="Mode mit" data-en="Fashion with"></span>
+      <em data-de="Haltung." data-en="Purpose."></em>
+    </h1>
+    <p class="hero__sub" data-de="UrbanCart bietet Mode, Lifestyle und Home für Menschen, die wissen, was sie wollen. Hochwertig. Direkt. Ohne Kompromisse." data-en="UrbanCart offers fashion, lifestyle and home for people who know what they want. Quality. Direct. Uncompromised."></p>
+    <div class="hero__btns">
+      <a href="#products" class="btn-hero-primary">
+        <span data-de="Kollektion entdecken" data-en="Explore Collection"></span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#categories" class="btn-hero-ghost">
+        <span data-de="Kategorien" data-en="Categories"></span>
+      </a>
+    </div>
+  </div>
+  <div class="hero__visual">
+    <!-- Aicher-inspired geometric product composition -->
+    <div class="hero__visual-grid">
+      <div class="hero__visual-cell hero__visual-cell--large">
+        <div class="hero-product" style="background:#2D3748">
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" opacity=".4">
+            <path d="M20 60 L40 20 L60 60 Z" stroke="#E87722" stroke-width="1.5" fill="none"/>
+            <circle cx="40" cy="40" r="16" stroke="white" stroke-width="1" fill="none"/>
+            <line x1="24" y1="40" x2="56" y2="40" stroke="white" stroke-width=".5" opacity=".5"/>
+            <line x1="40" y1="24" x2="40" y2="56" stroke="white" stroke-width=".5" opacity=".5"/>
+          </svg>
+        </div>
+      </div>
+      <div class="hero__visual-cell" style="background:#1A202C">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" opacity=".35">
+          <rect x="8" y="8" width="24" height="24" stroke="#E87722" stroke-width="1.5" fill="none"/>
+          <rect x="14" y="14" width="12" height="12" stroke="white" stroke-width="1" fill="none"/>
+        </svg>
+      </div>
+      <div class="hero__visual-cell" style="background:#2D3748">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" opacity=".35">
+          <circle cx="20" cy="20" r="12" stroke="#005B9A" stroke-width="1.5" fill="none"/>
+          <circle cx="20" cy="20" r="6" stroke="white" stroke-width="1" fill="none"/>
+          <circle cx="20" cy="20" r="2" fill="white" opacity=".5"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST STRIP -->
+<div class="truststrip">
+  <div class="truststrip__inner">
+    <div class="trust-item">
+      <svg class="trust-item__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      <div>
+        <div class="trust-item__label" data-de="Gratis Lieferung" data-en="Free Delivery"></div>
+        <div class="trust-item__sub" data-de="Ab 49 € Bestellwert" data-en="On orders over €49"></div>
+      </div>
+    </div>
+    <div class="trust-item">
+      <svg class="trust-item__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+      <div>
+        <div class="trust-item__label" data-de="30 Tage Rückgabe" data-en="30-Day Returns"></div>
+        <div class="trust-item__sub" data-de="Kostenlos & unkompliziert" data-en="Free & hassle-free"></div>
+      </div>
+    </div>
+    <div class="trust-item">
+      <svg class="trust-item__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div>
+        <div class="trust-item__label" data-de="Sicher bezahlen" data-en="Secure Payment"></div>
+        <div class="trust-item__sub">SSL · PayPal · Klarna</div>
+      </div>
+    </div>
+    <div class="trust-item">
+      <svg class="trust-item__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <div>
+        <div class="trust-item__label" data-de="Käuferschutz" data-en="Buyer Protection"></div>
+        <div class="trust-item__sub" data-de="Jede Bestellung abgesichert" data-en="Every order covered"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="section section--compact" id="categories">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <div class="section__label sr" data-de="Sortiment" data-en="Assortment"></div>
+        <h2 class="section__title sr" data-de="Nach Kategorie shoppen" data-en="Shop by Category"></h2>
+      </div>
+    </div>
+    <div class="cat-grid sr">
+      <div class="cat-card" onclick="filterCat('Damenmode')">
+        <svg class="cat-card__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>
+        <div class="cat-card__name" data-de="Damenmode" data-en="Women's Fashion"></div>
+        <div class="cat-card__count" data-de="1.240 Artikel" data-en="1,240 items"></div>
+      </div>
+      <div class="cat-card" onclick="filterCat('Herrenmode')">
+        <svg class="cat-card__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <div class="cat-card__name" data-de="Herrenmode" data-en="Men's Fashion"></div>
+        <div class="cat-card__count" data-de="890 Artikel" data-en="890 items"></div>
+      </div>
+      <div class="cat-card" onclick="filterCat('Schuhe')">
+        <svg class="cat-card__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6-4 3 7-2 3H3V7z"/><path d="M21 17l-1-8H9l-2 5h13a1 1 0 0 1 1 1v2"/></svg>
+        <div class="cat-card__name" data-de="Schuhe" data-en="Shoes"></div>
+        <div class="cat-card__count" data-de="640 Artikel" data-en="640 items"></div>
+      </div>
+      <div class="cat-card" onclick="filterCat('Accessoires')">
+        <svg class="cat-card__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div class="cat-card__name" data-de="Accessoires" data-en="Accessories"></div>
+        <div class="cat-card__count" data-de="420 Artikel" data-en="420 items"></div>
+      </div>
+      <div class="cat-card" onclick="filterCat('Home & Living')">
+        <svg class="cat-card__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <div class="cat-card__name" data-de="Home & Living" data-en="Home & Living"></div>
+        <div class="cat-card__count" data-de="315 Artikel" data-en="315 items"></div>
+      </div>
+      <div class="cat-card" onclick="filterCat('Sport')">
+        <svg class="cat-card__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        <div class="cat-card__name" data-de="Sport" data-en="Sport"></div>
+        <div class="cat-card__count" data-de="280 Artikel" data-en="280 items"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="section" id="products">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <div class="section__label sr" data-de="Sortiment" data-en="Products"></div>
+        <h2 class="section__title sr" id="products-title" data-de="Bestseller" data-en="Bestsellers"></h2>
+      </div>
+      <a href="#products" class="section__link sr" data-de="Alle ansehen" data-en="View all">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    <div class="product-grid" id="product-grid">
+      <!-- injected by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- EDITORIAL -->
+<section class="editorial sr">
+  <div class="editorial__content">
+    <div class="editorial__tag" data-de="Unsere Geschichte" data-en="Our Story"></div>
+    <h2 class="editorial__title" data-de="Daten als Grundlage für bessere Mode." data-en="Data as the foundation for better fashion."></h2>
+    <p class="editorial__sub" data-de="UrbanCart entstand aus der Überzeugung, dass gute Entscheidungen auf guten Daten basieren. Jedes Produkt, jede Kategorie, jede Kampagne – datengetrieben und kundenzentriert." data-en="UrbanCart was built on the conviction that good decisions are based on good data. Every product, every category, every campaign – data-driven and customer-centric."></p>
+    <a href="index.html" class="btn-hero-primary" style="align-self:flex-start">
+      <span data-de="Zum Datenkurs" data-en="To the Data Course"></span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+  <div class="editorial__visual">
+    <svg width="120" height="120" viewBox="0 0 120 120" fill="none" opacity=".15">
+      <rect x="10" y="10" width="100" height="100" stroke="white" stroke-width="1"/>
+      <circle cx="60" cy="60" r="40" stroke="#E87722" stroke-width="1.5"/>
+      <line x1="10" y1="60" x2="110" y2="60" stroke="white" stroke-width=".5"/>
+      <line x1="60" y1="10" x2="60" y2="110" stroke="white" stroke-width=".5"/>
+      <circle cx="60" cy="60" r="8" stroke="white" stroke-width="1" fill="none"/>
+      <circle cx="60" cy="30" r="3" fill="#E87722"/>
+      <circle cx="90" cy="60" r="3" fill="white"/>
+      <circle cx="60" cy="90" r="3" fill="#E87722"/>
+      <circle cx="30" cy="60" r="3" fill="white"/>
+    </svg>
+  </div>
+</section>
+
+<!-- DATA NOTE -->
+<section class="section section--compact">
+  <div class="container">
+    <div class="data-note sr">
+      <svg class="data-note__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div>
+        <div class="data-note__title" data-de="Hinweis für Kursteilnehmende" data-en="Note for Course Participants"></div>
+        <div class="data-note__text" data-de="UrbanCart ist ein <strong>fiktives Unternehmen</strong> – entwickelt für den Kurs „E-Commerce & Digitale Geschäftsmodelle" (THWS Business School, Prof. Dr.-Ing. Eva Klenk). Die Datensätze simulieren den realen Geschäftsbetrieb für die Analyse mit Tableau. <a href='index.html'>Zurück zum Kurs →</a>" data-en="UrbanCart is a <strong>fictional company</strong> – created for the course &ldquo;E-Commerce &amp; Digital Business Models&rdquo; (THWS Business School, Prof. Dr.-Ing. Eva Klenk). The datasets simulate real business operations for analysis with Tableau. <a href='index.html'>Back to course →</a>"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer__grid">
+    <div>
+      <div class="footer__brand-logo">Urban<em>Cart</em></div>
+      <p class="footer__brand-sub" data-de="Mode, Lifestyle und Home für Europa. Fiktives Unternehmen im Rahmen des THWS E-Commerce Kurses." data-en="Fashion, lifestyle and home for Europe. Fictional company within the THWS E-Commerce course."></p>
+      <svg class="footer__thws-svg" viewBox="0 0 274.3 91.2" xmlns="http://www.w3.org/2000/svg"><style>.st0{fill:#FF6A00}</style><g><g><path class="st0" d="M15,32.6h2.6c1.1,0,2-0.9,2-2v-9.1c0-1.1,0.9-2,2-2h15.6c1.1,0,2-0.9,2-2v-2.6c0-1.1-0.9-2-2-2H21.5 c-1.1,0-2,0.9-2,2v2.6c0,1.1-0.9,2-2,2H15c-1.1,0-2,0.9-2,2v9.1C13,31.7,13.9,32.6,15,32.6z"/><path class="st0" d="M63.1,0H47.5c-1.1,0-2,0.9-2,2v2.6c0,1.1,0.9,2,2,2h15.6c1.1,0,2-0.9,2-2V2C65.1,0.9,64.2,0,63.1,0z"/><path class="st0" d="M76.1,13h-2.6c-1.1,0-2,0.9-2,2v9.1c0,1.1,0.9,2,2,2h2.6c1.1,0,2-0.9,2-2V15C78.1,13.9,77.2,13,76.1,13z"/><path class="st0" d="M76.1,32.6h-2.6c-1.1,0-2,0.9-2,2v2.5c0,1.1,0.9,2,2,2h2.6c1.1,0,2-0.9,2-2v-2.6 C78.1,33.4,77.2,32.6,76.1,32.6z"/><path class="st0" d="M52.1,34.5c0-1.1-0.9-2-2-2h-2.6c-1.1,0-2,0.9-2,2v22.1c0,1.1-0.9,2-2,2h-9.1c-1.1,0-2-0.9-2-2V34.5 c0-1.1,0.9-2,2-2H37c1.1,0,2-0.9,2-2v-2.6c0-1.1-0.9-2-2-2h-2.6c-1.1,0-2,0.9-2,2v2.6c0,1.1-0.9,2-2,2H28c-1.1,0-2,0.9-2,2v28.6 c0,1.1,0.9,2,2,2h15.6c1.1,0,2-0.9,2-2v-2.6c0-1.1,0.9-2,2-2h2.6c1.1,0,2-0.9,2-2L52.1,34.5L52.1,34.5z"/><path class="st0" d="M63.1,13H47.5c-1.1,0-2,0.9-2,2v2.6c0,1.1,0.9,2,2,2h9.1c1.1,0,2,0.9,2,2v15.5c0,1.1,0.9,2,2,2h2.6 c1.1,0,2-0.9,2-2V15C65.1,13.9,64.2,13,63.1,13z"/><path class="st0" d="M63.1,45.6h-2.6c-1.1,0-2,0.9-2,2v22.1c0,1.1-0.9,2-2,2H54c-1.1,0-2,0.9-2,2v2.6c0,1.1,0.9,2,2,2h2.6 c1.1,0,2-0.9,2-2v-2.6c0-1.1,0.9-2,2-2h2.6c1.1,0,2-0.9,2-2V47.5C65.1,46.5,64.2,45.6,63.1,45.6z"/><path class="st0" d="M43.6,71.6H21.5c-1.1,0-2-0.9-2-2V47.5c0-1.1-0.9-2-2-2H15c-1.1,0-2,0.9-2,2v22.1c0,1.1,0.9,2,2,2h2.6 c1.1,0,2,0.9,2,2v2.6c0,1.1,0.9,2,2,2h22.1c1.1,0,2-0.9,2-2v-2.6C45.5,72.5,44.7,71.6,43.6,71.6z"/><path class="st0" d="M30.6,84.6H15c-1.1,0-2,0.9-2,2v2.6c0,1.1,0.9,2,2,2h15.6c1.1,0,2-0.9,2-2v-2.6 C32.5,85.5,31.7,84.6,30.6,84.6z"/><path class="st0" d="M4.6,58.6H2c-1.1,0-2,0.9-2,2v9.1c0,1.1,0.9,2,2,2h2.6c1.1,0,2-0.9,2-2v-9.1C6.5,59.5,5.6,58.6,4.6,58.6z"/></g><g><path class="st0" d="M103.1,55.2V34.5h-10v-8.4h10V14.6h9.5v11.5h11.9v8.4h-11.9v18.6c0,2.6,1,3.7,3.7,3.7h8.2v8.3h-11.4 C106.3,65.1,103.1,62.3,103.1,55.2z"/><path class="st0" d="M131.7,9.1h9.5v20c2.5-2.8,6.2-4.2,10.6-4.2c9.6,0,15.5,6.1,15.5,16.6v23.6h-9.5V42.5c0-6.1-2.9-9-7.9-9 c-5.2,0-8.6,3.7-8.6,9.3v22.3h-9.5v-56H131.7z"/><path class="st0" d="M172.1,26.1h9.9l7.6,28.4l7.6-28.4h11l7.6,28.4l7.6-28.4h9.9l-11.7,39h-11.3l-7.6-28.3l-7.6,28.3h-11.3 L172.1,26.1z"/><path class="st0" d="M236.3,53.7h9.8c0.3,3.3,3.1,4.9,7.9,4.9c4.3,0,7-1.8,7-4.7c0-2.5-1.9-3.8-5.4-4.1l-6.2-0.6 c-7.3-0.8-11.8-5.1-11.8-11.8c0-7.8,6.2-12.6,16.2-12.6c9.8,0,16.1,4.2,16.6,12.3h-9.5c-0.2-3.1-2.9-4.6-7.2-4.6 c-4.1,0-6.6,1.6-6.6,4.3c0,2.3,1.8,3.6,5.8,4.1l6.3,0.7c7.4,0.9,11.6,5.2,11.6,11.7c0,7.8-6.5,12.9-16.9,12.9 C243.1,66.3,236.7,62,236.3,53.7z"/></g></g></svg>
+    </div>
+    <div>
+      <div class="footer__col-title" data-de="Shop" data-en="Shop"></div>
+      <a href="#" class="footer__col-link" data-de="Damenmode" data-en="Women's Fashion"></a>
+      <a href="#" class="footer__col-link" data-de="Herrenmode" data-en="Men's Fashion"></a>
+      <a href="#" class="footer__col-link" data-de="Schuhe" data-en="Shoes"></a>
+      <a href="#" class="footer__col-link" data-de="Accessoires" data-en="Accessories"></a>
+      <a href="#" class="footer__col-link">Home & Living</a>
+    </div>
+    <div>
+      <div class="footer__col-title" data-de="Service" data-en="Service"></div>
+      <a href="#" class="footer__col-link" data-de="Lieferung & Rückgabe" data-en="Delivery & Returns"></a>
+      <a href="#" class="footer__col-link" data-de="Größentabelle" data-en="Size Guide"></a>
+      <a href="#" class="footer__col-link" data-de="Kontakt" data-en="Contact"></a>
+      <a href="#" class="footer__col-link" data-de="FAQ" data-en="FAQ"></a>
+    </div>
+    <div>
+      <div class="footer__col-title" data-de="Kurs" data-en="Course"></div>
+      <a href="index.html" class="footer__col-link" data-de="Kursübersicht" data-en="Course Overview"></a>
+      <a href="data/" class="footer__col-link" data-de="Datensätze" data-en="Datasets"></a>
+      <a href="https://github.com/swrobuts/e-comm" class="footer__col-link" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <p class="footer__disclaimer" data-de="UrbanCart ist ein fiktives Unternehmen. Alle Produkte, Preise und Daten sind synthetisch und dienen ausschließlich Lehrzwecken im Kurs „E-Commerce & Digitale Geschäftsmodelle" · THWS Business School · Prof. Dr.-Ing. Eva Klenk." data-en="UrbanCart is a fictional company. All products, prices and data are synthetic and serve educational purposes only within the course &ldquo;E-Commerce &amp; Digital Business Models&rdquo; · THWS Business School · Prof. Dr.-Ing. Eva Klenk."></p>
+  </div>
+</footer>
+
+<!-- CART SIDEBAR -->
+<div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
+<div class="cart-sidebar" id="cart-sidebar">
+  <div class="cart-header">
+    <div>
+      <div class="cart-header__title" data-de="Warenkorb" data-en="Shopping Cart"></div>
+      <div class="cart-header__count" id="cart-header-count"></div>
+    </div>
+    <button class="cart-close" onclick="closeCart()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="cart-body" id="cart-body">
+    <div class="cart-empty">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <p data-de="Dein Warenkorb ist leer" data-en="Your cart is empty"></p>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span class="cart-total__label" data-de="Gesamt" data-en="Total"></span>
+      <span class="cart-total__value" id="cart-total">€ 0,00</span>
+    </div>
+    <button class="cart-checkout" data-de="Zur Kasse" data-en="Checkout">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+// ── PRODUCTS DATA ──
 const PRODUCTS = [
-  { id:"P0001", name:"Slim-Fit Bluse", cat:"Damenmode", price:"49,99", old:"69,99", stars:"★★★★☆", badge:"SALE", bg:"#fce7f3" },
-  { id:"P0009", name:"Oxford Hemd Classic", cat:"Herrenmode", price:"79,99", old:null, stars:"★★★★★", badge:null, bg:"#dbeafe" },
-  { id:"P0017", name:"Sneaker Urban Run", cat:"Schuhe", price:"119,99", old:"149,99", stars:"★★★☆☆", badge:"SALE", bg:"#f0fdf4" },
-  { id:"P0025", name:"Seidenschal Parisien", cat:"Accessoires", price:"39,99", old:null, stars:"★★★★★", badge:"NEU", bg:"#fef3c7" },
-  { id:"P0030", name:"Kissen Lino 50×50", cat:"Home & Living", price:"24,99", old:null, stars:"★★★★☆", badge:null, bg:"#f5f3ff" },
-  { id:"P0037", name:"Yoga-Matte Pro", cat:"Sport", price:"54,99", old:"69,99", stars:"★★★★★", badge:"SALE", bg:"#ecfdf5" },
-  { id:"P0004", name:"Strickpullover Mila", cat:"Damenmode", price:"89,99", old:null, stars:"★★★★☆", badge:"NEU", bg:"#fdf2f8" },
-  { id:"P0012", name:"Kapuzenpulli Anton", cat:"Herrenmode", price:"69,99", old:"89,99", stars:"★★★★☆", badge:"SALE", bg:"#eff6ff" },
+  {id:1, cat:'Damenmode', name:{de:'Slim-Fit Bluse Celeste',en:'Slim-Fit Blouse Celeste'}, price:49.99, old:69.99, badge:'sale', bg:'#FDF2F8', color:'#9D174D',
+   icon:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity=".25"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>'},
+  {id:2, cat:'Herrenmode', name:{de:'Oxford Hemd Classic White',en:'Oxford Shirt Classic White'}, price:79.99, old:null, badge:'top', bg:'#EFF6FF', color:'#1E3A8A',
+   icon:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity=".25"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>'},
+  {id:3, cat:'Schuhe', name:{de:'Sneaker Urban Run Pro',en:'Sneaker Urban Run Pro'}, price:119.99, old:149.99, badge:'sale', bg:'#F0FDF4', color:'#065F46',
+   icon:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity=".25"><path d="M3 7l6-4 3 7-2 3H3V7z"/><path d="M21 17l-1-8H9l-2 5h13a1 1 0 0 1 1 1v2"/></svg>'},
+  {id:4, cat:'Accessoires', name:{de:'Seidenschal Parisien',en:'Silk Scarf Parisien'}, price:39.99, old:null, badge:'new', bg:'#FFFBEB', color:'#92400E',
+   icon:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity=".25"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'},
+  {id:5, cat:'Home & Living', name:{de:'Kissen Lino 50×50',en:'Cushion Lino 50×50'}, price:24.99, old:null, badge:null, bg:'#F5F3FF', color:'#5B21B6',
+   icon:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity=".25"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>'},
+  {id:6, cat:'Sport', name:{de:'Yoga-Matte Pro 4mm',en:'Yoga Mat Pro 4mm'}, price:54.99, old:69.99, badge:'sale', bg:'#ECFDF5', color:'#065F46',
+   icon:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity=".25"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>'},
+  {id:7, cat:'Damenmode', name:{de:'Maxi-Kleid Florencia',en:'Maxi Dress Florencia'}, price:89.99, old:null, badge:'new', bg:'#FFF1F2', color:'#9F1239',
+   icon:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity=".25"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>'},
+  {id:8, cat:'Herrenmode', name:{de:'Chino Slim Pierre Navy',en:'Chino Slim Pierre Navy'}, price:69.99, old:89.99, badge:'sale', bg:'#EFF6FF', color:'#1E3A8A',
+   icon:'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity=".25"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>'},
 ];
 
-function App() {
-  const [cart, setCart] = useState(0);
-  const [added, setAdded] = useState(null);
+// ── STATE ──
+let cart = [];
+let currentFilter = 'all';
+const lang = () => document.documentElement.lang || 'de';
 
-  const addToCart = (id) => {
-    setCart(c => c + 1);
-    setAdded(id);
-    setTimeout(() => setAdded(null), 1200);
-  };
-
-  return (
-    <>
-      {/* Announcement */}
-      <div className="topbar">
-        🚚 Kostenloser Versand ab 49 € · <span>BLACK FRIDAY</span>: Bis zu 40% auf ausgewählte Artikel
-      </div>
-
-      {/* Navbar */}
-      <nav className="navbar">
-        <div style={{display:'flex', alignItems:'center', gap:'16px'}}>
-          <img src={"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARgAAABtCAYAAAB6Fn5KAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH6gMUERgZGETRggAAABBjYU52AAABGAAAAMwAAAAAAAAAMrYZErEAAEPZSURBVHja7Z13eBzV1YffO7N9tbvq1ZLcewNsMJjeewiEUEIKgTQCaR9JIAWcRkIKhBQgJBAIoYROqMZ0MNjGBfcqq1q9rbaXmfv9MbMryZZsuUg2zv6eR7ZWO3PbnHvm9CuklH7ASwYZZJDBgUVSOdgjyCCDDA5fZBhMBhlkMGzIMJgMMshg2JBhMBlkkMGwIcNgMsggg2GD5WAPYCQQjcXx9wRJJjXjDwJUVUUgUBSB1+PGbrMe7GFmkMFhh8OawURjcV55aylPvfQONQ3NvQwGk8EIUBWVsRUlXHbBKZx2wlHYrIf1kmSQwYhCHK5xMPFEgrv+8TR//ddzhCMxhCIQfb6XfX6RUuLJcvG9r1zK1666AIuqHuzhZ5DB4YDDNw7m7Q8+5t5H/ks0FsdiUVEVBaXPj5r6URUsFpVQOMKf//kMS1asP9hDzyCDwwaHJYPRNJ3nX1tMTzCMogxtioqi0Nkd4IVFHyKlHNI9GWSQwe5xWDKYcCRKdX0zQoi9vndb7Q6isfjBnkIGGRwWOCwZjK7raJrGXrMXAYlEEl3XD/YUMsjgsMBhyWD2D3sv9WSQQQYDI8NgMsggg2FDhsFkkEEGw4ZMVNlO2Ae78EGHlBIpJbou0XUdXc94wTIARRFYrZZ9cnYcKGQYzE7QNO0Ts0FjsTgr127lnaWrqalvJp5IEI0liCUSB3toGRwCsNusjCkv5uR5szn2qGlkuZ0jPoYMg+kDRQha2rvp6PLjyXId7OHsFo0t7dz59yd5/rUP6A4E+4QmZ5BBfzz63Buccuxs/u9rlzFt4ugR7TvDYPpACEFjSzsL31nO16664GAPZ1C0dXTzw9vu47V3P0IoSia1IYPdIhqL8+IbS6iqa+QPP/kGc2ZNHrG+M0bePhBCoOk69z3yAm99sOqQjOjVdck/Hn2JRe8tN9IePolGowxGFEIIVIvKxq11/OR3D1C3o2XE+lYXLFhwM2A/2ItwIBGJxnjihbdoae9GUfZuAwoh6AmGWPzROkLhKC6ng3gigT8Qwh8IEQxFCIYiBIJh4okENqt1yOkIBwLVdU384q6H6QmGRrTfDD7ZEBi03dTaiZBw0rzZe7039gH6YakipTwq+wpFUWhu6+T3f3uCfzz2ElkuJwjjISmKkrbKOx12jpw+gS9+5ixmTBk7Itb6j9dvo7G146B6BjL4ZEIIgRCS5xd9wGUXnsL0yWOHvc/DksEcCCiKgpQSfyBEd09wwGukhPVbanj/o7X87sdf58R5s4Z9XHWNLSSTSdSM3SWDfYAQgpb2Ll5/f+WIMJiMjL0bGBxf9Cvz0K/kg1nqobq+md/c/Sit7V3DPqZ4PJlxGA0BhhSrHxJ2tP0dS+r+AzEfIQRSSpau2jgiSb0ZBnMAoKoKazdVs2TlhoM9lAwwNqTTbqOkIJcsl/OgMRlpjsWb5aK4IBe7zbrXY5FSIoSgpDCPyrIiLKq6/0xGEdTtaKHbH9yvdoaCDIM5ABBCEEskqKptPNhDyQCjHtBJx8zivw/8issvOOXgZcebEdZfueI8nrnv58yaMg5tH8aiqgo/ueEq7v3198jJ9rC//FIgCITCBILhYV+CjA3mACJ+CEfQGukEIKVB4H2N1anvhMA0jsu0hyq1OVPXS+MGJIbRO/W9GMBlnlYNMIIYUypnKrVh588gEIJBr9HNv+3SltmfMPsEiMbjtHb6CUWigNhpjruuQe94jfkLoSAE6Xt2vm7w9er9nBpfMBShrdNPPJE01kxKc6ygSz1dfH6gsUgkFqmS7c0iL9dn9mP0n/p+oPt3ByEgFk+aazO8yDCYA4pD07OT2qz5OT5GlRagazq1O1rwB0IIIbDbrPg8biLROBWlhaiqwpbqBgAmjhmFBKpqdhCKxlCEcQqDqijEE0nGlBdjtVio2dFMR1dPP6bl82QxurwIq8VCQ1MbzW1dgCTL5cTtctDdEyQWT2C1WMjxZaFpOl3+ALqUZLmduJ3GNdFYHJvVSuWoIrxZLto7/TQ0tRkbVQhyPG4kEE8k8bidhCNRPlqzmRt++ic6u3uMkyOyXFgtFhLJJGPKSwCoqm0kEDKqHuq6jstpZ/SoEuw2K3WNrfQEQuRmewiFo4Qi0TTDsFosZHuziMZilBTm4XY62Fqzg2g8zsTRo7DbrFTVNeIPhBFC8OTL7/Lau8tpautEVdX0XG1WC5VlRQTDEarqmkgkkggh0HUdp8PO2IoSnHY7O1ra+9ndpAS7zcLoUcXk+LLo8gepaWgmlkgOOS4qFIlQXdfE7Gnjh5X2MgzmMEfqjX7mCXO48euXUVFahESyYXMNv/zzwyxfs4WjZ03mVz+4hvZOPzOnjsNqsfDcq+9jsaicf/qxALz0xhIW3Pkg/kCIb119MXNnTiIQjjBn1mQsqsKmbXX86s//ZvHydQAcc8QUbrruSmZMHouiCBqa2rj7oed4/IW3OGneLH70zSv53X1P8MSLb3PcUdP4zU1fobW9m+tv+RPNbZ1879pLmT9nGtf9+C46/QFuuu4Kzj75aGw2K8FQhH8//Rr3PvICmqbz4xuuorQoD03TmTpxNA8+tZBV67Zy2w+v5a77n+Y/L7zFlz97DmeeOJeeYIgjZ0xECMF7S1fzk989QENzG8WFedz67S9w4jEzQQi21zWycs0Wzjr5aP70wDM88vzrWFQVXUpGjyrij7dejz8QZOrE0WS5XSx69yPaOrr5zPknY7NaeX/ZGm6+/e80NLVz6bknctmFp/KtW//Mlu31/OrGa8jL8eLxuJg0toJILMbjz7/J7+97glAkSllRPj++4SpOP/5IrFYLVTWN+LzutJHX53Hzo+s/x/mnzcNmsxJPJHlh0Qf85u5H6QmG9yjJCCGIJ5K89u5HnGe2MVzI2GA+YdB0fa/yjnQpGVdRys9vvJp4PMkPfnUvv7zrYSrLi/nxDZ/H63HjsNuYOK6ccaPL+PsjL7J6QxWf/8yZHHvUVP764LOs2bidS847kflzpqPpOvm5PuYeMYWKsiL++uCzPPb8m0waV8Gt3/kihfk5lBTm8avvX8O0iaP59zOL+NMDz2C1WljwvS9x3FHT2F7XRF6ujxOPnolFVTnmiClMGFvOkTMnMnHMKLxZbk4+djZJTae1s5uvXnk+F59zIg8/s4jrf3IXHy5fz7e+fAlnnjgHXUqK8nM46djZ2GxWXn17GZur6nC7HIyrLMXncSOlJDfbyxEzJpDt83DH35/kvWVrOPuUY/jMeSeh6ToXnTmf808/lgf+8wrfXfAX3E4Hn7/kTFas3ULtjj7lVyXYrFbGVpYyc+p4Hn32Dd758GM+ddbxXHjmfB54/BXeXbKaM0+ayzknH4Om6+RmexlTUYLDbkMIQXFRHifMm0VLWxe/vecxGhrbuPqyczhm9hQEcN0XPsXF55zAso83cfvdj9He5aeirAhpZsvPnzONz336dBa9v4Kv/+hOFr27nLNPPprZU8cP2cajKgqvL17JoveWDyu9ZiSYA4iRUJA6u3r26nqpS+YdOZVRJYU8+eLb7GhuR1EEq9Zt5dT5RzC+shRd11GEwrOvvMdv7nmMT2+vZ/7c6Ty3cDG33/M4W2t2cOxRU6koLUwzt0QyyS//9DAvvv4hNpsVi6pw1cVnMnPyWFxOB9MmjeGvDz3HL//0MMmkRlVtI/fc9l3OPWUev/7rI2zaVsesqeMoKczlqBkT2Va9A5/Hzexp4+kJhqkoK+TBJ15FVRTOPHEOtQ3NLF25gVA4yrvL1nDOqcdw6nFHsPCdjxBC0NbRzU2/uY9tNY1IKdOSV9+Hk0xq/O7ex3npzSXMmjKOeUdOZfqkMVgtFgpys4nGE7z23nJWb6jiorNPIDfby2/ufpT6xtZd4o5UVeH195Zz292PcPSsyZwy/wjeWbKa39z9KMccMYVTjjuCylHFA6osihDsaGrjlj/8ky3VDTS3d3H3r77D+DFlrNtczanzj2BzVT0/uO1v1DW28tIbS3jsrz/FZrUiJTjsNlTVOBUjmUjynxfe5KGnFrK9vgl1iNHdQggCwTC/uOthHHYbJx87e1hiqw5LBqPrEk0bYc+BhESfg92GA93+IBu21u5dzRoBBXnZWCwqX7nyfK7+7DkAWCwq8XjSiFLGUKV6goZNJhyNoWk6wXAEoQgi0Ri67DVkCiHw94TYXFWPalFJJJOs2bgdVVUoyPWR5XYiEKzZuB1N11FVlY1ba+kJhigtziMSi7Nk5Qauvuwcjj1yKhPGjOLZV99n2sTRzJk5iXgiicVi4YMV63E6bHizXBTm53D3r74DwjjfSlUUnA67saEERKJxQuEoiiIY7CUei8dp7ejCoqqEIlFisQR2U6p4d9kaPn/JGfzy+9dQu6OF0084ig8+Wkdnd2DQlIyeYBgkxOIJkkmNQDhi9pMgqWuDhuILIejuMVJPLBYVf08QTdNRVQVPloscn4cPlq+jtaMbm9VCc3sXNXVNTJpQiaoIFi9fz6J3l3PBGcdx4ZnzicXivPPham6545/0mHa1oUBRFGoamrnhlj9z3qnHMH/OdHyeLHY5QExg2qeKKczP2aso8sOSwTS3ddLe7R/xcPrqesNQZx2m0yE/WLGODdtq9y4HSRpSj6bp/OOxl3j7w9WoqkKuz4PNamHDtlpmpiM6hfnvTuu2i3cIstxORhXns6W6AYuqMK6yFCkl3T0hg9EKGFtRAhKSukZFWSFZLicdXT0kkxpLVm3gmivO4/ILT8XjdvH+R2sJR6J86dKzycvx0tjczoattcTiCYLhKD01O/jZnQ8RicZw2G3k5/hoaG5LqwRCDDDuASF2+dViUTly+gTCkRhISVlRHo8/9wb3/+cVwpHo7tfb7Ldv/0Mhu/7X9K57OBIlGIpQVlyAN8tFa0c3xdleSorzDa+aIgiHotz2l0f4+6MvkuPzcP7px3LhmfN568OPeeS519kb8lAUhU5/gIeefo1Hn39z0Mx8i0WlvKSAz198BldcdBoup2NI7R92DEZKyctvLDE9GiPXr6IoLP14I6s3VDFn1qQD3n5DYyt3/+t5wpEYqjp0ChKKYOnHG2lp62TekdP4cOUGnA47X/nc+XT7g7z54ce91w65VYnDbuOH37ySwvwcigtyuezCU9le28i6zdVGdHNdE1+69GxC4SjdPQGuufxckprOG++vNIzM2+pobG7npGNnU1Wzg83b6xHAt6+5hJKiPJ55+V3aOrrRpeSdJau58qLTmDy+gqWrNnLq/CM579R5/Paex4YsqYrdzMVmtTB/zjS6/AGeeOFtEskk0VicgjwfrR1dxOKJEXlZpcL4P1i+nkvPP4mf3HAVb32witNPOIppE0dT09CMrksuv+AUrrniXB74z6u8veRjjmhuN934+ya1K0IgFBVd14kPIv7FEwk2bqtlwZ0P0dbp53tf/eyQjlk+rBiMruu89MYSHnr6NaRkJLJF01AUQWtHN7+5+1F+/5OvM9p0hR4IVNc1cesd/2T5mi17PSdFCLZsr+fXf32UH3z9ch6682aEMGrK/OOxl+kOBNE0zXAHx+MIIUgkk4YLOZZAAMlkkm6/4S5O7dR4PIHP4+YPP/0GVqvhhr797sdoaG4D4Bd3PcyPrr+SW77zBQC6e4L88e9P8taHq7CoKu2dfpas3MCo0kJWrN1CZ1cPW2t2sK16B6PLi3lv2RriiSSKIrjv0RcYVVLA979+uWEvUgQvv7GUxSvWI4QgFIrSEwiZG0wAkkTCGHMsngAB4WiM7p6QwZDM+BV/T4hQOEoikWRbTSPHzZnOD6+7Ak3XsVot2KwW7rr/ae7593/TMTkAmq7h7wkSicYQ5ufunhCRaMyw9Wg6/p4QkYjxORKL4+8JktQ0pIRAKIzWJ+w/mVrveJxEMslfH3qWsuJ8PnvBKXz2glNoaevk4/XbjPw4XfL+8nV8+uwTuOm6K/jOtZdgtVh45a1lvP3hx/ucYW9Mbfe0paoqiaTG3x97iSOnT+DMk+buud2DdTa1lJJwJEp3T4hYPL7f0YmdXT288tZSHn/hLTP2YeQdZKl4k5mTx/KFz5zFkdMn4LDb9il3SAiIRuN8sHwd/372dTZV1aWDy/ZlXABjykuYPK4cKSUbttZS19gKQJbLSUVZEa0dXbR1+PFkOaksLaKlo4u2jm48WS7jc3sX7V1+/vSzGzh1/hF8+f9+i9vlwGG3sWlbHdUNzX36hPKSAqZOqMRqUamqa2RL9Q50XU/HkxTm5VCUn017l5+m1k5URaFyVBFOu526xhYCoUg6LsTjdjFz8ljyc300t3WydnM14UgMRRFUlBZit1kNFdW0g3mzXJSXFtLc2kl7dw+lBblk+zzUNDQTicawWS2MKS8hFImiKgpP3buA1Ruq+O29j5PUNHJ9Hv644HpaO7r53Ld+ZTATc9wOu40x5cV094Roau3AabcxuryE7p6g8dlh2Cu6ewI0tXZSlJ9DXo6XmoYWotGYYfxVBDUNzWiajsftpMJc7/ZOP1JK8rK9zJwyDrfLwZbt9QTDETxuF9VmadTCvGymTRyDz+OmrbObtZuqzZNMh/+lmkxqXHD6sdxz23f35OJOjjiD0TSd9ZureeH1D1i2ehPNrV0Gg9nPdsORqBn6LEZUctkZqQhMi0Ul2+PGsh/2mETCeLNpup6OXt2fcfUtY5GK/ExHyerSTOzc8+e7FlzPqfOP5IKrf8SW7fVm8qfoxwB37i91b985pOI6UgmlqWhdJANGtqZd9MIw8vaN+JU73ZMesyJQTCbV95p0pKyUVJYV8Z97bsFmtbJ05QY0TSfL7eTk42bz/GuL+f4v70UzGWO/tkVv1v3uPvftG4zQAeiNbt55fVPX6FoqSlqkI39T408VeDcu6F2PkYCu61SUFvL0335OeVnh7i5NjqiKFApHuf/xl7j/8ZdpautML/KBQIq4D3adFCEEqmoQdIc/wH6JZn08JgdqfQZqKjXmPX1OSUKrN1Sh6zrhaBSLRR1QWtxdfynsfJ8QAnWQ5yeEGNAAOdgz33kOA/ZlzmlHSzs//d0DXHTW8em4GYCHnlzIQ08tJKlp/e4f6noN1vfOc9z5ejD2hWIZ3G2sKAJFOTglO4QQ+INhOv2BPTGYkVORYvEEv7/3ce55+L+7PLAMPlkwNjVpCeBgM/X9RUqCUFWlD11KkkmdvnlGGRiQUuJxu/jPPbdwxLQJu7t05CSYV95cyj8ef5mkrmce2CccfbOTP+nMJTWHlDSjaVqfv4MQGVodEEN87CPCYPyBEA899SqhSDRTAf8wwOHAVP6X5nUwMSLsef3matZuqj4gtoQMMsjgk4MR2fFrN1UTNMOoM8ggg/8djIiK1NjSbrpu98TPJFIKDC04FT4tUfhknhmdnpUEw1zYCwVQRKpsUwbDj8OTtg51jAiDCUdiQ7pOl4Jca4KTsruwCR0hoD7q4MMeH1KKTyQhGJXPJJOcUfKtiXQluJqog6aY7RM5p08idCnIM2nLatJWXdTBkk8wbR1UDDH6YkQYzFCLFEugxBbnhxW1eC0JVCF5tSOfpT0+hjdPeXghgKuLmzg3vxVNChTg9/WV/Ku5+PDK1RhhpCTDvjAkkl0lQwmU2uP8sLIGj5pEFZKX2gtY2uPLnNKwl5CA1aJit+65UNUhR9+y7488fF4rVkXHoWgkTQZjyZD1fkFKUIVknCOKSzXYTFxXqI7aievKwBKJNO5L0VbmCewbpC4pzM+hMC97j9cecgzmcEVK31cxbC8ZkXz/YVd0bqqsZlZWEAnsiDm4bvNkmuK2jGVrmJA6iuX4uTPIy/Xt8foMgxkhbIu4+dCfjYYhwTTF7JlNsJ8QgEvV8KgJJAK3msww7mGGpmmMqyzhyotOG1Lc0CeKwaRMOX017INBUH3HQZ+xpM6v7gcBEsEDTSU82FSc/nNKVdrXvvZm3oOZwPaljX0Zh+xz4/7MY7DGJfuv7qRUpwM6tgOIA0EHu2+/N2l0wO+NhaayrIhbv/slpkyoHFK7nwgGIwENsAuJW9WwCElcKoQ0Jb1RBzTs7eQeFgxmBJRoO+nk6i7XGW7OVMURl2rYVBQgIQVhTSUujeREQe+DN/NvieopJcn43N9N3deF2tt/ajwuVcepaEggrKlEdAUh9+Tm7h0vgEPRcSg6AohLhYimoMnBjaKpNnSzDZuQuFQdmzDOOYrqChFd3W0baXsHYFckTkXDKiQ6goimENEV9D2OYdf5GAxLkNzpmUkp0CRoUqCb36Se+WBItTe0Ne5djxQGCjcYKCxhYNrbtT2BYVvqSxe6ea9zNzS3ryEPqTwsp8NGSWEeTodtQA+Rw2Fj1pRxXPGp05gxZehnWh/yDEYHslSNE7O7OSW7iwpHBLuiE9ZUqiIu3u7OYbHfR0hT+y2ylGBVJGfldlBsMw7fCmgWXmrPJ6ipaQZgcGzBidndTHEF0TEI97XOfBpjNozseeNBq0JyVFaQU3M6meIOkWN6uqK6SlPMzoqAlze6cmiI2cE8mCu1GY719jAzqwcdgS4Fb3TlUht1oAjDhVpoi3N2bgd2RScpBQs781CAC/Pbmev1k2eNo0tBW8LG0h4fr3TkscNUs3Z9i0nT9SqZ7gpzSk4XM9xB8qwJBJKAZmFbxMW73dl81OMloisDEKhB/DnWJCdnd3Gcz0+5PYJb1dCloEezUGW2saTHR1hTdll/CYyyxzgtp4s5Xj8ltlh6fl0JKxvDWbzZlcPqYBaaOd7BNomUAqsiOTu3gyJbFInAKnQKbfE0E/NYklxZ1EyPppobWlITdfFGVw76AA4DCZTb45yX187RO63xsh4fL/dZYwOC+b5uprkNOgFY7M9mY8iN0oeeFCE5I6eT0Y4IxrFqkua4g4WdeST0Xpe4LgVjnRFOye40SjsgqYq4eKs7x1w/gVVIjvAEODWni8kug+YUIYnoKo0xO8t7fLzZnUNjzDYILQyOlHf32COn8tXPnc/saeNx2GwDXmu1WnC5HHsdjX9IMxgJ5FuT3DK6mtNzO7ALvR9znZUV4Jy8Nt7uzuPO+gpqo/Y+3N94615R2MIcbzcSaIg6ea87h4BJgH1xZm4nlxc2kZSCqK6yMeShIWZDwSBup6pzbUkjVxQ1kWNJpMeXwgx3gNNz27m4wM0f6it5tzu7n1pwck4XXy5pQDPfvNVRF9VRh9E+UGxLcMOoejxqgoiuYlckp2R3MjMrYL7LDEwmxHxfF2fldvDr2jGsDGSZCkL/t6Jb1fhCcTOXFzVRaI33a0MA87zdfDq/hde78vhzQzkNMXs/iUqXgsmuMD+oqGGu149VyF1ebHM9fi7Mb2VhZz531FfQFreiCJn2/p2U3c33ymuZ4Aql50mfMRzn6+bighYeaynhH02lRDRltxvEJnSuKGrmKI8fzexDhzTz8FkSfLW0IX29KiRvdObzdlcOyZ3a0oHxzgh3jN/CNPdga9zOr2vHsCLgQRGSpBSMcUT5bnlduv37G0exMeROn/QoAZ9F4xtlO5jqDqBLgSIkdVEnKwOefgxLAqfndPF/FTXp6/7cUMnrXbkoGC/Wr5Xu4NLCZrItyV1obqY7wBm5HXw65Ob39aP50O9Nv9j2uLdMleiME+bw2x99jZKivL3dnkPCCCUH7ZuGrAMzswKcndeO1WQuKRUkpTbZFJ1zcttYMKaKElvcJDaZ7lXHEJkNsXk3lVnTojXosv/fAS4taOXa0np8lgSa2XZSCuJSSfcjgUmuED+urGaSK9xP9JVSpMVhbQAXqQRDvMeQlL5Y3MiMrMAuOneq7xnuADdXVlNqj/d7O0spsCs63yxr4LqyOgqsvW/4hBQkpGLMEXCoGp/Kb+XWMdsptCXSa5cKSrupsobjfF0oQqbnF5eGWpoai13RuCi/hW+WNWBTekX6Sa4wPx5dzSRXKN2/jrFeqflrGEzh2tJ6LiloNT0Ue6akvj+7+353lKdLwQRXiKnuwdd4ujvITZU1lNlj6KYqsjLooTNhNZ+XYHpWkCxV69f/aEeUUnuUpElzSSnIt8aZ4IykaUJKQ22cmRVIr1kgaWF5jzc9niuLWri6ZAdeS3JQmgPJNHeQH1duZ6wzOuSdliq09aPrPzdszAVGQIJJJJJ07OVZPr2LILAIgy0YUoWb2qgTl6oxzR2kzB5NE+qx3m6+VNLE7+oqBhSH9xUSKLAluLigxbQfQFRTebmjgA97fMR0hXJHlAvz2pjsDqIBlc4w5+e3s7muYp/6VIXEa0pJDTEna4NZxKXCBGeISa4QipBowDR3gPPy2rmvsTQdMawjODO3kyuKmk2JBFrjdl7pyGdNyENSCiY4w5yb18ZYZxgNmO/r4qqiJv7YUJEm9uN9fkNSMGvlV0dcPNNWSE3UiU3ROcoT4IK8Vjzmm/Ws3HaebitkTdCNAlyQ306FPZIOzV8R8PJiez6tCRseVeOk7C5Oy+nAqhh2nUsKWni1I4+2hHXQ14COoC1uY0fMgSYNhpBnTWBTjK2WlIKOhA1N9q5jR9I68Kbr00lDzMG6oIfYoGvcwd8aS1Ewon+roi7mWv0mM4lQao+xOexK282muYN41GSf15xhA5uZFeSt7uy0+lhgjTPBGU7bWOpjTrZGnAigxB7nooJWVJPmwpqFF9sLWBbwEtcVKh1RPpXfygRXCA0Y7wxzbl47f2kYlZamBt9XhjH3vNPmDdlYu68YdgbT0NzGhq21+1zGUgAdCRt31VeysDM3bWupdES5flQDZ+a2Y9q4OSe3jefaCtgYdh0w0UwCZbYYJfYYOobx9e3uXH5RO4aopoCpEqwJerh93FY8ahJFSMY4ojgUnZi+j0WYgfe6c/ltXSU1UQcSQa4lwfWjGri0sJmUoXi+r5tHWoqJaApSCrItGp8tbMGpaOhAc9zOT7ePZ7Hfl357LiSHN7tyuH3cVia4QgCcm9fOs22FabVtmjuI1dxkMV3hjw2VvNKRm1ajFnbmEdEULitqNuwnwBhHhNXBLByKxhR3MD2PlriNn9eMZUPIlVah3ujKwapIjvF2o0uBR9UotsdpTQweHRrTBb+sHY3NVNdcisavx21jutuIg2mP27lx2wRaEr1xMFFdGTAKXCAHXOMcS4Lryxr4bNHOa1xEWFMJaiqrAl7megwGk21JMMUVZlPYhZSGWj47K4CCIY2mJDIhJDOyArgUnahuSJETnBEKbTEkBoNZE8yiy2SI5fYoRbZemlvUmcevakcTl4ayKaVgQ8jNbeO24VI0VCEZ44hgUyQJfc97zemwMX/O9AO0SwbH8DIYCc8vXEx9Y+s+1doQwvDuPNBUxpNtBWn1SJOCrREnt9dWUmaPMsMdQAcKbHHm+fxsDLsO5BSwKTpqn/dgyoCYomIhJGuCbq7bMhm7MLZxRFfTqsRezxtoT9j4U0M5WyOudN+tCSsPNpVwvK+LUnsUHSi1R8mxJAhr9rSKNtllSFICeLatiHe6s1GF7CcZrA25eaqtiJsqqwFJsS3GbE+AqqgDFSOIre+I+vrAQJKU8EBTKa925qXH3By3oSBRhEx7m1JQ6O1fEZKApnJbzWjyzPwsiaA+ah/0xSBMY3hb3JZ+Lm5VI95nM2kImuN2dsRt/doZ6Cmk1vjPDeVsDbtM2x20Jaw82FzC8dldlPVb4yQhTUUHlge8fF5XsZtesVlZAf7bno8Ecq3JtFqoSVgX9DLFHUARknHOMEW2ODVRBwKYmRXEoejoQFwKPurxkTQXzSqkQWP0qnlKH0OREJIVAQ9f3zwFm0lzIdOrNxQ4HXYK83L2iT73BsPKYN5cvJJ/PvFKv1MB9wYCqIs6ebUjbxdXnAVJY9zGS+0FTHMHSb1tprlDWIQ8YGpSihADmgWnqqEBJ+V0cttYWNrjozluozNppTthoT5qJ6SpCHMzK6kG9tIEpQBbw26qIk5UeqN+VWlIA/UxB6NM4ncqOi5FT9sdJrvCuFXNtLkoBJIWZmUF2ankK5o0VNCEbnhnLEIywRlGwdDtd8Qc6WHbFI3/K69lmjvElrCL9oSVrqSFzoSVDSE3CdPDlnoBxHSF5rgdgaGyFdri/HxsFa935lETddCRsNKdtNCRsLI25E4bOPfkrhZ94oxkyr3d7wqz0Dawi8C80zNQgG1hl7HGYoA1jjoo77vGqp6WNLaEXeyI2RnvDKdVIq8lSVfCwlhHhGJTKglrKk+3FXKdLUaJPUqeNcEkV5jtUSduRWOGacBP0dj6kDttDG9PWAlpFuxKHB04M7cdi5AsD3gNmjPXsNakufT6sWcjb9qWOQKBPvvEYAZKXkwNVtd1uv1BXn5zCXfe/zTN7V37XGhKAaqjTtrTennfBTF+Xx9yE9EUnKahrdAax65IwtqBWTwFaIjZWdLj46L8VjTAoWick9fGWXntJHRBVFcIahbqYw7e6MzjxY48upMWRB+Pyt6iO6mSGODepBn/0HcVUptJAYpscVM8BxXJN0fVplWYfs8QsAiDsaSQZzVcoJoUvO/3cWWRnSJbDE0Kyh0RvlpanzYyRjSV7qSFdaEsnm0rZHnAYxhChSQhBW905XFajuF2l0hmuAPMcAdISEHMjKFpj9tYHvDydFshm9NS58hFt3UnLcQHWGNNCiJ6/zUWfX5vT1hYF/IwwbRhlTuilNtjdCSszMgK4lI1BNAYN7K1z81rp8wexS50ZmUFeKUzjyJbnHF97C+bQlk0mikOqWz7jwI+zskzEmSdqsYF+a2cl99m0pxKQFOpizpZ1JnLy5359CTVIcQTjSz2isHsaG7nzcUrWb+lJn3olMSoem+xGE2FwhG2VDewuaqeeCKx31XsAkkL2mBvNCCoqcSlghPNDOjqr87sL4SQxHXBfY2jKLPHmOPxA71+KqsisSo6XkuSUfYocz1+jvT08MvaMXQmLCP+qB1KyrdgbHa3qu12DL3itzTKGGASfNjN3TvK+U55LbmWRFpCUoTEITScikaeNc54Z5gTfF3cUT+aZ9oKkGbg41td2TzSUsrnihpxmmqAxDC8ulQNt6pRYI0z1R3k+OxuFlSPZVmPdyeX+/BCDvG7fu51YXjjPurxckFeK0JIfJYkU90hNobdzDLtLwAbQ252xGysDWVxnK8LgOlZQVyKxkRXOK0eptSuqK6YkqYkqivcs2MUJbYYs7J6+oyjL80lKLdHOdrbzWxPgF/XjsaftHAQT+3ZBUNmMG9/sIpf/fkR1m+pJjnAcZ2pKAnjnF5hHquw/6ZWl6qhIAdlMi7V0IONvg1dVjugBGqI79sjDn6wbQKfLmjj+Owuim0xXIqGXdGxKUawuobBkM7Oa2NT2M19jaUHcBx7hgQiplFZmIbAtoSN6BAMzaqQ7Ig50xKXlPB0WwF1UQcXFbQyzR0k25LEqWjYFJkOG9DMGj7XldWzNpTF5rChcsR0hb80jGJDyM15ee2Mc4bxWJI4TK+RJeX6loKxjhA3jKrnhi2T8Ccth1SI/kAQwNpgFh0JKwW2OAqGu/kDvy/tFdKl4OOgh4QUrAlmEdMVbIrOaEeEcnuMmVlB7EJHw3iJrgp6+vWgCMmWsJMbTZqb7+umqA/NWfvQnCIkF+S1sTGUxUPNxXv0Io0khsRgVqzZzPdv+xu1DS2oqoLFMjKFuyUwxhkhx5qkLW7dRd+WKExyhXEqvX6C9riNuN6rEvR9+1iFjlXsyhwV800/4Bj65Lo0xGz8pWEUDzcXk2tN4LNo+CwJSmxxzsjtYJ6328iUBk7O7uSxliKC2sgVOZcYSZR6n8/3NY5iUVfugOUh9J1yeKK6kv6c2iTv+30sC3jJsyTItibxqUlyTFvCRfmtaWNziT3KMV4/m8LOtKs7rCv8tz2fRZ255FsT+CxJfJYkedYER/Rxc2sIprqDTHGHWez3YhkghB4GSt84OEipzVsjborMSOLJrhBzvQEKbHEA/JolbVPZGnbRlrBRZo+SbUlwlDfANNPzpQA1USfVEUdvIkkfmquNOriroZyHmkvItSTwWpJkW5KU2uKcmdfO0R4/QkhUITk5p5Mn2wqJaIdO7es9MphINMZfH3qO2oaWEWMsKehApSPCqdldPNZaiDBjPaQZwJRvTXBuXns6VkACG8OG0TGVrxE0o3Z1wGtJUuGIUhVxIkx1QEdQYkswyRVCH2AMQkjK7XE8puFUAvVROzVRB9BbW+QDv4+/T95ApSOCxLBnZKkagRFkMALYHHYR1Cy41SQW03PxaEvRLtdKjOJeudZk2urXFLOl83Iq7FEU06ga1hRqow5aE70xJa925NGVsHJz5XaEaWAssRlqs8+SpNQeT4+pM2mhMWajMW5Ly7mvduZhFTqXFzabeWY6RVbjHl0KxjujnJzTlWaBmhS83pVLXdS+WxUgFWOSCpYcFlYkDOa5IuBlvq8LHSMl4oK8NqMSI1AbddIQc6AKSWvCytawi3J7FIuQnJvbzmjTQKwAHwc9+M0ThFKpBqPscbJSNCehNuagug/N6VKwLODlvkkbKDXjwQqscdyKRlhTDhkrzB4ZzIYtNSxevh5VPRhnPRv5Jl8tbaAzaeHd7myiumISc5zryho4IqsnnYDYmbCytMeXvj+uC2qjznRbTkXj8sIWNofdNMeNeItcS5JrShoZbTKGXSG4uriR8/Lb0uHpf22o4F8txWC6Xg3bRG9YdEpVSxzAgL+hQMFgMBtDWUZ8CXB2bjtLerJ5vTOnTzyIYJwjws/HVjHBJPSQZuHGbRNYEfBQbItzx4Qt5JrBfo1xO9/bOpGqiNOIYzFb6et9ATPmRApmZQX51dhtqMJwWa/o8fHDqvF0Jy3m/dK8v/de3bw/9ftkV4jvltekXbUJqVAVcVLTx5W9c8RutiXJLE+QqN+bHldCF4R0BQ7gs0i1tCLgIaipuFSNLDXJHK8/7UFcF8wikFTNIFGFNSEPp+R0IoHZHn/aWxTTFZYHvGiARZglVoGvle7g9Nx2M+pZcEd9JU+0FEKfcINUSEAKMV0hMYBB/2Bijwxm3eZqeoKhgzI4YRJziT3KL8duY3mPj+qoA5eic6Snh/HOsCkyGw/lja48NoZc6ULOmoQlfh+fLWzGbgaenZjdyZ8nxvk44DFSEdxBpmcF0u3sDE3C9qiTLDMyUwGuLW3ArWqsCnqI6ArFtjiXFLSkI4sVJFvCbsOewL4mSuzbevVoKk+0FjEjK4Bd0cixJrhldBVzPfmsMA2JlY4oF+a3MtUU0y1CsrTHZ0SjCmm4oRMWxjlDJKVgkiXBLaO383RbEQ0xO6owUjiuKmoybD0Ym2h9KAuA+pidhBTkmWkK87O7+Mnoal7tzKM9YcOlaMz3dXNmTns6XqczYWObGcWaTi3oow3pctd1NLw95hpLox7MraOraDUlJUXAUn82v62rOOAlVwVQFXFRH3MaSbJCpp0LcSlYHfT0YxprglmEdRWHGRSXaqM5bjeSJfu0nZCC6qgDj5pMe5m+UVpPtppgdchDVFcotcW4tLCFQnONFSSbwu4RlZiHgj0ymLYOP5quH5QD03QpCOsqHjVJlprktJyO9He9uRiGbr466OH+plJDPTL1dBX4KODh/e4czsxtTxthZ7gDzHQH0u2kRE5gF0ZjMK5cPpXfxnR3DxqCQluMb5XXENGMYDqnomMzPSUKRuTxU21FxKXoFxw1/DBUw9e7cpjRWsxVRY0IIcmzxvl8cSOXFzWjS6N8ZyreRcWIuflb4yjCuoIqJP6kytNtRUx1B003Mxzr62aO109EV1EwomhTLwAVeNufw7KAF4uQ1EYdvNRRwJdLGkwGpnNhfitn5bYT0xUsQuI0xf8UXuwooMaMIh4qM0gxteN9XWnV2WtJkG1KXqqQNJhBbQd+paEraWFN0MNUV9Dw2mEY1zsTNjaFXX0kDdgecdIcszPGGU7bV1QkG8JuWvpU4BMChISFnXmcl9fGZDMVoMQe5bsVBs1pUuAwS2ekaK4lbueZtkKSUuwS83QwsUe9J5lMjuAG6a2HYTGJ919NpXwc8KYfQCpRL0XYuhQs9udwa/U4g0D7GAGFkIQ0lT82VLCkJ9tom17mlLqyK2HllY5C4tIgfrUPk1GEpDFm47baMawOekltYgUjktRnSWJTet27DTEHt9eNYWmPx1jcPpGXqpCoGBKDGGDeFtEbm6KIwRddEcYaqTuNNdVPyoPz98ZRdCet6YdsEQYj7A1QE6wMerm1elxa8kvN76WOPO7ZUUFXwkrq1WIVEq/J7FOBXZoUvNWdy+/qKgkk1XQczf2NpTzZWkxUV9P32013fipORMXI63q8pYT7G0tJpks29NKBal63cyRySgV6tq2AjwI+M2/NuF70/ekTxCKEoZal1ljdzRqrfdZ4wOclICnhox4vGgILhgRjFZLqqJOmuL2fytyRsLI14sJqSjopo/vyHh+xnU41ME48sHNb7RjWmVJhX5rzWpJpW4+CYe/5Td0YVgY8I5W9PGQcUuUaUg/i382lOBWdJPByRz5PtxVyYX47833dFNti2BSdiK5SG3XwVlcui7py6UxY+pVqSLWYdjFXTeBT+W2c4Oui2B7DIiRBzcLGkJvn2gppiNvZEbdjFxoJqZhh70YbAlgZyOLbWydxem4nx3r9lNujuFUNRRgxCy1xox7Mws48toYNu4/xhjdy+JeZtiHdNFD3DYs3gresPNxcil3RUYQ0SgAMsEYSeL3TqCUjpSCsK3Ql+8bbGHMOaip/3TGKxf5szs7rYIY7QK41gUVIwppKfczB+93ZvNaVR0vc2u98ICP2R+H+phKWB7yckdPBjKwg+dY4dkVHl4KAplJt1uN5uzvbjL+Q6f67khZ+XTuat7tzOTWnk0nOENnWJFZh1IPpTlrZHHbzemcuH/Z4ifWpSaNgqKX/bBrVJ8NZ0BBz9NtAipDURB3cuG0C87w9VJr5X32/3xp2o5t2jTaTtoa2xnn91rgzuWtMkwIsD3j4245ynKakpwjJyoC3nycnFTvzdFsRzXF7WlpOml66nZlCqp9lPV6+tXUyZ+R0Ms/XTZk9hlvR0vVgmuM2lvf4WNiZazguODS8bP3mIqX0A97BLvjNXx7hjn88NUIeJLlLtfe+GoYhMWhYhU5UV+lOqkR1ZQgVvXpTB/q2ETKjUVNep537Haj6mBHMJ/GoSVyqjoIhMfRoFsKakrbT9I9D2DV1oX/7u86795qdZjKALWJgwuotnaBiFGPyqIb+H9FVepJm1bZB165/NTW3qpGlamkGE9JVAkmjopqyp/4FeMzguhSDCWlGJOrAFQl3tx679pNyaQsGpoDUfcO1xgMxqV3b7aUfscd2d73Hoeh4VA2nSXNRXSFg0txg8xgMupTkerN44p4FTJ88Zmg37RuSh5QEA7segJWu/yKN3I7QTmHyvfqm2G27ithdG7s+4IFSExSzoFBCF3ToVjoSu45zYBfqwPPqG4A+EHEMuFkGvW5XpUsIUyWU0JO0pF2hqatTbujBtmXf+0NmJvHO/Q6+/jv3r+JP9l93Br1f7NU8Ux68wRQescc292+NB+9z13HKIbW76z1xXaFdV2AAmtvXoLqRCMY7xBiMOfGB/iYG/27I7Q7axu4f8y5Xir0fx5DbPoDX7Xneh/b9n5Q1Hq5r+92zDzQ3KKTEZrPidNgPVIuD4lCzCWWQQQbDDCklRfk55GZ79r+xPWDPDOZQSWrIIIMMDgikhLmzJpHtzRr2vvbIYNwux4jUjcgggwyGH7quk5/r48Iz54+I8LBHBjO+sgy7zTLkA+wzyCCDQxNSSoQQfO6i0zhqxsQR6XOPDGb2tPGMrShF1zMMJoMMPqnQdSM+6JKzT+C6L1yEOkKR+XuMgwF44PGXufWOB0lq2oipS1JKNF3vEwlr1JjJqGsHB6lzdA5HpGjqYNFWal0P9PrKPm0W5Pq46qIz+PrnLyRnBIy7JoYWB3PZhadS09DMg08uJBqLD3BCQJ840nQ06L4/LCkldpuVk+fNZvL4CiwWlaraRl54/QM0Td9vQtB1HV2XqKqSYVh7QIrRO+12crM9ByWrfrjnFwxF8AfC6Lo+oi8xKSW6NNIQfB43WW7nAe3barFQkOvjqJmTOP+0ecyaOn7ES64MSYIBCEeiPL9wMU+99A41O5pJJnXjJDtpbFgzKJ6kphMIhUkkkijKvm1gTdO45JwT+f1PrwOMfKg3F6/iW7f+mUSy/xl9e9O+lMZDnT9nGrOmjOPZhe/T1NrRr/KewfDlbttOvRVS3+/8eaBr93asu+v3QLQ1lL50XeLzuDjl2CP41FnzmTK+8jBkMNDR5eeDFet5+uV32bitzkg4HIH1lVIyYXQZl5x7EiccPYP83OwDane1Wix4slwH01Ez9Ehel9PB5Z86lQvOOI6Orh4jCTLViqanj+RLJJNsqqrniRffZvHydej63kkcuq6jaTqzp43HalH57s/+woo1W4gnkiQ1zdQlDXVJ03UU0VuaMyWZCCGMzSiMesF9GUEimeSkY2bxlSvP54MV66nb0YLVakVRhHG/lChCMTeznmaSUko0TTcDnowITqMv0iUKjTdgb39DaS89VkBVFXRdppl16l5FEem3naoopj1MpiVJzdSv1fQ6SHSpoyoKiqL062sob+gU8R89axLf/cqlzJ87A7vNyuGKylFFHDljIp86Yz6/v+8/PPXyu3tNt3uDlLH1gtOP46brrmBs5ciWVh1J7FUkrxCCLLeTLLdzt9dNnzyW048/kj/c9wT/fOJVtCE+LF3XGV9ZynFzpjNj8liklIwfPQq7zcYHK9YbRD97CqcffxR5OV621zby8ltLqWloBmDW1HFMHDOK6rpmJo+voNsfYNH7K4gnkumjMk84eiYzp4xFtahccPqxTJ80mveWraW6oZny4gLOOfUYJo8txx8I89aHq1iyagPJpEZetpfTjz+K9i4/s6eNJy/by8tvLaW1vYvPnHsSWVlO3ly8irc//BhN15FSUlFaxLmnHsP40WV0dQd4Y/FKPlqzGU3TKMzL5rT5R1JV10RZUR5up4PXF69k8rhyslxOOv0BJo4tZ3ttI+8uW8uY8mLOOeUYxlWU0t7pZ9H7K1i5bit2m5WzTpxLIplk0fsrSCSSnDB3OhPGjOKjNZtZu6kan9fN2SfNpaOrh7eXrN7t5kmd+nfuKcfwixu/TFlJwcGm0RFDeVkhv7jxy0gpeeLFt4EDL8mkXhTnn3IMv77pK+Tl7FF5+ERjyCrSvqAnEOI7C/7CS28uHZJonUxqXHLOCdz+46/hsNuxWlQi0RjJpMb3f3kvEsltP/wKLqednkCYvFwvm7fV8e0Ff2H1xip+8PUr+PaXL6ato5u8XB8r127hS/93O8FQBE3TOefko7nrZzfgctqxWi1EojHi8QTX//RPbN5ez19+8W2OmjGRji4/bpcTTdf59V8e4Z9PvMKMyWN58p4FqKpCLBbH7XbREwjREwiRl+PF6bQTiyX4+s138OYHq5g6oZI/LrieGZPH0tHlx+N2EYsn+NmdD/LI829wzKwpPPqXn9ATCOP1uIhEY3zlB7/n2ivO4+RjZxOORMn2enjqpbd58MmF/HHBN5k0roKOrh58HjehSISf/u4BXn5rKQ/8/gdMnTCai679CW0d3fz7Tz/muDnT+fczi/jeL+7mhLkzePTPP+GfT7zKgjsf2q0KoGk6c2dO4t7ffI9R/0PMpS9q6pv54nd/zabt9ft9KsbO0HWditJCHrrz5mE/tvUQQHJYFWqvx821V5xHttc9JAu5qiq8s3QNl359Aa+98xGxeIIf3nYfF3/1FjZvr+c713yGZFLjuh/9kfO/dDO/vftxJo+v5NrLz8OiWpBI7HYbr7+/kou/egs33/4PItFYuu2lqzdx6TcW8NzC94nHE/zo9n9w6Td+xkdrNvOlz5zF3FmTuftfz3H+1T/imht/S2dXD9/84kWMHlWcNgpX1zdx2XU/59Y//JP8PB/haJTPfH0Bt/z+n3g9bk4+bjaqqnL1Z89m5pSx3HHfE5z3pZv52k1/IByJcv2XPk1ZUT66lFgsKq0d3Xz5xt9y1bdvY/P2eoQQuFwO7nv0RT517U+4++HnufaKc5k8voLb736M8790M9f9+E6Sms4NV1+Mx+3i/WVrKcjzMWlsOaVF+YytKCUSjTFz8liyvVnMnjoeRVH4YMX6PUovLqedb3z+wv9Z5gIwuryYT591vJlke+A8OynV87xT5zFl/L6dW/5Jw7Bb7GZOGcfUCaPTdoLdQQhBpz/AynVbaevsRtd1NlXVsXzNFnzeLMaNLuP195bzyjvLqGtq5d/PLmJrdQNHzphAttcN0rBHvPbuRyxbtZHNVfVp24MQAn9PkFXrt9LS1omuSzZX1bNy3VYSiSRzZ02msaWdh55aSG1DC29+sIr/vraYsuJ8Jo0rT+vNazdVs2bzdj5avYlwOMr6LTWs3bydFWu3mFJHFj6Pm6NmTKKmvpmHn11EXWMrC99bzitvLWN0eTHjR5chTfvR8jWbeGfJatZsrCIYjqIoCl3dAV56YwnL12ymyx/kiOkT2LK9gUeee526plZeeXsZr7+7nHGVpYypKGHpqo3E4gmOnDGBGZPHYrNaeO7V9yktzmfKuAqOmjGRptYO1m+p3u0Z4bquM2lsOceNwJnFhzrmz52BN+vAHUGcgtNh54RjZv7PpOAMO4NxuxxUjioaclU8QX/DrKIoqKqCzWpBVQShSAxpHkWbSCaJxuJYLRZURTGqw5r9qKo6oBtaVdQ+cQ+gCIGqKFitFuLxBPF4Mr0JQ5EoihBYLZZ0oWppGl5TxlldgiIUSKfiC1RFYLWqxBJJw5smjC9DEYOBGO1htgeKqpjGX9J9CCFQVQWrRcVqsRCLJ9KeOV1KQpEYiqpgs1nZWrODqtpGjp49hVOOm01LexfPvPoeuq5z5olzmDpxNKvWbaWlvWu3NgUpYeqESrJ9w5+jcqijpCiPbK/nAEsw4HG7KCvOP9jTGzEMO4MRQux3PV9FCBqa2mhp7+b4udOZMLoMVVGYP8cwZlbVNuIPhvfKIKeqCvk5PrK9WSSSSbZsr2dUSQEnz5uFxaJSUVbEqfOPpLsnRG1Di8EkBprfzv8LCIQjbK3ewZhRxRw/dwYWVWVsRQknzZtFe6ef+sbW3UoSvW0LeoJhqmobmTCmjOPmTENVFCaOGcUJR8+gtb2bxuZ2/MEQy1ZtZNbUcZx+wlGs2bid1RuqqKlv5jPnnURxQQ6Ll68jHk/ucY1ys72Z2CDAarVgtVqG+l4cIqT50jgkq6QMCz4RMxWKoK6xhceff4NvXXMJD915M/U7WpkxZSzxRIKHn36NqHmU7W7bEcZx7B1dPdhsVn5z81fp6PJz6x0P8u9nFnHiMbP4xQ+u4ZLzTqKoIIeJY0bx4BOvsrGqjinjKwaomDZwj/F4gkeefZ15R07ltz/6Gp/79OmMKi5gTEUJ9z78PFV1jRw1feJuWkiNFyLROP9+ZhFzZk7ijluuY83GairLCqkYVcSf7n+ausYWkPDBivV88dKzcTkdLF+ziU5/gI/Xb+PoI6bQ3ulnxdotQ2IcQ2F8GWQwVKgLFiy4GRjWyjOvvbuc1RurhnyUrBCCwrwcwpEob3/4Mf6AcWzK6g1VtHX4KSvOJz/Xx4attfzunsd584NVgCAvx4uUkrc//JjWju5BN0tTawfJRJJwJEZnd5AlqzawfM1m1m2uJsebxaiSAgKhMA89uZB7//0C4UgUp91meKbWbWXNpu3Y7TYKcn2sWr+VNRu347DbyM/N5uMN21izcTt1ja1s3FpLbraXsuICunoC3P/4S/zjPy8TicVxOezkZnv5aPVmNmytSduJivJz6ezu4Z0lqw01SBFUNzSxqaqe/BwfZcX5dHT2cN8jL/DgUwuJJ5IIAcFwlCy3iy3VDTzz8nt0dPlJahpOh433lq1h4Tsf7THVQ9cl846catgI/scRCkf5zwtv0ekPDCq97i2klGS5nVx2wSkjGa5/MKEPq5s6hRt/cQ//evq1IYcpp2wQqSC21OdUDIHb6cBmtRCOxIjFE2lGktqkKWv9YJspFahmuM57r9d1ic1qweV0kEwmCUWiIESawHYez2CfU3PQdYndZsHpdJBIJAlHoukxDtReCgPOWzfSJ1xOO/F4glA0htKnrfQYMAL0UjCC9NjteqSQTGp855pL+NENVw0nOXwi0NLexcVfuYVttTsOmKta13VKCvN4+r6fMbbi8A2u64NDrSavgV4m0fs59b+CcZxtX/dzCn0T8na3mVKbLsVoUterqiCpaemD5sROG7jvePb0OdVeIqmRCOy5vf5z2HXeRltJ/AEjgrovc+l3705rmMmCP7SgKMpBOWPsYGFEGMy+GA0Hu2d3be1NP3vb/s5/39PnA/33ffkuY6w99DASeU6HEkYkc83tHP7iwhnsP4RgRApBZ/C/gxFhMBVlRemkuwwOTUgpsVgsVJQVHeyhHBJQzMTQA32qqRD/WzWNRoTBzJ423kgXONizzWBQSCkpyPUxY9KwHsT1iYHL6SAv24s8gFQrpSTX59ljsvDhhBFhMFMnVHLcUdPQtT2nC2RwcKDrkpPnzTqsSwfsDdwuB3NmTjqgbUoJR0yfgM/jPtjTGzGMCINxOOxce8V5FOZnp2uDZnDoQNN0KsoK+fJl5454xbNDGReccSwlBbkHhGZ1XScvx8tFZ87PqEjDgXlHTuPGr15mlEHISDKHBFKFqHJ8Wdx03ZXMnDruYA/pkMKMyeP4yhXnYbFY9svdn8qd+9JnzmLO7MkHe1ojihGJ5AXDuDVt0miK8nPYuLWWrp5AuhJcBiMP3SyKNb6yjAXf/SKfOvP4TJrAThBCMH3yGHRdZ92m7URj8b0mWE3TcTpsXH3p2Xzn2s/8r3npRiaSty+klGzcWst/XniLd5euoam1g1g8kfEwjRCEEDjsNsqK8znl2CO47IKTGTe67H9KbN9bxOMJFr23nH89/RprN1UTCIb7RUvvDENiEWS5nEydUMlVnz6Dc089Bsf/FnMBSI44g0lB142kw8aWDoKhMFom4nREoCoCb5ab0uJ8cnyejNSyFwiFI1TXNdHQ1EYsnhj0Ok3XsVutlBXnM250GZ5hqCvzCcHBYzAZZJDBYY/hLZmZQQYZ/G8jw2AyyCCDYUOGwWSQQQbDhgyDySCDDIYNGQaTQQYZDBsyDCaDDDIYNmQYTAYZZDBs+H+FQy3s9ZMc4wAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNi0wMy0yMFQxNzoyNDowNSswMDowMOrE+y4AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjYtMDMtMjBUMTc6MjQ6MDUrMDA6MDCbmUOSAAAAAElFTkSuQmCC"} alt="THWS Business School" style={{height:'30px',width:'auto'}}/>
-          <div style={{width:'1px',height:'24px',background:'#e5e7eb'}}/>
-          <div className="nav-logo">Urban<span>Cart</span></div>
-        </div>
-        <div className="nav-links">
-          {["Damenmode", "Herrenmode", "Schuhe", "Accessoires", "Home & Living", "Sale"].map(l => (
-            <span key={l} className="nav-link">{l}</span>
-          ))}
-        </div>
-        <div className="nav-actions">
-          <span style={{fontSize:'0.84rem', color:'#6c757d', cursor:'pointer'}}>🔍</span>
-          <span style={{fontSize:'0.84rem', color:'#6c757d', cursor:'pointer'}}>♡</span>
-          <button className="cart-btn">
-            🛒 Warenkorb {cart > 0 && <span style={{background:'#E87722', padding:'1px 6px', borderRadius:'10px', marginLeft:'4px'}}>{cart}</span>}
-          </button>
-        </div>
-      </nav>
-
-      {/* Hero */}
-      <section className="hero">
-        <div className="hero-text">
-          <div className="hero-tag">Frühjahrskollektion 2024</div>
-          <h1 className="hero-title">
-            Style trifft<br/>
-            <em>Datenanalyse.</em>
-          </h1>
-          <p className="hero-sub">
-            UrbanCart ist Europas wachsender Online-Händler für Mode, Lifestyle und Home.
-            Täglich kaufen tausende Kunden aus ganz Deutschland bei uns ein.
-          </p>
-          <div className="hero-btns">
-            <button className="btn-dark">Jetzt shoppen</button>
-            <button className="btn-ghost">Neuheiten ansehen</button>
-          </div>
-        </div>
-        <div className="hero-visual">
-          <div className="hero-visual-inner">
-            <div className="hero-visual-big">UC</div>
-            <div className="hero-visual-sub">Mode · Lifestyle · Home</div>
-            <div style={{marginTop:'24px', display:'flex', gap:'16px', justifyContent:'center', flexWrap:'wrap'}}>
-              {[["14.355","Bestellungen/Jahr"],["8.000","Kunden"],["41","Produkte"],["6","Kategorien"]].map(([n,l]) => (
-                <div key={l} style={{textAlign:'center'}}>
-                  <div style={{fontSize:'1.4rem', fontWeight:900, color:'#E87722'}}>{n}</div>
-                  <div style={{fontSize:'0.68rem', color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:'0.08em'}}>{l}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Trust bar */}
-      <div className="trust-bar">
-        <div className="trust-inner">
-          {[
-            [<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#005B9A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>,"Kostenlose Lieferung ab 49 €"],
-            [<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#005B9A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>,"30 Tage Rückgabe"],
-            [<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#005B9A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,"SSL-verschlüsselt"],
-            [<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E87722" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,"4,3 / 5 Kundenbewertung"],
-            [<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#005B9A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>,"Versand in 1–3 Tagen"],
-          ].map(([icon, text]) => (
-            <div key={text} className="trust-item">
-              <span className="trust-icon">{icon}</span>
-              <span className="trust-text">{text}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Categories */}
-      <div style={{maxWidth:'1200px', margin:'0 auto'}}>
-        <div className="cat-strip">
-          {CATEGORIES.map(c => (
-            <div key={c.name} className="cat-card">
-              <div className="cat-icon">{c.icon}</div>
-              <div className="cat-name">{c.name}</div>
-              <div className="cat-count">{c.count}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Products */}
-      <div className="section">
-        <div className="section-header">
-          <h2 className="section-title">Bestseller</h2>
-          <span className="section-link">Alle ansehen →</span>
-        </div>
-        <div className="products-grid">
-          {PRODUCTS.map(p => (
-            <div key={p.id} className="product-card">
-              <div className="product-img" style={{background: p.bg}}>
-                <div className="product-img-placeholder">
-                  {p.cat === "Damenmode" ? "👗" : p.cat === "Herrenmode" ? "👔" :
-                   p.cat === "Schuhe" ? "👟" : p.cat === "Accessoires" ? "💍" :
-                   p.cat === "Home & Living" ? "🏠" : "⚽"}
-                </div>
-                {p.badge && <div className="product-badge">{p.badge}</div>}
-              </div>
-              <div className="product-info">
-                <div className="product-cat">{p.cat}</div>
-                <div className="product-name">{p.name}</div>
-                <div className="product-stars">{p.stars}</div>
-                <div className="product-price-row">
-                  <span className="product-price">{p.price} €</span>
-                  {p.old && <span className="product-price-old">{p.old} €</span>}
-                </div>
-                <button
-                  className="add-btn"
-                  onClick={() => addToCart(p.id)}
-                  style={added === p.id ? {background:'#3D7A56'} : {}}
-                >
-                  {added === p.id ? "✓ Hinzugefügt" : "In den Warenkorb"}
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Data note for students */}
-      <div style={{padding: '0 32px 32px', maxWidth:'1264px', margin:'0 auto'}}>
-        <div className="data-note">
-          <div className="data-note-title">📊 Hinweis für Kursteilnehmende</div>
-          <div className="data-note-text">
-            UrbanCart ist ein <strong>fiktives Unternehmen</strong> – eigens für diesen Kurs erstellt.
-            Die Datensätze (orders.csv, customers.csv, reviews.csv usw.) bilden den Geschäftsbetrieb
-            dieses Shops für die Jahre 2023–2024 synthetisch nach. In den Labs analysierst du
-            genau diese Daten mit Tableau – als Junior Data Analyst bei UrbanCart.
-          </div>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-logo">Urban<span>Cart</span></div>
-        <div className="footer-tagline">Mode · Lifestyle · Home — Europa</div>
-        <div className="footer-links">
-          {["Über uns","Karriere","Presse","Nachhaltigkeit","AGB","Datenschutz","Impressum"].map(l => (
-            <span key={l} className="footer-link">{l}</span>
-          ))}
-        </div>
-        <div className="footer-disclaimer">
-          UrbanCart ist ein fiktives Unternehmen. Alle Produkte, Preise und Daten sind synthetisch
-          und dienen ausschließlich Lehrzwecken im Rahmen des Kurses
-          „E-Commerce &amp; Digitale Geschäftsmodelle" · THWS Business School · Prof. Dr.-Ing. Eva Klenk
-        </div>
-      </footer>
-    </>
-  );
+// ── LANGUAGE ──
+function setLang(l) {
+  document.documentElement.lang = l;
+  document.querySelectorAll('[data-de]').forEach(el => {
+    const v = el.getAttribute('data-' + l);
+    if(v !== null) el.innerHTML = v;
+  });
+  document.querySelectorAll('.lang-btn').forEach(b =>
+    b.classList.toggle('is-active', b.textContent.toLowerCase() === l));
+  const si = document.getElementById('search-input');
+  if(si) si.placeholder = l === 'de' ? 'Suchen ...' : 'Search ...';
+  renderProducts();
+  renderCart();
+  localStorage.setItem('lang', l);
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+// ── STARS ──
+function stars(n) {
+  return [1,2,3,4,5].map(i =>
+    `<svg class="star ${i<=n?'is-filled':''}" width="12" height="12" viewBox="0 0 24 24" fill="${i<=n?'#E87722':'none'}" stroke="${i<=n?'#E87722':'#D1D5DB'}" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`
+  ).join('');
+}
+
+// ── PRODUCTS ──
+function filterCat(cat) {
+  currentFilter = cat;
+  document.querySelectorAll('.catnav__item').forEach(el => {
+    const de = el.getAttribute('data-de') || '';
+    const en = el.getAttribute('data-en') || '';
+    el.classList.toggle('is-active',
+      (cat === 'all' && (de === 'Alle' || en === 'All')) ||
+      de === cat || en === cat ||
+      (cat === 'sale' && (de === 'Sale' || en === 'Sale'))
+    );
+  });
+  const titleEl = document.getElementById('products-title');
+  if(titleEl) {
+    titleEl.setAttribute('data-de', cat === 'all' ? 'Bestseller' : cat);
+    titleEl.setAttribute('data-en', cat === 'all' ? 'Bestsellers' : cat);
+    titleEl.textContent = lang() === 'de' ? titleEl.getAttribute('data-de') : titleEl.getAttribute('data-en');
+  }
+  renderProducts();
+}
+
+function renderProducts() {
+  const l = lang();
+  const grid = document.getElementById('product-grid');
+  if(!grid) return;
+  const filtered = currentFilter === 'all' ? PRODUCTS :
+    currentFilter === 'sale' ? PRODUCTS.filter(p => p.badge === 'sale') :
+    PRODUCTS.filter(p => p.cat === currentFilter);
+
+  if(!filtered.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;padding:48px;text-align:center;color:#9CA3AF;font-size:13px;font-weight:600">${l==='de'?'Keine Artikel gefunden.':'No items found.'}</div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(p => {
+    const inCart = cart.find(c => c.id === p.id);
+    const name = p.name[l];
+    const badgeHtml = p.badge ?
+      `<div class="product-card__badge badge--${p.badge}">${p.badge === 'sale' ? 'Sale' : p.badge === 'new' ? (l==='de'?'Neu':'New') : 'Top'}</div>` : '';
+    const saveHtml = p.old ? `<span class="product-card__price-save">−${Math.round((1-p.price/p.old)*100)}%</span>` : '';
+
+    return `
+    <div class="product-card" id="pcard-${p.id}">
+      ${badgeHtml}
+      <div class="product-card__img">
+        <div class="product-card__img-inner prod-visual" style="background:${p.bg}">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+            <div style="color:${p.color}">${p.icon}</div>
+            <div style="width:40px;height:1px;background:${p.color};opacity:.2"></div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${p.color};opacity:.4">UrbanCart</div>
+          </div>
+        </div>
+      </div>
+      <div class="product-card__info">
+        <div class="product-card__cat">${p.cat}</div>
+        <div class="product-card__name">${name}</div>
+        <div class="product-card__stars">${stars(Math.floor(3.5 + Math.random()))}</div>
+        <div class="product-card__price-row">
+          <span class="product-card__price">€ ${p.price.toFixed(2).replace('.',',')}</span>
+          ${p.old ? `<span class="product-card__price-old">€ ${p.old.toFixed(2).replace('.',',')}</span>` : ''}
+          ${saveHtml}
+        </div>
+        <button class="product-card__btn ${inCart?'is-added':''}" onclick="addToCart(${p.id})">
+          ${inCart
+            ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>${l==='de'?'Im Warenkorb':'In cart'}</span>`
+            : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span>${l==='de'?'In den Warenkorb':'Add to cart'}</span>`
+          }
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── CART ──
+function addToCart(id) {
+  const p = PRODUCTS.find(p => p.id === id);
+  if(!p) return;
+  const existing = cart.find(c => c.id === id);
+  if(!existing) cart.push({...p, qty:1});
+  updateCartBadge();
+  renderCart();
+  renderProducts();
+  openCart();
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(c => c.id !== id);
+  updateCartBadge();
+  renderCart();
+  renderProducts();
+}
+
+function updateCartBadge() {
+  const badge = document.getElementById('cart-count');
+  const total = cart.reduce((s,c) => s + c.qty, 0);
+  if(total > 0) {
+    badge.style.display = 'flex';
+    badge.textContent = total;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function renderCart() {
+  const l = lang();
+  const body = document.getElementById('cart-body');
+  const totalEl = document.getElementById('cart-total');
+  const countEl = document.getElementById('cart-header-count');
+  const total = cart.reduce((s,c) => s + c.price * c.qty, 0);
+
+  if(countEl) countEl.textContent = `${cart.length} ${l==='de'?(cart.length===1?'Artikel':'Artikel'):(cart.length===1?'item':'items')}`;
+  if(totalEl) totalEl.textContent = `€ ${total.toFixed(2).replace('.',',')}`;
+
+  if(!body) return;
+  if(!cart.length) {
+    body.innerHTML = `<div class="cart-empty">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <p>${l==='de'?'Dein Warenkorb ist leer':'Your cart is empty'}</p>
+    </div>`;
+    return;
+  }
+  body.innerHTML = cart.map(c => `
+    <div class="cart-item">
+      <div class="cart-item__img" style="background:${c.bg}">
+        <div style="color:${c.color}">${c.icon}</div>
+      </div>
+      <div class="cart-item__info">
+        <div class="cart-item__cat">${c.cat}</div>
+        <div class="cart-item__name">${c.name[l]}</div>
+        <div class="cart-item__price">€ ${c.price.toFixed(2).replace('.',',')}</div>
+      </div>
+      <button class="cart-item__remove" onclick="removeFromCart(${c.id})">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
+
+function openCart() {
+  document.getElementById('cart-overlay').classList.add('is-open');
+  document.getElementById('cart-sidebar').classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCart() {
+  document.getElementById('cart-overlay').classList.remove('is-open');
+  document.getElementById('cart-sidebar').classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+
+// ── SCROLL REVEAL ──
+(function(){
+  const obs = new IntersectionObserver(entries =>
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }),
+    {threshold:.08});
+  document.querySelectorAll('.sr').forEach(el => obs.observe(el));
+})();
+
+// ── INIT ──
+(function(){
+  const l = localStorage.getItem('lang') || 'de';
+  setLang(l);
+  renderProducts();
+})();
 </script>
 </body>
 </html>
