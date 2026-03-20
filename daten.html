@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Datenfluss &amp; Dashboard-Prinzipien &middot; E-Commerce &amp; Digitale Geschäftsmodelle &middot; THWS</title>
+<link rel="stylesheet" href="design-system.css"/>
+<style>
+/* ── PAGE-SPECIFIC ── */
+.page-hero{background:var(--gray-100);padding:80px 48px 64px;border-bottom:1px solid var(--gray-200);}
+.page-hero__inner{max-width:900px;}
+.page-hero__eyebrow{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--orange);margin-bottom:16px;}
+.page-hero__title{font-size:clamp(36px,5vw,60px);font-weight:800;letter-spacing:-2px;line-height:1.05;margin-bottom:20px;}
+.page-hero__sub{font-size:17px;color:var(--gray-600);line-height:1.8;max-width:700px;}
+
+.content-wrap{max-width:1100px;margin:0 auto;padding:0 48px;}
+
+/* Flow diagram */
+.flow-diagram{padding:80px 0;}
+.flow-diagram__title{font-size:28px;font-weight:800;letter-spacing:-1px;margin-bottom:8px;}
+.flow-diagram__sub{font-size:15px;color:var(--gray-600);margin-bottom:48px;}
+.flow-steps{display:grid;grid-template-columns:repeat(5,1fr) ;gap:0;margin-bottom:56px;}
+.flow-step{padding:32px 24px;border-right:1px solid var(--gray-200);position:relative;}
+.flow-step:last-child{border-right:none;}
+.flow-step__num{width:36px;height:36px;background:var(--orange);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;margin-bottom:20px;}
+.flow-step__icon{margin-bottom:16px;color:var(--gray-600);}
+.flow-step__title{font-size:15px;font-weight:700;margin-bottom:8px;}
+.flow-step__text{font-size:13px;color:var(--gray-600);line-height:1.7;}
+.flow-step__tag{display:inline-block;margin-top:12px;background:var(--gray-100);border:1px solid var(--gray-200);padding:3px 10px;font-size:11px;font-weight:700;font-family:monospace;color:var(--gray-600);}
+.flow-arrow{position:absolute;right:-14px;top:50%;transform:translateY(-50%);z-index:2;color:var(--orange);font-size:20px;font-weight:700;}
+
+/* Dataset cards */
+.dataset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px;}
+.dataset-card{background:#fff;border:1px solid var(--gray-200);padding:32px;border-top:3px solid var(--orange);}
+.dataset-card__name{font-size:16px;font-weight:800;font-family:monospace;color:var(--orange);margin-bottom:4px;}
+.dataset-card__rows{font-size:13px;color:var(--gray-600);margin-bottom:16px;}
+.dataset-card__fields{list-style:none;padding:0;}
+.dataset-card__fields li{font-size:12px;padding:5px 0;border-bottom:1px solid var(--gray-100);display:flex;justify-content:space-between;align-items:center;}
+.dataset-card__fields li:last-child{border-bottom:none;}
+.field-type{font-size:10px;font-weight:700;padding:2px 6px;border-radius:2px;font-family:monospace;}
+.field-type.num{background:#EEF6FF;color:var(--blue);}
+.field-type.txt{background:#FFF3E8;color:var(--orange);}
+.field-type.dt{background:#F0FFF4;color:#2D8A55;}
+.field-type.id{background:var(--gray-100);color:var(--gray-600);}
+.dataset-card__lab{margin-top:16px;padding-top:12px;border-top:1px solid var(--gray-200);font-size:11px;color:var(--gray-600);}
+.dataset-card__lab a{color:var(--orange);font-weight:700;text-decoration:none;}
+
+/* Event log simulation */
+.event-sim{background:var(--gray-900,#1a1a18);border-radius:4px;padding:24px 32px;font-family:monospace;font-size:12px;color:#a0e0a0;line-height:2;overflow-x:auto;margin:32px 0;}
+.event-sim .ts{color:#666;}
+.event-sim .ev{color:#E87722;}
+.event-sim .val{color:#7EC8E3;}
+
+/* Dashboard principles */
+.principles-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:32px;margin-top:48px;}
+.principle-card{background:var(--gray-100);padding:32px;position:relative;}
+.principle-card__num{position:absolute;top:24px;right:24px;font-size:48px;font-weight:800;color:rgba(0,0,0,.06);}
+.principle-card__title{font-size:16px;font-weight:700;margin-bottom:12px;}
+.principle-card__text{font-size:14px;color:var(--gray-600);line-height:1.8;}
+.principle-card__example{margin-top:16px;padding:12px 16px;background:#fff;border-left:3px solid var(--orange);font-size:13px;font-style:italic;color:var(--gray-600);}
+
+/* Dashboard types */
+.dtype-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px;}
+.dtype-card{padding:32px;background:#fff;border:1px solid var(--gray-200);}
+.dtype-card__badge{display:inline-block;padding:4px 12px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;}
+.dtype-card__badge.op{background:#EEF6FF;color:var(--blue);}
+.dtype-card__badge.an{background:#FFF3E8;color:var(--orange);}
+.dtype-card__badge.st{background:#1a1a18;color:#fff;}
+.dtype-card__title{font-size:18px;font-weight:700;margin-bottom:8px;}
+.dtype-card__who{font-size:12px;color:var(--gray-600);margin-bottom:16px;font-style:italic;}
+.dtype-card__features{list-style:none;padding:0;}
+.dtype-card__features li{font-size:13px;color:var(--gray-600);padding:4px 0;display:flex;gap:8px;}
+.dtype-card__features li::before{content:'–';color:var(--orange);}
+
+/* Preattentive */
+.preatt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:32px;}
+.preatt-card{padding:24px;text-align:center;background:var(--gray-100);}
+.preatt-card__demo{height:64px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:24px;}
+.preatt-card__title{font-size:13px;font-weight:700;margin-bottom:4px;}
+.preatt-card__text{font-size:12px;color:var(--gray-600);}
+
+/* Tableau license */
+.license-box{background:linear-gradient(135deg,#005B9A 0%,#003d6b 100%);color:#fff;padding:48px;margin:48px 0;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
+.license-box__title{font-size:28px;font-weight:800;letter-spacing:-1px;margin-bottom:16px;}
+.license-box__sub{font-size:15px;opacity:.8;line-height:1.8;}
+.license-box__steps{list-style:none;padding:0;}
+.license-box__steps li{font-size:14px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;gap:12px;align-items:flex-start;}
+.license-box__steps li:last-child{border-bottom:none;}
+.license-step-num{background:var(--orange);color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;margin-top:2px;}
+.license-box__cta{display:inline-flex;align-items:center;gap:8px;margin-top:24px;background:#fff;color:var(--blue);padding:14px 28px;font-size:14px;font-weight:700;text-decoration:none;}
+
+/* Report anatomy */
+.anatomy-box{background:var(--gray-100);padding:40px;margin:32px 0;}
+.anatomy-box__title{font-size:18px;font-weight:700;margin-bottom:24px;}
+.anatomy-layers{display:flex;flex-direction:column;gap:12px;}
+.anatomy-layer{display:flex;align-items:center;gap:24px;padding:16px 20px;background:#fff;border-left:4px solid;}
+.anatomy-layer.l1{border-color:var(--orange);}
+.anatomy-layer.l2{border-color:var(--blue);}
+.anatomy-layer.l3{border-color:#3D7A56;}
+.anatomy-layer.l4{border-color:#9CA3AF;}
+.anatomy-layer__label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;width:140px;flex-shrink:0;}
+.anatomy-layer__desc{font-size:13px;color:var(--gray-600);}
+.anatomy-layer__ex{margin-left:auto;font-size:12px;font-family:monospace;background:var(--gray-100);padding:4px 10px;white-space:nowrap;}
+
+/* Section block */
+.section{padding:64px 0;}
+.section__eyebrow{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--orange);margin-bottom:12px;}
+.section__title{font-size:32px;font-weight:800;letter-spacing:-1px;margin-bottom:8px;}
+.section__rule{width:48px;height:3px;background:var(--orange);margin:16px 0 24px;}
+.section__lead{font-size:16px;color:var(--gray-600);line-height:1.8;max-width:700px;}
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+<div class="navbar__inner">
+  <a href="index.html" class="navbar__logo-link">
+    <svg class="navbar__logo" viewBox="0 0 274.3 91.2" xmlns="http://www.w3.org/2000/svg">
+      <style>.st0{fill:#FF6A00}</style><g><g><path class="st0" d="M15,32.6h2.6c1.1,0,2-0.3,2.6-0.8c0.6-0.5,0.9-1.3,0.9-2.3c0-1-0.3-1.7-0.9-2.2s-1.5-0.7-2.6-0.7H15V32.6zM15,34.9v8.4h-3V24.3h5.7c2,0,3.6,0.5,4.7,1.4c1.1,1,1.6,2.3,1.6,4.1c0,1-0.3,1.9-0.8,2.7c-0.5,0.8-1.3,1.4-2.2,1.8l3.8,8.8v0.2h-3.2L18,34.9H15z"/><path class="st0" d="M31.9,43.4h-3V24.3h3V43.4z"/><path class="st0" d="M49.9,26.6h-5.5v16.7h-3V26.6h-5.5v-2.3h14V26.6z"/></g><g><path class="st0" d="M72.4,34.8c0,1.8-0.3,3.4-1,4.7c-0.7,1.3-1.6,2.4-2.8,3.1c-1.2,0.7-2.6,1.1-4.1,1.1c-1.5,0-2.9-0.4-4.1-1.1c-1.2-0.7-2.1-1.7-2.8-3.1c-0.7-1.3-1-2.9-1-4.6v-0.9c0-1.8,0.3-3.4,1-4.7c0.7-1.3,1.6-2.3,2.8-3.1c1.2-0.7,2.6-1.1,4.1-1.1c1.5,0,2.9,0.4,4.1,1.1c1.2,0.7,2.1,1.8,2.8,3.1c0.7,1.3,1,2.9,1,4.7V34.8z M69.4,34c0-2-0.4-3.5-1.2-4.6c-0.8-1.1-2-1.6-3.5-1.6c-1.5,0-2.6,0.5-3.4,1.6c-0.8,1.1-1.2,2.6-1.2,4.5v0.9c0,1.9,0.4,3.4,1.2,4.5c0.8,1.1,2,1.7,3.5,1.7c1.5,0,2.6-0.5,3.4-1.6c0.8-1.1,1.2-2.6,1.2-4.6V34z"/><path class="st0" d="M86.2,35.4h-7.5v8h-3V24.3h11.7v2.3H78.7v6.5h7.5V35.4z"/></g><rect x="95.2" y="20.3" class="st0" width="2.4" height="27.2"/><g><path d="M112.4,38.2l4.7-13.9h3.2l-6.5,19.1h-2.7l-6.5-19.1h3.2L112.4,38.2z"/><path d="M135.1,34.5h-8.4v6.5h9.8v2.4h-12.8V24.3H136v2.3h-9.3v5.6h8.4V34.5z"/><path d="M142.1,40.9h9.2v2.4h-12.2V24.3h3V40.9z"/><path d="M153.3,43.4V24.3h5.8c1.8,0,3.3,0.4,4.7,1.1c1.4,0.8,2.4,1.8,3.2,3.2c0.8,1.4,1.1,3,1.1,4.7v1.1c0,1.8-0.4,3.3-1.1,4.7c-0.8,1.4-1.8,2.4-3.2,3.2c-1.4,0.8-3,1.1-4.8,1.1H153.3z M156.3,26.6v14.4h2.7c2,0,3.5-0.6,4.6-1.8c1.1-1.2,1.6-2.9,1.7-5.1V33c0-2.2-0.5-3.9-1.6-5.1c-1.1-1.2-2.6-1.8-4.6-1.8L156.3,26.6L156.3,26.6z"/><path d="M184.4,34.5H176v6.5h9.8v2.4h-12.8V24.3h12.7v2.3H176v5.6h8.4V34.5z"/><path d="M201.5,39.6c0-0.9-0.3-1.6-1-2.1c-0.7-0.5-1.8-1-3.5-1.4c-1.7-0.4-3-0.9-4-1.5c-1.9-1.1-2.9-2.6-2.9-4.5c0-1.7,0.7-3.1,2.1-4.2c1.4-1.1,3.2-1.6,5.4-1.6c1.5,0,2.8,0.3,3.9,0.8c1.2,0.5,2.1,1.3,2.7,2.3c0.6,1,1,2.1,1,3.3h-3c0-1.2-0.4-2.1-1.1-2.7c-0.7-0.7-1.8-1-3.2-1c-1.3,0-2.3,0.3-3,0.8c-0.7,0.6-1.1,1.3-1.1,2.2c0,0.8,0.4,1.5,1.1,2c0.7,0.5,2,1,3.7,1.4c1.7,0.4,3.1,0.9,4.1,1.5c1,0.6,1.8,1.3,2.3,2.1c0.5,0.8,0.7,1.8,0.7,2.9c0,1.7-0.7,3.1-2.1,4.1c-1.4,1-3.3,1.5-5.6,1.5c-1.5,0-3-0.3-4.3-0.8c-1.3-0.6-2.3-1.3-3-2.3c-0.7-1-1.1-2.1-1.1-3.4h3c0,1.2,0.4,2.2,1.3,2.9c0.8,0.7,2,1,3.5,1c1.4,0,2.5-0.3,3.2-0.8C201.1,41.1,201.5,40.4,201.5,39.6z"/></g><g><path d="M113.3,58.1h-8.4v6.5h9.8v2.4h-12.8V47.9h12.7v2.3h-9.7v5.6h8.4V58.1z"/><path d="M122.8,56.2l4.4-8.3h3.4l-6.2,10.8v8.4h-3.1v-8.4l-6.2-10.8h3.4L122.8,56.2z"/><path d="M145.9,58.1h-8.4v6.5h9.8V67h-12.8V47.9h12.7v2.3h-9.7v5.6h8.4V58.1z"/><path d="M155,56.8l1.1-8.9h3l-2.3,19.1h-2.9l-2.5-13.1l-2.5,13.1h-2.9l-2.3-19.1h3l1.1,8.9l2.6-8.9h2L155,56.8z"/></g></g>
+    </svg>
+    <div class="navbar__divider"></div>
+    <span class="navbar__module" data-de="Datenfluss &amp; Dashboards" data-en="Data Flow &amp; Dashboards"></span>
+  </a>
+  <div class="navbar__right">
+    <a href="index.html" style="font-size:13px;font-weight:700;color:var(--gray-600);text-decoration:none;">← Kursübersicht</a>
+    <a href="urbancart.html" style="font-size:13px;font-weight:700;color:var(--orange);text-decoration:none;margin-left:24px;">Shop →</a>
+  </div>
+</div>
+</nav>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="page-hero__inner">
+    <div class="page-hero__eyebrow">Lerngrundlage · Alle Labs</div>
+    <h1 class="page-hero__title">Vom Klick zum Dashboard</h1>
+    <p class="page-hero__sub">Wie entstehen die Daten, die du in Tableau analysierst? Welche Prinzipien machen ein Dashboard gut? Und wie erhältst du Tableau kostenlos? Diese Seite beantwortet alle Grundlagenfragen – bevor du mit Lab 01 startest.</p>
+  </div>
+</div>
+
+<div class="content-wrap">
+
+<!-- SECTION 1: DATA FLOW -->
+<div class="section">
+  <div class="section__eyebrow">Kapitel 1</div>
+  <h2 class="section__title">Wie entstehen die Datensätze?</h2>
+  <div class="section__rule"></div>
+  <p class="section__lead">UrbanCart ist ein fiktiver E-Commerce-Shop, der für diesen Kurs entwickelt wurde. Jede Interaktion – ein Klick, ein Kauf, eine Bewertung – erzeugt strukturierte Datenpunkte. Diese werden in einer Datenbank gespeichert und als CSV-Dateien exportiert.</p>
+
+  <!-- Flow steps -->
+  <div class="flow-diagram">
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-step__num">1</div>
+        <div class="flow-step__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div class="flow-step__title">Nutzer interagiert</div>
+        <div class="flow-step__text">Besucher öffnet die Shop-Seite, klickt auf ein Produkt, legt es in den Warenkorb, kauft oder bricht ab.</div>
+        <div class="flow-step__tag">Frontend-Event</div>
+        <div class="flow-arrow">›</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step__num">2</div>
+        <div class="flow-step__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="flow-step__title">Event wird geloggt</div>
+        <div class="flow-step__text">Jedes Event (page_view, add_to_cart, purchase …) wird mit Zeitstempel, Session-ID, Gerät und Kanal in der Datenbank gespeichert.</div>
+        <div class="flow-step__tag">Backend-Logging</div>
+        <div class="flow-arrow">›</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step__num">3</div>
+        <div class="flow-step__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        </div>
+        <div class="flow-step__title">Datenbank</div>
+        <div class="flow-step__text">Tabellen: orders, order_items, customers, sessions, reviews, marketing. Normalisiert, relational, SQL-basiert.</div>
+        <div class="flow-step__tag">PostgreSQL / MySQL</div>
+        <div class="flow-arrow">›</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step__num">4</div>
+        <div class="flow-step__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div class="flow-step__title">CSV-Export</div>
+        <div class="flow-step__text">SQL-Abfragen exportieren die Rohdaten als CSV. Diese Flat-File-Struktur ist optimal für Tableau und Excel.</div>
+        <div class="flow-step__tag">SELECT → CSV</div>
+        <div class="flow-arrow">›</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step__num">5</div>
+        <div class="flow-step__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        </div>
+        <div class="flow-step__title">Tableau-Analyse</div>
+        <div class="flow-step__text">Tableau verbindet die CSVs, berechnet KPIs via Drag & Drop und erstellt interaktive Dashboards.</div>
+        <div class="flow-step__tag">Tableau Public</div>
+      </div>
+    </div>
+
+    <!-- Event log simulation -->
+    <div class="event-sim">
+      <div><span class="ts">2024-11-29 08:14:22</span> | <span class="ev">session_start</span>   | session_id=<span class="val">UCx8821</span> | channel=<span class="val">SEA</span> | device=<span class="val">mobile</span></div>
+      <div><span class="ts">2024-11-29 08:14:35</span> | <span class="ev">product_view</span>   | product=<span class="val">Minimal Trenchcoat</span> | price=<span class="val">249.00</span></div>
+      <div><span class="ts">2024-11-29 08:15:02</span> | <span class="ev">add_to_cart</span>    | product=<span class="val">Minimal Trenchcoat</span> | qty=<span class="val">1</span></div>
+      <div><span class="ts">2024-11-29 08:15:44</span> | <span class="ev">checkout_start</span> | cart_value=<span class="val">249.00</span></div>
+      <div><span class="ts">2024-11-29 08:16:18</span> | <span class="ev">purchase</span>       | order_id=<span class="val">ORD-14201</span> | total=<span class="val">249.00</span> | customer_id=<span class="val">CUS-3847</span></div>
+      <div style="opacity:.4">— Diese Session endet als 1 Zeile in orders.csv + 1 Zeile in order_items.csv —</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: DATASETS -->
+<div class="section" style="border-top:1px solid var(--gray-200);">
+  <div class="section__eyebrow">Kapitel 2</div>
+  <h2 class="section__title">Die 6 UrbanCart-Datensätze</h2>
+  <div class="section__rule"></div>
+  <p class="section__lead">Alle Datensätze sind synthetisch generiert – sie entsprechen der Struktur realer E-Commerce-Datenbanken, enthalten aber keine echten Personendaten.</p>
+
+  <div class="dataset-grid">
+
+    <div class="dataset-card">
+      <div class="dataset-card__name">orders.csv</div>
+      <div class="dataset-card__rows">14.355 Zeilen · Jan 2023–Dez 2024</div>
+      <ul class="dataset-card__fields">
+        <li>order_id <span class="field-type id">PK</span></li>
+        <li>customer_id <span class="field-type id">FK</span></li>
+        <li>order_date <span class="field-type dt">DATE</span></li>
+        <li>total_revenue <span class="field-type num">NUM</span></li>
+        <li>region <span class="field-type txt">TEXT</span></li>
+        <li>channel <span class="field-type txt">TEXT</span></li>
+        <li>status <span class="field-type txt">TEXT</span></li>
+      </ul>
+      <div class="dataset-card__lab">→ <a href="lab01.html">Lab 01</a>, <a href="lab03.html">Lab 03</a>, <a href="lab05.html">Lab 05</a></div>
+    </div>
+
+    <div class="dataset-card">
+      <div class="dataset-card__name">order_items.csv</div>
+      <div class="dataset-card__rows">29.803 Zeilen · Bestellpositionen</div>
+      <ul class="dataset-card__fields">
+        <li>order_item_id <span class="field-type id">PK</span></li>
+        <li>order_id <span class="field-type id">FK</span></li>
+        <li>product_id <span class="field-type id">FK</span></li>
+        <li>quantity <span class="field-type num">NUM</span></li>
+        <li>unit_price <span class="field-type num">NUM</span></li>
+        <li>total_price <span class="field-type num">NUM</span></li>
+      </ul>
+      <div class="dataset-card__lab">→ <a href="lab01.html">Lab 01</a>, <a href="lab04.html">Lab 04</a></div>
+    </div>
+
+    <div class="dataset-card">
+      <div class="dataset-card__name">customers.csv</div>
+      <div class="dataset-card__rows">8.000 Zeilen · Kundenprofile</div>
+      <ul class="dataset-card__fields">
+        <li>customer_id <span class="field-type id">PK</span></li>
+        <li>age_group <span class="field-type txt">TEXT</span></li>
+        <li>region <span class="field-type txt">TEXT</span></li>
+        <li>device <span class="field-type txt">TEXT</span></li>
+        <li>signup_date <span class="field-type dt">DATE</span></li>
+        <li>gender <span class="field-type txt">TEXT</span></li>
+      </ul>
+      <div class="dataset-card__lab">→ <a href="lab02.html">Lab 02</a>, <a href="lab03.html">Lab 03</a></div>
+    </div>
+
+    <div class="dataset-card">
+      <div class="dataset-card__name">sessions.csv</div>
+      <div class="dataset-card__rows">144 Zeilen · Funnel-Daten</div>
+      <ul class="dataset-card__fields">
+        <li>session_id <span class="field-type id">PK</span></li>
+        <li>funnel_stage <span class="field-type txt">TEXT</span></li>
+        <li>channel <span class="field-type txt">TEXT</span></li>
+        <li>device <span class="field-type txt">TEXT</span></li>
+        <li>session_date <span class="field-type dt">DATE</span></li>
+        <li>count <span class="field-type num">NUM</span></li>
+      </ul>
+      <div class="dataset-card__lab">→ <a href="lab06.html">Lab 06</a></div>
+    </div>
+
+    <div class="dataset-card">
+      <div class="dataset-card__name">reviews.csv</div>
+      <div class="dataset-card__rows">5.857 Zeilen · Kundenbewertungen</div>
+      <ul class="dataset-card__fields">
+        <li>review_id <span class="field-type id">PK</span></li>
+        <li>customer_id <span class="field-type id">FK</span></li>
+        <li>product_name <span class="field-type txt">TEXT</span></li>
+        <li>rating <span class="field-type num">NUM 1–5</span></li>
+        <li>review_text <span class="field-type txt">TEXT</span></li>
+        <li>sentiment <span class="field-type txt">TEXT</span></li>
+      </ul>
+      <div class="dataset-card__lab">→ <a href="lab07.html">Lab 07</a></div>
+    </div>
+
+    <div class="dataset-card">
+      <div class="dataset-card__name">marketing.csv</div>
+      <div class="dataset-card__rows">144 Zeilen · Kampagnendaten</div>
+      <ul class="dataset-card__fields">
+        <li>campaign_id <span class="field-type id">PK</span></li>
+        <li>channel <span class="field-type txt">TEXT</span></li>
+        <li>spend <span class="field-type num">NUM €</span></li>
+        <li>clicks <span class="field-type num">NUM</span></li>
+        <li>conversions <span class="field-type num">NUM</span></li>
+        <li>revenue <span class="field-type num">NUM €</span></li>
+        <li>date <span class="field-type dt">DATE</span></li>
+      </ul>
+      <div class="dataset-card__lab">→ <a href="lab08.html">Lab 08</a></div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:32px;padding:24px;background:var(--gray-100);display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <strong>Alle Datensätze herunterladen</strong><br/>
+      <span style="font-size:13px;color:var(--gray-600);">GitHub Repository · direkt verwendbar in Tableau Public</span>
+    </div>
+    <a href="https://github.com/swrobuts/e-comm/tree/main/data" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:var(--gray-900,#1a1a18);color:#fff;padding:12px 24px;font-size:13px;font-weight:700;text-decoration:none;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download auf GitHub
+    </a>
+  </div>
+</div>
+
+<!-- SECTION 3: TABLEAU LICENSE -->
+<div class="section" style="border-top:1px solid var(--gray-200);">
+  <div class="section__eyebrow">Kapitel 3</div>
+  <h2 class="section__title">Tableau für Studierende: Kostenlos</h2>
+  <div class="section__rule"></div>
+
+  <div class="license-box">
+    <div>
+      <h3 class="license-box__title">Tableau Academic License</h3>
+      <p class="license-box__sub">Tableau stellt Studierenden und Lehrenden eine vollwertige Desktop-Lizenz kostenlos zur Verfügung – kein Wasserzeichen, keine Einschränkungen. Gültig für 1 Jahr, verlängerbar.</p>
+      <a href="https://www.tableau.com/academic/students" target="_blank" rel="noopener" class="license-box__cta">
+        → tableau.com/academic/students
+      </a>
+    </div>
+    <div>
+      <ul class="license-box__steps">
+        <li><div class="license-step-num">1</div><span>Gehe zu <strong>tableau.com/academic/students</strong></span></li>
+        <li><div class="license-step-num">2</div><span>Klicke auf <strong>„Get Tableau for free"</strong></span></li>
+        <li><div class="license-step-num">3</div><span>Registriere dich mit deiner <strong>@thws.de</strong> E-Mail-Adresse</span></li>
+        <li><div class="license-step-num">4</div><span>Verifizierung per E-Mail + Hochschulnachweis (Immatrikulationsbescheinigung)</span></li>
+        <li><div class="license-step-num">5</div><span>Download + Aktivierungsschlüssel wird per E-Mail gesendet – in &lt;24h</span></li>
+        <li><div class="license-step-num">6</div><span>Alternativ: <strong>Tableau Public</strong> (kostenlos, kein Antrag nötig, speichert in der Cloud)</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+    <div style="background:var(--gray-100);padding:28px;border-left:3px solid var(--blue);">
+      <strong style="display:block;margin-bottom:8px;">Tableau Desktop (Academic)</strong>
+      <ul style="list-style:none;padding:0;font-size:13px;color:var(--gray-600);line-height:2;">
+        <li>✓ Vollversion ohne Einschränkungen</li>
+        <li>✓ Verbindung zu lokalen Dateien und Datenbanken</li>
+        <li>✓ Daten bleiben lokal (kein Cloud-Zwang)</li>
+        <li>✓ Für alle Labs dieser Veranstaltung nutzbar</li>
+        <li>→ <strong>Benötigt:</strong> @thws.de E-Mail + Immatrikulationsnachweis</li>
+      </ul>
+    </div>
+    <div style="background:var(--gray-100);padding:28px;border-left:3px solid var(--orange);">
+      <strong style="display:block;margin-bottom:8px;">Tableau Public (Alternative)</strong>
+      <ul style="list-style:none;padding:0;font-size:13px;color:var(--gray-600);line-height:2;">
+        <li>✓ Kostenlos, kein Antrag</li>
+        <li>✓ Sofort verfügbar auf public.tableau.com</li>
+        <li>✓ Alle Lab-Aufgaben lösbar</li>
+        <li>⚠ Dashboards sind öffentlich sichtbar</li>
+        <li>⚠ Kein direkter Datenbankzugang</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: DASHBOARD TYPES -->
+<div class="section" style="border-top:1px solid var(--gray-200);">
+  <div class="section__eyebrow">Kapitel 4</div>
+  <h2 class="section__title">Welche Dashboards gibt es?</h2>
+  <div class="section__rule"></div>
+  <p class="section__lead">Nicht jedes Dashboard ist gleich. Je nach Zielgruppe und Verwendungszweck gelten unterschiedliche Regeln für Inhalt, Granularität und Aktualität.</p>
+
+  <div class="dtype-grid">
+    <div class="dtype-card">
+      <div class="dtype-card__badge op">Operativ</div>
+      <div class="dtype-card__title">Operative Dashboards</div>
+      <div class="dtype-card__who">Für: Teamleiter, Operations-Manager</div>
+      <ul class="dtype-card__features">
+        <li>Echtzeit oder täglich aktualisiert</li>
+        <li>Sehr granular: Einzelbestellungen, Stunden</li>
+        <li>Ziel: sofortige Handlungsentscheidungen</li>
+        <li>Beispiel: Bestellstatus-Übersicht heute</li>
+        <li>Viele Metriken, hohe Detailtiefe</li>
+      </ul>
+    </div>
+    <div class="dtype-card">
+      <div class="dtype-card__badge an">Analytisch</div>
+      <div class="dtype-card__title">Analytische Dashboards</div>
+      <div class="dtype-card__who">Für: Data Analysts, Marketing-Teams</div>
+      <ul class="dtype-card__features">
+        <li>Wöchentlich / monatlich aktualisiert</li>
+        <li>Mittlere Granularität: Wochen, Monate</li>
+        <li>Ziel: Muster erkennen, Hypothesen testen</li>
+        <li>Beispiel: RFM-Segmentierung, Funnel</li>
+        <li>Interaktiv, drill-down fähig</li>
+      </ul>
+    </div>
+    <div class="dtype-card">
+      <div class="dtype-card__badge st">Strategisch</div>
+      <div class="dtype-card__title">Strategische Dashboards</div>
+      <div class="dtype-card__who">Für: Geschäftsführung, Vorstände</div>
+      <ul class="dtype-card__features">
+        <li>Monatlich / quartalsweise</li>
+        <li>Sehr aggregiert: Quartal, Jahr</li>
+        <li>Ziel: strategische Entscheidungen</li>
+        <li>Beispiel: Executive Dashboard Lab 09</li>
+        <li>Max. 5–7 KPIs, sofort lesbar</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: DESIGN PRINCIPLES -->
+<div class="section" style="border-top:1px solid var(--gray-200);">
+  <div class="section__eyebrow">Kapitel 5</div>
+  <h2 class="section__title">Dashboard-Gestaltungsprinzipien</h2>
+  <div class="section__rule"></div>
+  <p class="section__lead">Ein gutes Dashboard ist nicht das mit den meisten Charts – sondern das, das die richtige Frage in 30 Sekunden beantwortet. Diese Prinzipien gelten für alle Labs.</p>
+
+  <!-- Preattentive attributes -->
+  <h3 style="font-size:20px;font-weight:700;margin:48px 0 8px;letter-spacing:-.5px;">Präattentive Attribute: Was das Auge zuerst sieht</h3>
+  <p style="font-size:14px;color:var(--gray-600);margin-bottom:0;">Das Gehirn verarbeitet bestimmte visuelle Eigenschaften vor dem bewussten Sehen – in unter 250ms. Nutze diese gezielt.</p>
+
+  <div class="preatt-grid">
+    <div class="preatt-card">
+      <div class="preatt-card__demo">
+        <span style="color:var(--orange);font-weight:900;font-size:32px;">●</span>
+        <span style="color:var(--gray-200);font-size:32px;">●●●</span>
+      </div>
+      <div class="preatt-card__title">Farbe</div>
+      <div class="preatt-card__text">Rot = Problem. Grün = OK. Nie mehr als 4–5 Farben pro Chart.</div>
+    </div>
+    <div class="preatt-card">
+      <div class="preatt-card__demo">
+        <div style="display:flex;align-items:flex-end;gap:4px;">
+          <div style="width:12px;height:16px;background:var(--gray-300)"></div>
+          <div style="width:12px;height:32px;background:var(--orange)"></div>
+          <div style="width:12px;height:20px;background:var(--gray-300)"></div>
+          <div style="width:12px;height:8px;background:var(--gray-300)"></div>
+        </div>
+      </div>
+      <div class="preatt-card__title">Größe / Länge</div>
+      <div class="preatt-card__text">Größer = wichtiger. Balkendiagramme funktionieren weil Länge intuitiv ist.</div>
+    </div>
+    <div class="preatt-card">
+      <div class="preatt-card__demo">
+        <span style="font-size:28px;font-weight:900;">12%</span>
+        <span style="font-size:14px;color:var(--gray-400);margin-left:8px;">3%</span>
+      </div>
+      <div class="preatt-card__title">Typografie</div>
+      <div class="preatt-card__text">Schriftgröße zeigt Hierarchie. KPI-Zahl groß, Label klein.</div>
+    </div>
+    <div class="preatt-card">
+      <div class="preatt-card__demo">
+        <div style="display:flex;gap:16px;align-items:center;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green,#3D7A56)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>
+        </div>
+      </div>
+      <div class="preatt-card__title">Form / Icon</div>
+      <div class="preatt-card__text">Pfeil oben = Wachstum. Pfeil unten = Rückgang. Universal verständlich.</div>
+    </div>
+  </div>
+
+  <!-- Core principles -->
+  <h3 style="font-size:20px;font-weight:700;margin:56px 0 8px;letter-spacing:-.5px;">Die 8 Kernprinzipien nach Stephen Few</h3>
+  <p style="font-size:14px;color:var(--gray-600);margin-bottom:0;">Stephen Few gilt als der wichtigste Theoretiker für Dashboard-Design. Seine Prinzipien sind in jedem professionellen BI-Team Standard.</p>
+
+  <div class="principles-grid">
+    <div class="principle-card">
+      <div class="principle-card__num">1</div>
+      <div class="principle-card__title">Relevanz vor Vollständigkeit</div>
+      <div class="principle-card__text">Zeige nur was die Entscheidung braucht. Jeder zusätzliche Chart erhöht die kognitive Last. Das Ziel ist nicht, alle Daten zu zeigen – sondern die richtigen.</div>
+      <div class="principle-card__example">„Was ist die eine Zahl, die CEO heute braucht?"</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-card__num">2</div>
+      <div class="principle-card__title">Konsistenz in Farbe und Form</div>
+      <div class="principle-card__text">Dieselbe Metrik immer in derselben Farbe. Keine willkürlichen Farbwechsel. Orange = Umsatz, Blau = Kunden, Rot = Problem – und das konsistent über alle Charts.</div>
+      <div class="principle-card__example">Ampelsystem: Grün = OK, Gelb = Beobachten, Rot = Handeln</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-card__num">3</div>
+      <div class="principle-card__title">Kontext durch Vergleich</div>
+      <div class="principle-card__text">Eine Zahl allein sagt nichts. 500.000 € – gut oder schlecht? Zeige immer Vorperiode, Ziel oder Benchmark. Der Kontext macht die Zahl verständlich.</div>
+      <div class="principle-card__example">„€ 500.000 (↑ 12% vs. Vorjahr, Ziel: € 480.000)"</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-card__num">4</div>
+      <div class="principle-card__title">Hierarchie durch Layout</div>
+      <div class="principle-card__text">Das Wichtigste oben links. Kreisförmige Lesebewegung (Z-Muster oder F-Muster). KPIs groß und zuerst. Details unten oder auf einer zweiten Seite.</div>
+      <div class="principle-card__example">KPI-Row oben → Hauptchart Mitte → Detail unten</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-card__num">5</div>
+      <div class="principle-card__title">Weißraum als Gestaltungsmittel</div>
+      <div class="principle-card__text">Leere Fläche ist kein verschwendeter Platz. Sie gibt dem Auge Ruhe und betont das Wichtige durch Kontrast. Volle Dashboards wirken chaotisch.</div>
+      <div class="principle-card__example">Aicher-Prinzip: Reduktion bis es wehtut</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-card__num">6</div>
+      <div class="principle-card__title">Richtiger Diagrammtyp</div>
+      <div class="principle-card__text">Zeitverläufe → Linie. Kategorienvergleich → Balken. Anteile → Stacked Bar (nicht Torte!). Korrelation → Scatter. Kreisdiagramme fast nie verwenden.</div>
+      <div class="principle-card__example">Tortendiagramm: meist falsch. Balken: fast immer richtig.</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-card__num">7</div>
+      <div class="principle-card__title">Achsen immer bei Null beginnen</div>
+      <div class="principle-card__text">Balkendiagramme müssen bei Null beginnen. Abgeschnittene Achsen täuschen Unterschiede vor, die in Wirklichkeit klein sind. Liniendiagramme: Ausnahme erlaubt.</div>
+      <div class="principle-card__example">Abgeschnittene Y-Achse = visuelles Lügen</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-card__num">8</div>
+      <div class="principle-card__title">Dashboard ≠ Bericht</div>
+      <div class="principle-card__text">Ein Dashboard ist für laufendes Monitoring – immer aktuell, interaktiv, auf eine Seite komprimiert. Ein Bericht ist für einmalige Tiefenanalyse – statisch, detail­reich, länger.</div>
+      <div class="principle-card__example">CEO braucht Dashboard. Controller braucht Bericht.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6: ANATOMY OF A TABLEAU DASHBOARD -->
+<div class="section" style="border-top:1px solid var(--gray-200);">
+  <div class="section__eyebrow">Kapitel 6</div>
+  <h2 class="section__title">Anatomie eines Tableau-Dashboards</h2>
+  <div class="section__rule"></div>
+  <p class="section__lead">Von der Rohdatei zum fertigen Dashboard: Was passiert in Tableau, und in welcher Reihenfolge?</p>
+
+  <div class="anatomy-box">
+    <div class="anatomy-box__title">Tableau-Workflow: 6 Ebenen</div>
+    <div class="anatomy-layers">
+      <div class="anatomy-layer l1">
+        <div class="anatomy-layer__label" style="color:var(--orange);">1 · Datenquelle</div>
+        <div class="anatomy-layer__desc">CSV, Excel, Datenbank oder Cloud-Quelle verbinden. Joins zwischen Tabellen definieren. Datentypen prüfen (Datum, Zahl, Text).</div>
+        <div class="anatomy-layer__ex">orders.csv INNER JOIN order_items.csv</div>
+      </div>
+      <div class="anatomy-layer l2">
+        <div class="anatomy-layer__label" style="color:var(--blue);">2 · Berechnete Felder</div>
+        <div class="anatomy-layer__desc">Neue Metriken aus bestehenden ableiten: AOV, ROI, ROAS, Recency, kumulierter Anteil. Tableau-spezifische Funktionen (COUNTD, DATEDIFF, RUNNING_SUM).</div>
+        <div class="anatomy-layer__ex">SUM([revenue]) / COUNTD([order_id])</div>
+      </div>
+      <div class="anatomy-layer l3">
+        <div class="anatomy-layer__label" style="color:#3D7A56;">3 · Arbeitsblätter</div>
+        <div class="anatomy-layer__desc">Eine Visualisierung pro Blatt. Dimensions auf Zeilen/Spalten, Measures auf Größe/Farbe/Text. Chart-Typ wählen. Filter und Sortierung anwenden.</div>
+        <div class="anatomy-layer__ex">Blatt 1: Umsatz-Linie · Blatt 2: Region-Balken</div>
+      </div>
+      <div class="anatomy-layer l4">
+        <div class="anatomy-layer__label">4 · Dashboard</div>
+        <div class="anatomy-layer__desc">Mehrere Arbeitsblätter kombinieren. Layout festlegen (fix oder automatisch). Dashboard-Filter für Interaktivität. Aktionen zwischen Charts definieren.</div>
+        <div class="anatomy-layer__ex">3 Blätter → 1 Dashboard mit Filter</div>
+      </div>
+      <div class="anatomy-layer" style="border-left-color:var(--gray-400);">
+        <div class="anatomy-layer__label" style="color:var(--gray-600);">5 · Story</div>
+        <div class="anatomy-layer__desc">Mehrere Dashboards in einer Präsentationssequenz. Narrative Struktur mit Überschriften und Erklärungen. Ideal für Management-Präsentationen.</div>
+        <div class="anatomy-layer__ex">Lab 09: Executive Story Point</div>
+      </div>
+      <div class="anatomy-layer" style="border-left-color:var(--gray-200);">
+        <div class="anatomy-layer__label" style="color:var(--gray-400);">6 · Publikation</div>
+        <div class="anatomy-layer__desc">Tableau Public: kostenlos, öffentlich. Tableau Server/Cloud: Unternehmen, intern. Embedded: Dashboard in Website einbetten. PDF: statischer Export.</div>
+        <div class="anatomy-layer__ex">public.tableau.com → Link teilen</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA: GO TO LABS -->
+<div style="padding:80px 0;text-align:center;border-top:1px solid var(--gray-200);">
+  <div style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--orange);margin-bottom:16px;">Bereit?</div>
+  <h2 style="font-size:40px;font-weight:800;letter-spacing:-1.5px;margin-bottom:16px;">Jetzt mit Lab 01 starten</h2>
+  <p style="font-size:16px;color:var(--gray-600);max-width:500px;margin:0 auto 40px;">Du verstehst woher die Daten kommen. Du weißt was ein gutes Dashboard ist. Tableau ist installiert. Los.</p>
+  <a href="lab01.html" style="display:inline-flex;align-items:center;gap:12px;background:var(--orange);color:#fff;padding:18px 40px;font-size:15px;font-weight:700;text-decoration:none;letter-spacing:.5px;">
+    Lab 01: Erste Schritte mit Tableau
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </a>
+  <div style="margin-top:16px;font-size:13px;color:var(--gray-600);">
+    Oder zuerst den <a href="urbancart.html" style="color:var(--orange);font-weight:700;">UrbanCart Shop</a> erkunden →
+  </div>
+</div>
+
+</div><!-- /content-wrap -->
+
+<script>
+(function(){
+  const obs = new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.06});
+  document.querySelectorAll('.sr').forEach(el=>obs.observe(el));
+})();
+</script>
+</body>
+</html>
