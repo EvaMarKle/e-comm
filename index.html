@@ -666,7 +666,7 @@ function App() {
           />
           <div className="navbar-divider"/>
           <span className="navbar-title">{t.navTitle}</span>
-        </div>        </div>
+        </div>
         <div className="lang-wrap">
           <button className={`lang-btn${lang==='de'?' active':''}`} onClick={()=>setLang('de')}>DE</button>
           <button className={`lang-btn${lang==='en'?' active':''}`} onClick={()=>setLang('en')}>EN</button>
@@ -689,7 +689,7 @@ function App() {
           <div className="hero-badges">
             {t.heroBadges.map((b,i) => <span key={i} className="hero-badge">{b}</span>)}
             <a href="urbancart.html" className="hero-badge" style={{textDecoration:'none', cursor:'pointer', borderColor:'rgba(232,119,34,0.7)', color:'#E87722'}}>
-              {lang==='de'?'🛒 UrbanCart Webshop':'🛒 UrbanCart Shop'}
+              {lang==='de'?'↗ UrbanCart Webshop':'↗ UrbanCart Shop'}
             </a>
           </div>
           <div className="hero-cta-row">
