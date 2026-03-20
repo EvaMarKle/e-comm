@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UrbanCart – Mode, Lifestyle & Home</title>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #fff; color: #1a1a1a; }
+
+    /* Top announcement bar */
+    .topbar {
+      background: #1a1a1a; color: #fff;
+      text-align: center; padding: 8px 16px;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em;
+    }
+    .topbar span { color: #E87722; }
+
+    /* Navbar */
+    .navbar {
+      background: #fff; border-bottom: 1px solid #e5e7eb;
+      position: sticky; top: 0; z-index: 100;
+      padding: 0 32px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 1.6rem; font-weight: 900; color: #1a1a1a;
+      letter-spacing: -0.03em;
+    }
+    .nav-logo span { color: #E87722; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-link {
+      font-size: 0.84rem; font-weight: 600; color: #4b5563;
+      text-decoration: none; transition: color 0.15s;
+      cursor: pointer;
+    }
+    .nav-link:hover { color: #E87722; }
+    .nav-actions { display: flex; align-items: center; gap: 16px; }
+    .cart-btn {
+      background: #1a1a1a; color: #fff;
+      padding: 8px 20px; font-size: 0.84rem; font-weight: 700;
+      border: none; cursor: pointer; transition: background 0.15s;
+      font-family: inherit;
+    }
+    .cart-btn:hover { background: #E87722; }
+
+    /* Hero */
+    .hero {
+      background: #f9fafb;
+      display: grid; grid-template-columns: 1fr 1fr;
+      min-height: 520px;
+    }
+    .hero-text {
+      display: flex; flex-direction: column;
+      justify-content: center; padding: 64px 48px;
+    }
+    .hero-tag {
+      display: inline-block;
+      background: rgba(232,119,34,0.12); color: #E87722;
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 4px 12px; margin-bottom: 20px;
+    }
+    .hero-title {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 900; color: #1a1a1a;
+      line-height: 1.1; margin-bottom: 16px;
+    }
+    .hero-title em { color: #E87722; font-style: normal; }
+    .hero-sub {
+      font-size: 1rem; color: #6c757d;
+      line-height: 1.7; margin-bottom: 32px; max-width: 400px;
+    }
+    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-dark {
+      background: #1a1a1a; color: #fff;
+      padding: 12px 28px; font-weight: 700; font-size: 0.9rem;
+      border: 2px solid #1a1a1a; cursor: pointer; text-decoration: none;
+      transition: background 0.15s; font-family: inherit;
+    }
+    .btn-dark:hover { background: #E87722; border-color: #E87722; }
+    .btn-ghost {
+      background: transparent; color: #1a1a1a;
+      padding: 12px 28px; font-weight: 700; font-size: 0.9rem;
+      border: 2px solid #1a1a1a; cursor: pointer;
+      transition: border-color 0.15s; font-family: inherit;
+    }
+    .btn-ghost:hover { border-color: #E87722; color: #E87722; }
+    .hero-visual {
+      background: #1a1a1a;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      min-height: 400px;
+    }
+    .hero-visual-inner {
+      text-align: center; color: #fff; padding: 40px;
+    }
+    .hero-visual-big {
+      font-size: 6rem; font-weight: 900; line-height: 1;
+      color: rgba(232,119,34,0.9);
+    }
+    .hero-visual-sub { font-size: 1rem; color: rgba(255,255,255,0.5); margin-top: 8px; }
+
+    /* Category strip */
+    .cat-strip {
+      padding: 40px 32px;
+      display: flex; gap: 16px;
+      overflow-x: auto; max-width: 1200px; margin: 0 auto;
+    }
+    .cat-card {
+      flex: 1; min-width: 140px;
+      background: #f9fafb; border: 1.5px solid #e5e7eb;
+      padding: 24px 16px; text-align: center;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .cat-card:hover { border-color: #E87722; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(232,119,34,0.1); }
+    .cat-icon { font-size: 2rem; margin-bottom: 8px; }
+    .cat-name { font-size: 0.82rem; font-weight: 700; color: #1a1a1a; }
+    .cat-count { font-size: 0.72rem; color: #9ca3af; margin-top: 2px; }
+
+    /* Products */
+    .section { padding: 48px 32px; max-width: 1200px; margin: 0 auto; }
+    .section-header {
+      display: flex; align-items: baseline;
+      justify-content: space-between; margin-bottom: 32px;
+    }
+    .section-title { font-size: 1.4rem; font-weight: 800; color: #1a1a1a; }
+    .section-link { font-size: 0.84rem; font-weight: 700; color: #E87722; cursor: pointer; }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .product-card {
+      background: #fff; border: 1.5px solid #e5e7eb;
+      cursor: pointer; transition: all 0.2s;
+      position: relative;
+    }
+    .product-card:hover { border-color: #1a1a1a; box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
+    .product-img {
+      width: 100%; aspect-ratio: 3/4;
+      background: #f3f4f6;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .product-img-placeholder {
+      font-size: 3rem; opacity: 0.3;
+    }
+    .product-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: #E87722; color: #fff;
+      font-size: 0.68rem; font-weight: 700;
+      padding: 3px 8px; letter-spacing: 0.06em;
+    }
+    .product-info { padding: 14px 16px; }
+    .product-cat { font-size: 0.68rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.08em; }
+    .product-name { font-size: 0.9rem; font-weight: 700; color: #1a1a1a; margin: 4px 0; line-height: 1.3; }
+    .product-price-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .product-price { font-size: 1rem; font-weight: 800; color: #1a1a1a; }
+    .product-price-old { font-size: 0.84rem; color: #9ca3af; text-decoration: line-through; }
+    .product-stars { font-size: 0.75rem; color: #F59E0B; margin-top: 4px; }
+    .add-btn {
+      width: 100%; background: #1a1a1a; color: #fff;
+      border: none; padding: 10px; font-weight: 700;
+      font-size: 0.84rem; cursor: pointer;
+      transition: background 0.15s; font-family: inherit;
+      margin-top: 10px;
+    }
+    .add-btn:hover { background: #E87722; }
+
+    /* Trust bar */
+    .trust-bar {
+      background: #f9fafb; border-top: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb;
+      padding: 24px 32px;
+    }
+    .trust-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-around;
+    }
+    .trust-item { display: flex; align-items: center; gap: 10px; }
+    .trust-icon { font-size: 1.4rem; }
+    .trust-text { font-size: 0.82rem; font-weight: 700; color: #374151; }
+
+    /* Data note */
+    .data-note {
+      background: rgba(0,91,154,0.06);
+      border-left: 3px solid #005B9A;
+      padding: 16px 24px; margin: 0 32px 32px;
+      max-width: 1200px; margin: 0 auto 32px;
+    }
+    .data-note-title { font-size: 0.72rem; font-weight: 700; color: #005B9A; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+    .data-note-text { font-size: 0.82rem; color: #6c757d; line-height: 1.6; }
+
+    /* Footer */
+    .footer { background: #1a1a1a; color: rgba(255,255,255,0.6); padding: 40px 32px; text-align: center; }
+    .footer-logo { font-size: 1.8rem; font-weight: 900; color: #fff; margin-bottom: 8px; }
+    .footer-logo span { color: #E87722; }
+    .footer-tagline { font-size: 0.84rem; margin-bottom: 24px; }
+    .footer-links { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+    .footer-link { font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.5); cursor: pointer; }
+    .footer-link:hover { color: #E87722; }
+    .footer-disclaimer { font-size: 0.72rem; color: rgba(255,255,255,0.25); max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-visual { min-height: 200px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState } = React;
+
+const CATEGORIES = [
+  { icon: "👗", name: "Damenmode", count: "1.240 Artikel" },
+  { icon: "👔", name: "Herrenmode", count: "890 Artikel" },
+  { icon: "👟", name: "Schuhe",     count: "640 Artikel" },
+  { icon: "💍", name: "Accessoires",count: "420 Artikel" },
+  { icon: "🏠", name: "Home & Living", count: "315 Artikel" },
+  { icon: "⚽", name: "Sport",      count: "280 Artikel" },
+];
+
+const PRODUCTS = [
+  { id:"P0001", name:"Slim-Fit Bluse", cat:"Damenmode", price:"49,99", old:"69,99", stars:"★★★★☆", badge:"SALE", bg:"#fce7f3" },
+  { id:"P0009", name:"Oxford Hemd Classic", cat:"Herrenmode", price:"79,99", old:null, stars:"★★★★★", badge:null, bg:"#dbeafe" },
+  { id:"P0017", name:"Sneaker Urban Run", cat:"Schuhe", price:"119,99", old:"149,99", stars:"★★★☆☆", badge:"SALE", bg:"#f0fdf4" },
+  { id:"P0025", name:"Seidenschal Parisien", cat:"Accessoires", price:"39,99", old:null, stars:"★★★★★", badge:"NEU", bg:"#fef3c7" },
+  { id:"P0030", name:"Kissen Lino 50×50", cat:"Home & Living", price:"24,99", old:null, stars:"★★★★☆", badge:null, bg:"#f5f3ff" },
+  { id:"P0037", name:"Yoga-Matte Pro", cat:"Sport", price:"54,99", old:"69,99", stars:"★★★★★", badge:"SALE", bg:"#ecfdf5" },
+  { id:"P0004", name:"Strickpullover Mila", cat:"Damenmode", price:"89,99", old:null, stars:"★★★★☆", badge:"NEU", bg:"#fdf2f8" },
+  { id:"P0012", name:"Kapuzenpulli Anton", cat:"Herrenmode", price:"69,99", old:"89,99", stars:"★★★★☆", badge:"SALE", bg:"#eff6ff" },
+];
+
+function App() {
+  const [cart, setCart] = useState(0);
+  const [added, setAdded] = useState(null);
+
+  const addToCart = (id) => {
+    setCart(c => c + 1);
+    setAdded(id);
+    setTimeout(() => setAdded(null), 1200);
+  };
+
+  return (
+    <>
+      {/* Announcement */}
+      <div className="topbar">
+        🚚 Kostenloser Versand ab 49 € · <span>BLACK FRIDAY</span>: Bis zu 40% auf ausgewählte Artikel
+      </div>
+
+      {/* Navbar */}
+      <nav className="navbar">
+        <div className="nav-logo">Urban<span>Cart</span></div>
+        <div className="nav-links">
+          {["Damenmode", "Herrenmode", "Schuhe", "Accessoires", "Home & Living", "Sale"].map(l => (
+            <span key={l} className="nav-link">{l}</span>
+          ))}
+        </div>
+        <div className="nav-actions">
+          <span style={{fontSize:'0.84rem', color:'#6c757d', cursor:'pointer'}}>🔍</span>
+          <span style={{fontSize:'0.84rem', color:'#6c757d', cursor:'pointer'}}>♡</span>
+          <button className="cart-btn">
+            🛒 Warenkorb {cart > 0 && <span style={{background:'#E87722', padding:'1px 6px', borderRadius:'10px', marginLeft:'4px'}}>{cart}</span>}
+          </button>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <section className="hero">
+        <div className="hero-text">
+          <div className="hero-tag">Frühjahrskollektion 2024</div>
+          <h1 className="hero-title">
+            Style trifft<br/>
+            <em>Datenanalyse.</em>
+          </h1>
+          <p className="hero-sub">
+            UrbanCart ist Europas wachsender Online-Händler für Mode, Lifestyle und Home.
+            Täglich kaufen tausende Kunden aus ganz Deutschland bei uns ein.
+          </p>
+          <div className="hero-btns">
+            <button className="btn-dark">Jetzt shoppen</button>
+            <button className="btn-ghost">Neuheiten ansehen</button>
+          </div>
+        </div>
+        <div className="hero-visual">
+          <div className="hero-visual-inner">
+            <div className="hero-visual-big">UC</div>
+            <div className="hero-visual-sub">Mode · Lifestyle · Home</div>
+            <div style={{marginTop:'24px', display:'flex', gap:'16px', justifyContent:'center', flexWrap:'wrap'}}>
+              {[["14.355","Bestellungen/Jahr"],["8.000","Kunden"],["41","Produkte"],["6","Kategorien"]].map(([n,l]) => (
+                <div key={l} style={{textAlign:'center'}}>
+                  <div style={{fontSize:'1.4rem', fontWeight:900, color:'#E87722'}}>{n}</div>
+                  <div style={{fontSize:'0.68rem', color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:'0.08em'}}>{l}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust bar */}
+      <div className="trust-bar">
+        <div className="trust-inner">
+          {[
+            ["🚚","Kostenlose Lieferung ab 49 €"],
+            ["↩️","30 Tage Rückgabe"],
+            ["🔒","SSL-verschlüsselt"],
+            ["⭐","4,3 / 5 Kundenbewertung"],
+            ["📦","Versand in 1–3 Tagen"],
+          ].map(([icon, text]) => (
+            <div key={text} className="trust-item">
+              <span className="trust-icon">{icon}</span>
+              <span className="trust-text">{text}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Categories */}
+      <div style={{maxWidth:'1200px', margin:'0 auto'}}>
+        <div className="cat-strip">
+          {CATEGORIES.map(c => (
+            <div key={c.name} className="cat-card">
+              <div className="cat-icon">{c.icon}</div>
+              <div className="cat-name">{c.name}</div>
+              <div className="cat-count">{c.count}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Products */}
+      <div className="section">
+        <div className="section-header">
+          <h2 className="section-title">Bestseller</h2>
+          <span className="section-link">Alle ansehen →</span>
+        </div>
+        <div className="products-grid">
+          {PRODUCTS.map(p => (
+            <div key={p.id} className="product-card">
+              <div className="product-img" style={{background: p.bg}}>
+                <div className="product-img-placeholder">
+                  {p.cat === "Damenmode" ? "👗" : p.cat === "Herrenmode" ? "👔" :
+                   p.cat === "Schuhe" ? "👟" : p.cat === "Accessoires" ? "💍" :
+                   p.cat === "Home & Living" ? "🏠" : "⚽"}
+                </div>
+                {p.badge && <div className="product-badge">{p.badge}</div>}
+              </div>
+              <div className="product-info">
+                <div className="product-cat">{p.cat}</div>
+                <div className="product-name">{p.name}</div>
+                <div className="product-stars">{p.stars}</div>
+                <div className="product-price-row">
+                  <span className="product-price">{p.price} €</span>
+                  {p.old && <span className="product-price-old">{p.old} €</span>}
+                </div>
+                <button
+                  className="add-btn"
+                  onClick={() => addToCart(p.id)}
+                  style={added === p.id ? {background:'#3D7A56'} : {}}
+                >
+                  {added === p.id ? "✓ Hinzugefügt" : "In den Warenkorb"}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Data note for students */}
+      <div style={{padding: '0 32px 32px', maxWidth:'1264px', margin:'0 auto'}}>
+        <div className="data-note">
+          <div className="data-note-title">📊 Hinweis für Kursteilnehmende</div>
+          <div className="data-note-text">
+            UrbanCart ist ein <strong>fiktives Unternehmen</strong> – eigens für diesen Kurs erstellt.
+            Die Datensätze (orders.csv, customers.csv, reviews.csv usw.) bilden den Geschäftsbetrieb
+            dieses Shops für die Jahre 2023–2024 synthetisch nach. In den Labs analysierst du
+            genau diese Daten mit Tableau – als Junior Data Analyst bei UrbanCart.
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="footer">
+        <div className="footer-logo">Urban<span>Cart</span></div>
+        <div className="footer-tagline">Mode · Lifestyle · Home — Europa</div>
+        <div className="footer-links">
+          {["Über uns","Karriere","Presse","Nachhaltigkeit","AGB","Datenschutz","Impressum"].map(l => (
+            <span key={l} className="footer-link">{l}</span>
+          ))}
+        </div>
+        <div className="footer-disclaimer">
+          UrbanCart ist ein fiktives Unternehmen. Alle Produkte, Preise und Daten sind synthetisch
+          und dienen ausschließlich Lehrzwecken im Rahmen des Kurses
+          „E-Commerce &amp; Digitale Geschäftsmodelle" · THWS Business School · Prof. Dr.-Ing. Eva Klenk
+        </div>
+      </footer>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

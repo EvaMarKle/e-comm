@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-Commerce &amp; Digitale Geschäftsmodelle · THWS Business School</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* ── Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: #ffffff;
+      color: #212529;
+      overflow-x: hidden;
+    }
+
+    /* ── Orange top bar (Aicher-Manifest) ── */
+    .top-bar { height: 4px; background: #E87722; position: fixed; top: 0; left: 0; right: 0; z-index: 200; }
+
+    /* ── Navbar ── */
+    .navbar {
+      position: sticky; top: 4px; z-index: 100;
+      background: #fff;
+      border-bottom: 1px solid #E9ECEF;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+      height: 56px;
+      display: flex; align-items: center;
+      padding: 0 32px;
+      justify-content: space-between;
+    }
+    .navbar-brand {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .navbar-logo {
+      height: 28px; width: auto;
+    }
+    .navbar-title {
+      font-size: 0.78rem; font-weight: 700;
+      color: #005B9A; letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* ── Language toggle ── */
+    .lang-wrap { display: flex; gap: 4px; }
+    .lang-btn {
+      padding: 4px 12px; border-radius: 4px;
+      border: 1.5px solid #E9ECEF; background: #fff;
+      cursor: pointer; font-weight: 700; font-size: 0.75rem;
+      color: #6C757D; transition: all 0.15s;
+      font-family: inherit;
+    }
+    .lang-btn.active { background: #E87722; color: #fff; border-color: #E87722; }
+    .lang-btn:hover:not(.active) { border-color: #005B9A; color: #005B9A; }
+
+    /* ── Hero ── */
+    .hero {
+      background: #005B9A;
+      position: relative;
+      overflow: hidden;
+      padding: 80px 32px 64px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .hero-geo-1 {
+      position: absolute; top: -60px; right: -80px;
+      width: 380px; height: 380px; border-radius: 50%;
+      background: rgba(232,119,34,0.14);
+      animation: floatA 12s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .hero-geo-2 {
+      position: absolute; bottom: -40px; left: -40px;
+      width: 220px; height: 220px;
+      background: rgba(255,255,255,0.06);
+      transform: rotate(30deg);
+      animation: floatB 16s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes floatA { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-20px,20px); } }
+    @keyframes floatB { 0%,100% { transform: rotate(30deg) translate(0,0); } 50% { transform: rotate(35deg) translate(10px,-10px); } }
+
+    .hero-content { position: relative; z-index: 2; max-width: 900px; text-align: center; }
+    .hero-eyebrow {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase; color: rgba(255,255,255,0.6);
+      margin-bottom: 16px;
+    }
+    .hero-kurs-tag {
+      display: inline-block;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      color: rgba(255,255,255,0.82);
+      padding: 4px 14px;
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .hero-title {
+      font-size: clamp(2.8rem, 7vw, 6rem);
+      font-weight: 800; color: #fff;
+      line-height: 1.0; margin-bottom: 16px;
+    }
+    .hero-title span { color: #E87722; }
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      color: rgba(255,255,255,0.75);
+      font-weight: 400; margin-bottom: 32px;
+      line-height: 1.5;
+    }
+    .hero-badges {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      justify-content: center; margin-bottom: 40px;
+    }
+    .hero-badge {
+      border: 1.5px solid rgba(255,255,255,0.35);
+      color: rgba(255,255,255,0.72);
+      padding: 4px 12px; font-size: 0.72rem; font-weight: 600;
+    }
+    .hero-cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: #E87722; color: #fff;
+      padding: 12px 28px; font-weight: 700; font-size: 0.9rem;
+      border: 2px solid #E87722; cursor: pointer;
+      text-decoration: none; display: inline-block;
+      transition: background 0.15s, transform 0.15s;
+      font-family: inherit;
+    }
+    .btn-primary:hover { background: #d06a1a; border-color: #d06a1a; transform: translateY(-1px); }
+    .btn-outline {
+      background: transparent; color: #fff;
+      padding: 12px 28px; font-weight: 700; font-size: 0.9rem;
+      border: 2px solid rgba(255,255,255,0.5); cursor: pointer;
+      text-decoration: none; display: inline-block;
+      transition: border-color 0.15s;
+      font-family: inherit;
+    }
+    .btn-outline:hover { border-color: #fff; }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      background: #fff;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      border-bottom: 1px solid #E9ECEF;
+    }
+    .stats-inner {
+      max-width: 960px; margin: 0 auto;
+      display: flex; flex-wrap: wrap;
+    }
+    .stat-item {
+      flex: 1; min-width: 140px;
+      text-align: center; padding: 28px 24px;
+      position: relative;
+    }
+    .stat-item + .stat-item::before {
+      content: '';
+      position: absolute; left: 0; top: 25%; height: 50%;
+      width: 1px; background: rgba(0,91,154,0.1);
+    }
+    .stat-num { font-size: 2.5rem; font-weight: 900; color: #E87722; line-height: 1; }
+    .stat-lbl {
+      font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: #005B9A; margin-top: 6px;
+    }
+
+    /* ── Section layout ── */
+    .section { padding: 72px 32px; }
+    .section-inner { max-width: 960px; margin: 0 auto; }
+    .section-eyebrow {
+      font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.14em;
+      color: #E87722; margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800; color: #005B9A;
+      line-height: 1.2; margin-bottom: 16px;
+    }
+    .section-lead {
+      font-size: 1rem; color: #6C757D;
+      line-height: 1.7; max-width: 680px;
+    }
+    .divider-line {
+      width: 48px; height: 4px;
+      background: #E87722; margin: 12px 0 24px;
+    }
+
+    /* ── Deming quote ── */
+    .deming-section {
+      background: #F1F3F5;
+      border-left: 4px solid #E87722;
+      padding: 40px 48px;
+    }
+    .deming-quote {
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      font-weight: 700; color: #212529;
+      line-height: 1.4; margin-bottom: 12px;
+      font-style: italic;
+    }
+    .deming-source {
+      font-size: 0.78rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: #E87722;
+    }
+
+    /* ── Lab cards grid ── */
+    .labs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 48px;
+    }
+    .lab-card {
+      background: #fff;
+      border: 1.5px solid #E9ECEF;
+      border-top: 3px solid #005B9A;
+      padding: 28px;
+      position: relative;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-top-color 0.25s ease;
+      display: flex; flex-direction: column;
+      min-height: 260px;
+      cursor: pointer;
+      text-decoration: none; color: inherit;
+    }
+    .lab-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 32px rgba(232,119,34,0.12);
+      border-top-color: #E87722;
+      border-color: rgba(232,119,34,0.3);
+    }
+    .lab-card-num {
+      position: absolute; top: 16px; right: 20px;
+      font-size: 2.8rem; font-weight: 900;
+      color: rgba(0,91,154,0.07); line-height: 1;
+      pointer-events: none; user-select: none;
+      font-variant-numeric: tabular-nums;
+    }
+    .lab-icon {
+      width: 40px; height: 40px;
+      background: #005B9A; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px; flex-shrink: 0;
+    }
+    .lab-icon svg { color: #fff; }
+    .lab-kw {
+      font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: #6C757D; margin-bottom: 4px;
+    }
+    .lab-title {
+      font-size: 1rem; font-weight: 800;
+      color: #005B9A; line-height: 1.25;
+      margin-bottom: 8px;
+    }
+    .lab-desc {
+      font-size: 0.84rem; color: #6C757D;
+      line-height: 1.65; flex: 1; margin-bottom: 16px;
+    }
+    .lab-footer {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-top: auto;
+    }
+    .diff-badge {
+      font-size: 0.68rem; font-weight: 700;
+      padding: 3px 10px; letter-spacing: 0.04em;
+    }
+    .diff-einstieg  { background: #d1fae5; color: #065f46; }
+    .diff-mittel    { background: #fef3c7; color: #92400e; }
+    .diff-fortgesch { background: #fee2e2; color: #991b1b; }
+    .lab-cta { font-size: 0.82rem; font-weight: 700; color: #E87722; }
+
+    /* ── Workflow ── */
+    .workflow-row {
+      display: flex; align-items: center;
+      gap: 0; flex-wrap: nowrap; overflow-x: auto;
+      padding-bottom: 4px; margin-top: 32px;
+    }
+    .wf-box {
+      background: #fff;
+      border: 1.5px solid rgba(0,91,154,0.25);
+      padding: 14px 20px;
+      font-weight: 700; font-size: 0.85rem;
+      color: #005B9A; white-space: nowrap;
+      flex: 1; text-align: center; min-width: 110px;
+    }
+    .wf-arrow {
+      color: #E87722; font-size: 1.4rem; font-weight: 900;
+      flex-shrink: 0; padding: 0 8px;
+      animation: arrowPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes arrowPulse {
+      0%,100% { opacity:1; transform:translateX(0); }
+      50%      { opacity:0.5; transform:translateX(3px); }
+    }
+
+    /* ── Eva Klenk card (LinkedIn style) ── */
+    .instructor-card {
+      background: #fff;
+      border: 1.5px solid #E9ECEF;
+      border-radius: 12px;
+      overflow: hidden;
+      max-width: 480px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    }
+    .instructor-cover {
+      height: 80px;
+      background: linear-gradient(135deg, #005B9A 0%, #003d6b 100%);
+      position: relative;
+    }
+    .instructor-cover::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; top: 0;
+      background-image: repeating-linear-gradient(
+        45deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px,
+        transparent 1px, transparent 12px
+      );
+    }
+    .instructor-avatar-wrap {
+      padding: 0 24px;
+      margin-top: -36px;
+      position: relative; z-index: 2;
+    }
+    .instructor-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid #fff;
+      background: #E9ECEF;
+      object-fit: cover;
+      display: block;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .instructor-avatar-placeholder {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid #fff;
+      background: #005B9A;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      font-size: 2rem; color: #fff; font-weight: 800;
+    }
+    .instructor-body { padding: 12px 24px 24px; }
+    .instructor-name { font-size: 1.1rem; font-weight: 800; color: #212529; }
+    .instructor-title { font-size: 0.84rem; color: #6C757D; margin-top: 2px; line-height: 1.5; }
+    .instructor-org {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 12px; font-size: 0.8rem; color: #005B9A; font-weight: 600;
+    }
+    .instructor-tags {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px;
+    }
+    .instructor-tag {
+      background: rgba(0,91,154,0.08);
+      color: #005B9A; font-size: 0.72rem; font-weight: 700;
+      padding: 3px 10px; border-radius: 20px;
+    }
+    .instructor-contact {
+      margin-top: 16px; font-size: 0.78rem; color: #6C757D;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    /* ── AI Section ── */
+    .ai-card {
+      background: #F1F3F5;
+      border-left: 3px solid #E87722;
+      padding: 24px 28px;
+      margin-bottom: 16px;
+    }
+    .ai-card-title { font-size: 0.9rem; font-weight: 800; color: #212529; margin-bottom: 8px; }
+    .ai-card-body { font-size: 0.84rem; color: #6C757D; line-height: 1.65; }
+    .code-block {
+      background: #0f172a;
+      border-left: 3px solid #E87722;
+      color: #e2e8f0;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 0.78rem; line-height: 1.7;
+      padding: 16px 20px;
+      overflow-x: auto;
+    }
+    .code-comment { color: #64748b; }
+    .code-key { color: #93c5fd; }
+    .code-str { color: #86efac; }
+
+    /* ── Footer ── */
+    .footer {
+      background: #212529;
+      padding: 48px 32px;
+      text-align: center;
+    }
+    .footer-inner { max-width: 960px; margin: 0 auto; }
+    .footer-title { font-size: 0.78rem; font-weight: 700; color: rgba(255,255,255,0.4);
+      text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px; }
+    .footer-text { font-size: 0.84rem; color: rgba(255,255,255,0.55); line-height: 1.7; }
+    .footer-link { color: #E87722; text-decoration: none; }
+    .footer-link:hover { text-decoration: underline; }
+
+    /* ── Scroll reveal ── */
+    .sr {
+      opacity: 0; transform: translateY(16px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .sr.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── BG alternating ── */
+    .bg-alt { background: #F1F3F5; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .hero { padding: 64px 20px 48px; }
+      .section { padding: 48px 20px; }
+      .navbar { padding: 0 20px; }
+      .deming-section { padding: 32px 24px; }
+      .labs-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ── i18n ── */
+const T = {
+  de: {
+    navTitle: "E-Commerce & Digitale Geschäftsmodelle",
+    heroEyebrow: "Master Marken- und Medienmanagement · THWS Business School",
+    heroKursTag: "Interaktive Lernplattform",
+    heroTitle: ["E-Commerce", " & Digitale", " Geschäfts­modelle"],
+    heroSub: "Datengetriebene Entscheidungen im E-Commerce – von der Analyse bis zur Strategie.",
+    heroBadges: ["9 interaktive Labs", "Tableau-basiert", "Quizzes & Selbststudium", "Realitätsnahe Daten"],
+    heroCta1: "Labs entdecken",
+    heroCta2: "Über den Kurs",
+    stat1num: "9", stat1lbl: "Interaktive Labs",
+    stat2num: "15", stat2lbl: "Fragen pro Quiz",
+    stat3num: "100%", stat3lbl: "Hands-on",
+    stat4num: "0", stat4lbl: "Vorwissen nötig",
+    demingQuote: "„In God we trust. All others must bring data."",
+    demingSource: "W. Edwards Deming — Statistiker & Qualitätspionier",
+    labsEyebrow: "Kursstruktur",
+    labsTitle: "9 Labs · Ein roter Faden",
+    labsLead: "Alle Labs spielen bei UrbanCart – einem fiktiven europäischen Online-Händler für Mode, Lifestyle und Home. Du übernimmst die Rolle eines Junior Data Analysts und löst echte Business-Probleme.",
+    wfTitle: "Lernpfad pro Lab",
+    wfSteps: ["Kontext & Daten", "Tableau-Schritt­anleitung", "Analyse & Ergebnisse", "Quiz (15 Fragen)", "KI-Ausblick"],
+    instructorEyebrow: "Dozentin",
+    instructorTitle: "Prof. Dr.-Ing.",
+    instructorName: "Eva Klenk",
+    instructorSub: "Wirtschaftsinformatik · ERP-Systeme · Process Mining · RPA",
+    instructorOrg: "THWS Business School · Würzburg",
+    instructorTags: ["Wirtschaftsinformatik", "ERP-Systeme", "Process Mining", "RPA", "E-Commerce"],
+    instructorContact: "eva.klenk@thws.de",
+    aiEyebrow: "KI & Python",
+    aiTitle: "Wie würde das mit KI & Python aussehen?",
+    aiLead: "Jedes Lab enthält einen optionalen Ausblick: Wie lässt sich diese Analyse mit modernen KI-Tools und Python reproduzieren? Kein Code nötig – nur das Verständnis, was möglich ist.",
+    aiCard1Title: "Technischer Stack",
+    aiCard1Body: "Python · Plotly Dash · pandas · scikit-learn · VADER (Sentiment) · Jupyter Notebooks",
+    aiCard2Title: "Prompting-Anleitung",
+    aiCard2Body: "Jeder Ausblick enthält einen konkreten Prompt, mit dem du einen KI-Assistenten anweisen kannst, die Analyse zu reproduzieren – inklusive Datenpipeline und Dashboard.",
+    aiCard3Title: "Referenz-Dashboard",
+    aiCard3Body: "Gestalterische Grundlage ist das WHI-Dashboard (whi-dashboard.butscher.cloud) – interaktiv, responsiv, Plotly Dash.",
+    footerText: "Master Marken- und Medienmanagement · THWS Business School Würzburg",
+    footerSub: "Kurs konzipiert und durchgeführt von Prof. Dr.-Ing. Eva Klenk",
+    startLab: "Lab starten →",
+  },
+  en: {
+    navTitle: "E-Commerce & Digital Business Models",
+    heroEyebrow: "Master Brand & Media Management · THWS Business School",
+    heroKursTag: "Interactive Learning Platform",
+    heroTitle: ["E-Commerce", " & Digital", " Business Models"],
+    heroSub: "Data-driven decisions in e-commerce – from analysis to strategy.",
+    heroBadges: ["9 interactive labs", "Tableau-based", "Quizzes & self-study", "Real-world data"],
+    heroCta1: "Explore Labs",
+    heroCta2: "About the Course",
+    stat1num: "9", stat1lbl: "Interactive Labs",
+    stat2num: "15", stat2lbl: "Questions per Quiz",
+    stat3num: "100%", stat3lbl: "Hands-on",
+    stat4num: "0", stat4lbl: "Prior Knowledge Needed",
+    demingQuote: ""In God we trust. All others must bring data."",
+    demingSource: "W. Edwards Deming — Statistician & Quality Pioneer",
+    labsEyebrow: "Course Structure",
+    labsTitle: "9 Labs · One Story",
+    labsLead: "All labs take place at UrbanCart – a fictional European online retailer for fashion, lifestyle and home goods. You take the role of a Junior Data Analyst solving real business problems.",
+    wfTitle: "Learning Path per Lab",
+    wfSteps: ["Context & Data", "Tableau Step-by-Step", "Analysis & Results", "Quiz (15 Questions)", "AI Outlook"],
+    instructorEyebrow: "Instructor",
+    instructorTitle: "Prof. Dr.-Ing.",
+    instructorName: "Eva Klenk",
+    instructorSub: "Business Informatics · ERP Systems · Process Mining · RPA",
+    instructorOrg: "THWS Business School · Würzburg",
+    instructorTags: ["Business Informatics", "ERP Systems", "Process Mining", "RPA", "E-Commerce"],
+    instructorContact: "eva.klenk@thws.de",
+    aiEyebrow: "AI & Python",
+    aiTitle: "How would this look with AI & Python?",
+    aiLead: "Each lab includes an optional outlook: how can this analysis be reproduced with modern AI tools and Python? No coding required – just understanding what's possible.",
+    aiCard1Title: "Technical Stack",
+    aiCard1Body: "Python · Plotly Dash · pandas · scikit-learn · VADER (Sentiment) · Jupyter Notebooks",
+    aiCard2Title: "Prompting Guide",
+    aiCard2Body: "Each outlook includes a concrete prompt you can use to instruct an AI assistant to reproduce the analysis – including data pipeline and dashboard.",
+    aiCard3Title: "Reference Dashboard",
+    aiCard3Body: "The design reference is the WHI Dashboard (whi-dashboard.butscher.cloud) – interactive, responsive, Plotly Dash.",
+    footerText: "Master Brand & Media Management · THWS Business School Würzburg",
+    footerSub: "Course designed and taught by Prof. Dr.-Ing. Eva Klenk",
+    startLab: "Start Lab →",
+  }
+};
+
+/* ── Lab data ── */
+const LABS = [
+  {
+    id: 1,
+    diff: "einstieg",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+        <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+      </svg>
+    ),
+    de: { kw: "Lab 01 · Einführung", title: "Erste Schritte mit Tableau", desc: "Verbinde dich mit dem UrbanCart-Datensatz und baue dein erstes Sales-Dashboard: Umsatz, Bestellanzahl und Ø Warenkorbwert auf einen Blick.", diff: "Einstieg" },
+    en: { kw: "Lab 01 · Introduction", title: "Getting Started with Tableau", desc: "Connect to the UrbanCart dataset and build your first sales dashboard: revenue, order count and average basket value at a glance.", diff: "Beginner" },
+  },
+  {
+    id: 2,
+    diff: "einstieg",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    ),
+    de: { kw: "Lab 02 · Kunden", title: "Wer kauft bei uns?", desc: "Analysiere Kunden nach Region, Altersgruppe und Gerät. Identifiziere das wertvollste Segment und visualisiere demografische Unterschiede.", diff: "Einstieg" },
+    en: { kw: "Lab 02 · Customers", title: "Who Buys from Us?", desc: "Analyse customers by region, age group and device. Identify the most valuable segment and visualise demographic differences.", diff: "Beginner" },
+  },
+  {
+    id: 3,
+    diff: "mittel",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+    ),
+    de: { kw: "Lab 03 · RFM", title: "Die besten Kunden: RFM-Analyse", desc: "Berechne Recency, Frequency und Monetary-Scores, clustere Kunden im Scatter Plot und leite konkrete Marketingmaßnahmen ab.", diff: "Mittel" },
+    en: { kw: "Lab 03 · RFM", title: "Top Customers: RFM Analysis", desc: "Calculate Recency, Frequency and Monetary scores, cluster customers in a scatter plot and derive concrete marketing actions.", diff: "Intermediate" },
+  },
+  {
+    id: 4,
+    diff: "mittel",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/>
+        <line x1="6" y1="20" x2="6" y2="16"/>
+      </svg>
+    ),
+    de: { kw: "Lab 04 · Produkte", title: "Was verkauft sich? ABC-Analyse", desc: "Wende das Pareto-Prinzip an, baue ein Pareto-Diagramm und identifiziere Bestseller, Ladenhüter und Streichungskandidaten.", diff: "Mittel" },
+    en: { kw: "Lab 04 · Products", title: "What Sells? ABC Analysis", desc: "Apply the Pareto principle, build a Pareto chart and identify bestsellers, slow-movers and candidates for delisting.", diff: "Intermediate" },
+  },
+  {
+    id: 5,
+    diff: "mittel",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+    ),
+    de: { kw: "Lab 05 · Zeitreihen", title: "Wann läuft's? Saisonalität & Trends", desc: "Visualisiere 2 Jahre Umsatzdaten, erkenne Black-Friday- und Weihnachts-Peaks und nutze Tableaus eingebaute Forecast-Funktion.", diff: "Mittel" },
+    en: { kw: "Lab 05 · Time Series", title: "When Does It Peak? Seasonality & Trends", desc: "Visualise 2 years of revenue data, identify Black Friday and Christmas peaks and use Tableau's built-in forecast function.", diff: "Intermediate" },
+  },
+  {
+    id: 6,
+    diff: "mittel",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+      </svg>
+    ),
+    de: { kw: "Lab 06 · Conversion", title: "Warum brechen Kunden ab?", desc: "Baue einen Sales Funnel (Besuch → Warenkorb → Checkout → Kauf), berechne Conversion Rates und identifiziere den größten Drop-off.", diff: "Mittel" },
+    en: { kw: "Lab 06 · Conversion", title: "Why Do Customers Drop Off?", desc: "Build a sales funnel (visit → cart → checkout → purchase), calculate conversion rates and identify the biggest drop-off point.", diff: "Intermediate" },
+  },
+  {
+    id: 7,
+    diff: "fortgesch",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+    ),
+    de: { kw: "Lab 07 · Sentiment", title: "Was sagen die Kunden?", desc: "Importiere vorverarbeitete Review-Daten (pos/neutral/neg), visualisiere das Stimmungsbild nach Kategorie und Region und leite Handlungsmaßnahmen ab.", diff: "Fortgeschritten" },
+    en: { kw: "Lab 07 · Sentiment", title: "What Do Customers Say?", desc: "Import pre-processed review data (pos/neutral/neg), visualise sentiment by category and region and derive action items.", diff: "Advanced" },
+  },
+  {
+    id: 8,
+    diff: "fortgesch",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+    ),
+    de: { kw: "Lab 08 · Marketing", title: "Woher kommen unsere Kunden?", desc: "Vergleiche Marketingkanäle (SEA, Social, E-Mail, Organic) nach Umsatz, CPA und ROAS. Baue eine Treemap der Kanalperformance.", diff: "Fortgeschritten" },
+    en: { kw: "Lab 08 · Marketing", title: "Where Do Our Customers Come From?", desc: "Compare marketing channels (SEA, social, email, organic) by revenue, CPA and ROAS. Build a treemap of channel performance.", diff: "Advanced" },
+  },
+  {
+    id: 9,
+    diff: "fortgesch",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+        <line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
+      </svg>
+    ),
+    de: { kw: "Lab 09 · Synthese", title: "Das große Bild: Executive Dashboard", desc: "Führe alle KPIs zusammen, baue eine Tableau Story und präsentiere deine Ergebnisse im Peer-Review. Das Abschluss-Lab.", diff: "Fortgeschritten" },
+    en: { kw: "Lab 09 · Synthesis", title: "The Big Picture: Executive Dashboard", desc: "Consolidate all KPIs, build a Tableau story and present your findings in a peer review. The final capstone lab.", diff: "Advanced" },
+  },
+];
+
+/* ── Scroll Reveal Hook ── */
+function useScrollReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll('.sr');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.1 });
+    els.forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+}
+
+/* ── Lucide inline icons ── */
+const IconMail = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+    <polyline points="22,6 12,13 2,6"/>
+  </svg>
+);
+const IconBuilding = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+  </svg>
+);
+
+/* ── Main App ── */
+function App() {
+  const [lang, setLang] = useState('de');
+  const t = T[lang];
+  useScrollReveal();
+
+  const diffClass = (d) => d === 'einstieg' ? 'diff-einstieg' : d === 'mittel' ? 'diff-mittel' : 'diff-fortgesch';
+
+  return (
+    <>
+      {/* Navbar */}
+      <nav className="navbar">
+        <div className="navbar-brand">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <rect width="28" height="28" rx="3" fill="#005B9A"/>
+            <rect x="6" y="6" width="6" height="6" fill="#E87722"/>
+            <rect x="16" y="6" width="6" height="6" fill="#fff" opacity="0.7"/>
+            <rect x="6" y="16" width="6" height="6" fill="#fff" opacity="0.7"/>
+            <rect x="16" y="16" width="6" height="6" fill="#E87722" opacity="0.5"/>
+          </svg>
+          <span className="navbar-title">{t.navTitle}</span>
+        </div>
+        <div className="lang-wrap">
+          <button className={`lang-btn${lang==='de'?' active':''}`} onClick={()=>setLang('de')}>DE</button>
+          <button className={`lang-btn${lang==='en'?' active':''}`} onClick={()=>setLang('en')}>EN</button>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <section className="hero">
+        <div className="hero-geo-1"/>
+        <div className="hero-geo-2"/>
+        <div className="hero-content">
+          <p className="hero-eyebrow">{t.heroEyebrow}</p>
+          <div className="hero-kurs-tag">{t.heroKursTag}</div>
+          <h1 className="hero-title">
+            {t.heroTitle[0]}
+            <span>{t.heroTitle[1]}</span>
+            {t.heroTitle[2]}
+          </h1>
+          <p className="hero-subtitle">{t.heroSub}</p>
+          <div className="hero-badges">
+            {t.heroBadges.map((b,i) => <span key={i} className="hero-badge">{b}</span>)}
+          </div>
+          <div className="hero-cta-row">
+            <a href="#labs" className="btn-primary">{t.heroCta1}</a>
+            <a href="#kurs" className="btn-outline">{t.heroCta2}</a>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <div className="stats-bar">
+        <div className="stats-inner">
+          {[
+            [t.stat1num, t.stat1lbl],
+            [t.stat2num, t.stat2lbl],
+            [t.stat3num, t.stat3lbl],
+            [t.stat4num, t.stat4lbl],
+          ].map(([n,l],i) => (
+            <div key={i} className="stat-item">
+              <div className="stat-num">{n}</div>
+              <div className="stat-lbl">{l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Deming Quote */}
+      <section className="section" id="kurs">
+        <div className="section-inner">
+          <div className="deming-section sr">
+            <p className="deming-quote">{t.demingQuote}</p>
+            <p className="deming-source">{t.demingSource}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Labs */}
+      <section className="section bg-alt" id="labs">
+        <div className="section-inner">
+          <p className="section-eyebrow sr">{t.labsEyebrow}</p>
+          <h2 className="section-title sr">{t.labsTitle}</h2>
+          <div className="divider-line sr"/>
+          <p className="section-lead sr">{t.labsLead}</p>
+
+          {/* Workflow */}
+          <div className="sr" style={{marginTop:'40px'}}>
+            <p style={{fontSize:'0.72rem',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',color:'#6C757D',marginBottom:'16px'}}>{t.wfTitle}</p>
+            <div className="workflow-row">
+              {t.wfSteps.map((s,i) => (
+                <React.Fragment key={i}>
+                  <div className="wf-box">{s}</div>
+                  {i < t.wfSteps.length - 1 && <div className="wf-arrow">›</div>}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+
+          {/* Lab Cards */}
+          <div className="labs-grid">
+            {LABS.map((lab, idx) => {
+              const d = lang === 'de' ? lab.de : lab.en;
+              return (
+                <div key={lab.id} className="lab-card sr" style={{transitionDelay: `${(idx % 3) * 80}ms`}}>
+                  <div className="lab-card-num">0{lab.id}</div>
+                  <div className="lab-icon">{lab.icon}</div>
+                  <div className="lab-kw">{d.kw}</div>
+                  <div className="lab-title">{d.title}</div>
+                  <div className="lab-desc">{d.desc}</div>
+                  <div className="lab-footer">
+                    <span className={`diff-badge ${diffClass(lab.diff)}`}>{d.diff}</span>
+                    <span className="lab-cta">{t.startLab}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Instructor */}
+      <section className="section" id="dozentin">
+        <div className="section-inner">
+          <p className="section-eyebrow sr">{t.instructorEyebrow}</p>
+          <h2 className="section-title sr">{t.instructorTitle} {t.instructorName}</h2>
+          <div className="divider-line sr"/>
+
+          <div className="sr" style={{display:'flex', gap:'48px', flexWrap:'wrap', alignItems:'flex-start', marginTop:'8px'}}>
+            {/* LinkedIn Card */}
+            <div className="instructor-card">
+              <div className="instructor-cover"/>
+              <div className="instructor-avatar-wrap">
+                <img src="assets/eva-klenk.jpg" alt="Prof. Dr.-Ing. Eva Klenk" className="instructor-avatar"/>
+              </div>
+              <div className="instructor-body">
+                <div className="instructor-name">{t.instructorTitle} {t.instructorName}</div>
+                <div className="instructor-title">{t.instructorSub}</div>
+                <div className="instructor-org">
+                  <IconBuilding/>
+                  {t.instructorOrg}
+                </div>
+                <div className="instructor-tags">
+                  {t.instructorTags.map((tag,i) => <span key={i} className="instructor-tag">{tag}</span>)}
+                </div>
+                <div className="instructor-contact">
+                  <IconMail/>
+                  <a href={`mailto:${t.instructorContact}`} style={{color:'#005B9A', textDecoration:'none'}}>{t.instructorContact}</a>
+                </div>
+              </div>
+            </div>
+
+            {/* Bio text */}
+            <div style={{flex:1, minWidth:'260px'}}>
+              <p style={{fontSize:'1rem', lineHeight:'1.75', color:'#6C757D', marginBottom:'16px'}}>
+                {lang === 'de'
+                  ? 'Prof. Dr.-Ing. Eva Klenk lehrt an der THWS Business School Würzburg im Schwerpunkt Wirtschaftsinformatik und Digital Business. Ihre Lehrgebiete umfassen ERP-Systeme, Process Mining und Robotische Prozessautomatisierung (RPA).'
+                  : 'Prof. Dr.-Ing. Eva Klenk teaches at THWS Business School Würzburg in the field of Business Informatics and Digital Business. Her teaching areas include ERP systems, process mining and robotic process automation (RPA).'}
+              </p>
+              <p style={{fontSize:'1rem', lineHeight:'1.75', color:'#6C757D'}}>
+                {lang === 'de'
+                  ? 'In diesem Kurs bringt sie ihre Expertise in Geschäftsprozessen und digitalen Systemen in den Kontext des E-Commerce – praxisnah, datengetrieben und direkt anwendbar.'
+                  : 'In this course she brings her expertise in business processes and digital systems into an e-commerce context – practical, data-driven and directly applicable.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* AI & Python Section */}
+      <section className="section bg-alt" id="ki">
+        <div className="section-inner">
+          <p className="section-eyebrow sr">{t.aiEyebrow}</p>
+          <h2 className="section-title sr">{t.aiTitle}</h2>
+          <div className="divider-line sr"/>
+          <p className="section-lead sr">{t.aiLead}</p>
+
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))', gap:'16px', marginTop:'32px'}}>
+            {[
+              [t.aiCard1Title, t.aiCard1Body],
+              [t.aiCard2Title, t.aiCard2Body],
+              [t.aiCard3Title, t.aiCard3Body],
+            ].map(([title, body], i) => (
+              <div key={i} className="ai-card sr" style={{transitionDelay:`${i*80}ms`}}>
+                <div className="ai-card-title">{title}</div>
+                <div className="ai-card-body">{body}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Sample prompt block */}
+          <div className="sr" style={{marginTop:'32px'}}>
+            <p style={{fontSize:'0.72rem',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',color:'#6C757D',marginBottom:'12px'}}>
+              {lang === 'de' ? 'Beispiel: Prompt für Lab 03 – RFM-Analyse' : 'Example: Prompt for Lab 03 – RFM Analysis'}
+            </p>
+            <div className="code-block">
+              <span className="code-comment"># Prompt für KI-Assistenten (z.B. ChatGPT / Claude):</span>{"\n\n"}
+              <span className="code-str">"Erstelle mir eine RFM-Analyse in Python mit Plotly Dash{"\n"}
+für einen E-Commerce-Datensatz (CSV mit Spalten: customer_id,{"\n"}
+order_date, revenue). Berechne Recency, Frequency und Monetary,{"\n"}
+normalisiere die Scores (1–5) und visualisiere die Cluster{"\n"}
+als interaktiven 3D Scatter Plot. Nutze das Farbschema{"\n"}
+#E87722 (Orange) und #005B9A (Blau)."</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="footer">
+        <div className="footer-inner">
+          <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'12px', marginBottom:'16px'}}>
+            <svg width="32" height="32" viewBox="0 0 28 28" fill="none">
+              <rect width="28" height="28" rx="3" fill="#E87722"/>
+              <rect x="6" y="6" width="6" height="6" fill="#fff" opacity="0.9"/>
+              <rect x="16" y="6" width="6" height="6" fill="#fff" opacity="0.5"/>
+              <rect x="6" y="16" width="6" height="6" fill="#fff" opacity="0.5"/>
+              <rect x="16" y="16" width="6" height="6" fill="#fff" opacity="0.9"/>
+            </svg>
+          </div>
+          <p className="footer-title">THWS Business School</p>
+          <p className="footer-text">{t.footerText}</p>
+          <p style={{marginTop:'8px', fontSize:'0.78rem', color:'rgba(255,255,255,0.35)'}}>{t.footerSub}</p>
+          <p style={{marginTop:'24px', fontSize:'0.72rem', color:'rgba(255,255,255,0.25)'}}>
+            UrbanCart ist ein fiktives Unternehmen. Alle Daten sind synthetisch und dienen ausschließlich Lehrzwecken. ·{' '}
+            <a href="https://github.com/swrobuts/e-comm" target="_blank" rel="noopener noreferrer" className="footer-link">GitHub</a>
+          </p>
+        </div>
+      </footer>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

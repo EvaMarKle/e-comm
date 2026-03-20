@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lab 01 – Erste Schritte mit Tableau · UrbanCart · THWS</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif; background:#fff; color:#212529; }
+
+    .top-bar { height:4px; background:#E87722; position:fixed; top:0; left:0; right:0; z-index:200; }
+
+    /* Navbar */
+    .navbar {
+      position:sticky; top:4px; z-index:100;
+      background:#fff; border-bottom:1px solid #E9ECEF;
+      box-shadow:0 1px 8px rgba(0,0,0,0.05);
+      height:52px; display:flex; align-items:center;
+      padding:0 32px; justify-content:space-between;
+    }
+    .nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .nav-brand-text { font-size:0.78rem; font-weight:700; color:#005B9A; letter-spacing:0.04em; text-transform:uppercase; }
+    .nav-lab-badge {
+      background:rgba(232,119,34,0.12); color:#E87722;
+      font-size:0.68rem; font-weight:700;
+      padding:3px 10px; letter-spacing:0.06em; text-transform:uppercase;
+    }
+    .lang-wrap { display:flex; gap:4px; }
+    .lang-btn {
+      padding:4px 10px; border-radius:3px;
+      border:1.5px solid #E9ECEF; background:#fff;
+      cursor:pointer; font-weight:700; font-size:0.72rem;
+      color:#6C757D; transition:all 0.15s; font-family:inherit;
+    }
+    .lang-btn.active { background:#E87722; color:#fff; border-color:#E87722; }
+
+    /* Progress bar */
+    .progress-bar {
+      background:#F1F3F5; padding:12px 32px;
+      display:flex; align-items:center; gap:8px; overflow-x:auto;
+    }
+    .prog-step {
+      display:flex; align-items:center; gap:6px; white-space:nowrap;
+      font-size:0.72rem; font-weight:700; color:#9ca3af;
+    }
+    .prog-step.active { color:#E87722; }
+    .prog-step.done { color:#3D7A56; }
+    .prog-dot {
+      width:24px; height:24px; border-radius:50%;
+      background:#E9ECEF; display:flex; align-items:center;
+      justify-content:center; font-size:0.68rem; font-weight:800;
+      flex-shrink:0;
+    }
+    .prog-dot.active { background:#E87722; color:#fff; }
+    .prog-dot.done { background:#3D7A56; color:#fff; }
+    .prog-arrow { color:#D1D5DB; font-size:0.9rem; }
+
+    /* Hero */
+    .lab-hero {
+      background:#005B9A; padding:48px 32px;
+      position:relative; overflow:hidden;
+    }
+    .lab-hero-inner { max-width:800px; }
+    .lab-num {
+      font-size:0.72rem; font-weight:700; letter-spacing:0.18em;
+      text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:8px;
+    }
+    .lab-title { font-size:clamp(1.8rem,4vw,2.8rem); font-weight:800; color:#fff; line-height:1.1; margin-bottom:12px; }
+    .lab-title span { color:#E87722; }
+    .lab-sub { font-size:1rem; color:rgba(255,255,255,0.75); line-height:1.7; max-width:560px; }
+    .lab-meta {
+      display:flex; gap:16px; flex-wrap:wrap; margin-top:24px;
+    }
+    .lab-meta-item {
+      display:flex; align-items:center; gap:6px;
+      font-size:0.78rem; font-weight:600; color:rgba(255,255,255,0.6);
+    }
+    .lab-meta-item strong { color:#fff; }
+
+    /* Content */
+    .content { max-width:800px; margin:0 auto; padding:48px 32px; }
+    .section-block { margin-bottom:48px; }
+    .block-eyebrow {
+      font-size:0.68rem; font-weight:700; letter-spacing:0.14em;
+      text-transform:uppercase; color:#E87722; margin-bottom:6px;
+    }
+    .block-title { font-size:1.3rem; font-weight:800; color:#005B9A; margin-bottom:8px; }
+    .block-lead { font-size:0.95rem; color:#6C757D; line-height:1.75; margin-bottom:20px; }
+    .divider { width:40px; height:3px; background:#E87722; margin:8px 0 16px; }
+
+    /* Steps */
+    .steps { display:flex; flex-direction:column; gap:16px; }
+    .step-card {
+      border:1.5px solid #E9ECEF; padding:20px 24px;
+      border-left:3px solid #005B9A;
+      transition:border-color 0.2s;
+    }
+    .step-card:hover { border-left-color:#E87722; }
+    .step-header { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+    .step-num {
+      width:28px; height:28px; border-radius:50%;
+      background:#005B9A; color:#fff;
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.75rem; font-weight:800; flex-shrink:0;
+    }
+    .step-title { font-size:0.95rem; font-weight:800; color:#212529; }
+    .step-body { font-size:0.87rem; color:#6C757D; line-height:1.7; margin-left:40px; }
+    .step-body code {
+      background:#F1F3F5; padding:1px 6px;
+      font-family:'Consolas','Monaco',monospace; font-size:0.82rem;
+      color:#E87722; border-radius:2px;
+    }
+    .step-tip {
+      background:rgba(0,91,154,0.06); border-left:2px solid #005B9A;
+      padding:10px 14px; margin-top:10px; margin-left:40px;
+      font-size:0.82rem; color:#005B9A; line-height:1.6;
+    }
+    .step-tip strong { color:#005B9A; }
+
+    /* Screenshot placeholder */
+    .screenshot-placeholder {
+      background:#F1F3F5; border:1.5px dashed #D1D5DB;
+      padding:32px; text-align:center; margin:16px 0;
+      border-radius:2px;
+    }
+    .screenshot-placeholder-icon { font-size:2rem; opacity:0.3; margin-bottom:8px; }
+    .screenshot-placeholder-text { font-size:0.78rem; color:#9ca3af; font-weight:600; }
+
+    /* KPI cards */
+    .kpi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; margin:16px 0; }
+    .kpi-card {
+      background:#fff; border:1.5px solid #E9ECEF;
+      border-top:3px solid #E87722; padding:20px 16px; text-align:center;
+    }
+    .kpi-icon { font-size:1.4rem; margin-bottom:8px; }
+    .kpi-val { font-size:1.6rem; font-weight:900; color:#E87722; line-height:1; }
+    .kpi-lbl { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#005B9A; margin-top:4px; }
+    .kpi-def { font-size:0.78rem; color:#9ca3af; margin-top:6px; line-height:1.5; }
+
+    /* Quiz */
+    .quiz-section { background:#F1F3F5; padding:40px 32px; margin:0 -32px; border-radius:2px; }
+    .quiz-title { font-size:1.1rem; font-weight:800; color:#005B9A; margin-bottom:4px; }
+    .quiz-sub { font-size:0.84rem; color:#6C757D; margin-bottom:24px; }
+    .quiz-progress { font-size:0.72rem; font-weight:700; color:#9ca3af; margin-bottom:20px; text-transform:uppercase; letter-spacing:0.08em; }
+    .question-block { background:#fff; border:1.5px solid #E9ECEF; padding:24px; margin-bottom:16px; }
+    .question-num { font-size:0.68rem; font-weight:700; color:#E87722; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px; }
+    .question-text { font-size:0.95rem; font-weight:700; color:#212529; margin-bottom:16px; line-height:1.5; }
+    .options { display:flex; flex-direction:column; gap:8px; }
+    .option-btn {
+      background:#F9FAFB; border:1.5px solid #E9ECEF;
+      padding:10px 16px; text-align:left;
+      font-size:0.87rem; font-weight:600; color:#374151;
+      cursor:pointer; transition:all 0.15s; font-family:inherit;
+    }
+    .option-btn:hover { border-color:#005B9A; color:#005B9A; background:rgba(0,91,154,0.04); }
+    .option-btn.correct { background:rgba(61,122,86,0.1); border-color:#3D7A56; color:#3D7A56; }
+    .option-btn.wrong   { background:rgba(239,68,68,0.08); border-color:#ef4444; color:#ef4444; }
+    .option-btn.revealed { pointer-events:none; }
+    .feedback {
+      margin-top:10px; padding:10px 14px;
+      font-size:0.84rem; line-height:1.6; font-weight:600;
+    }
+    .feedback.correct { background:rgba(61,122,86,0.1); color:#3D7A56; border-left:2px solid #3D7A56; }
+    .feedback.wrong   { background:rgba(239,68,68,0.08); color:#dc2626; border-left:2px solid #dc2626; }
+    .quiz-result {
+      background:#fff; border:1.5px solid #E9ECEF; border-top:3px solid #E87722;
+      padding:32px; text-align:center; margin-top:16px;
+    }
+    .quiz-result-score { font-size:3rem; font-weight:900; color:#E87722; line-height:1; }
+    .quiz-result-label { font-size:0.84rem; color:#6C757D; margin-top:6px; }
+    .quiz-result-msg { font-size:1rem; font-weight:700; color:#212529; margin-top:16px; }
+
+    /* AI Outlook */
+    .ai-section {
+      background:#0f172a; padding:32px;
+      border-left:3px solid #E87722; margin:32px 0;
+    }
+    .ai-eyebrow { font-size:0.68rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#E87722; margin-bottom:6px; }
+    .ai-title { font-size:1.1rem; font-weight:800; color:#fff; margin-bottom:12px; }
+    .ai-text { font-size:0.87rem; color:rgba(255,255,255,0.65); line-height:1.75; margin-bottom:16px; }
+    .code-block {
+      background:#1e293b; border-left:2px solid #E87722;
+      color:#e2e8f0; font-family:'Consolas','Monaco',monospace;
+      font-size:0.78rem; line-height:1.8; padding:16px 20px; overflow-x:auto;
+    }
+    .c-comment { color:#64748b; }
+    .c-str { color:#86efac; }
+    .c-kw { color:#93c5fd; }
+
+    /* Nav footer */
+    .lab-nav {
+      border-top:1px solid #E9ECEF; padding:32px;
+      display:flex; justify-content:space-between; align-items:center;
+      max-width:800px; margin:0 auto;
+    }
+    .lab-nav-btn {
+      display:flex; align-items:center; gap:8px;
+      font-size:0.87rem; font-weight:700; color:#005B9A;
+      text-decoration:none; cursor:pointer;
+      transition:color 0.15s;
+    }
+    .lab-nav-btn:hover { color:#E87722; }
+    .lab-nav-btn.primary {
+      background:#E87722; color:#fff;
+      padding:10px 20px; border:2px solid #E87722;
+    }
+    .lab-nav-btn.primary:hover { background:#d06a1a; border-color:#d06a1a; }
+
+    .sr { opacity:0; transform:translateY(12px); transition:opacity 0.5s ease,transform 0.5s ease; }
+    .sr.visible { opacity:1; transform:translateY(0); }
+  </style>
+</head>
+<body>
+<div class="top-bar"></div>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+/* ── i18n ── */
+const T = {
+  de: {
+    labNum: "Lab 01 von 09",
+    labTitle: ["Erste Schritte mit ", "Tableau"],
+    labSub: "Du öffnest Tableau zum ersten Mal. Kein Stress – wir gehen jeden Schritt gemeinsam durch. Am Ende hast du ein echtes Sales-Dashboard für UrbanCart.",
+    metaDauer: "60–90 Min.",
+    metaLevel: "Einstieg",
+    metaData: "orders.csv · order_items.csv",
+    metaTool: "Tableau Public (kostenlos)",
+    progSteps: ["Einführung","Daten laden","Erste Viz","Dashboard","Quiz","KI-Ausblick"],
+    // Section 1
+    s1eye: "Kontext",
+    s1title: "Was ist UrbanCart?",
+    s1lead: "Bevor wir anfangen: Woher kommen die Daten, mit denen wir arbeiten? UrbanCart ist ein fiktiver europäischer Online-Händler. Du bist der neue Junior Data Analyst im Team – und dein erstes Projekt ist ein Sales-Dashboard für die Geschäftsführung.",
+    // Section 2
+    s2eye: "Schritt-für-Schritt",
+    s2title: "Tableau einrichten & Daten laden",
+    s2lead: "Tableau Public ist kostenlos und läuft auf macOS und Windows. Lade es herunter, installiere es – und dann folge diesen Schritten.",
+    steps: [
+      {
+        title: "Tableau Public herunterladen & installieren",
+        body: "Gehe auf <strong>public.tableau.com</strong>, klicke auf \"Tableau Public herunterladen\" und installiere die App. Kostenlos, kein Abo nötig.",
+        tip: "💡 Tipp: Erstelle ein kostenloses Tableau-Konto – du kannst deine Visualisierungen später dort speichern und teilen."
+      },
+      {
+        title: "Datensatz herunterladen",
+        body: "Lade <code>orders.csv</code> und <code>order_items.csv</code> von GitHub herunter: <strong>github.com/swrobuts/e-comm/tree/main/data</strong>. Speichere beide Dateien in einem Ordner deiner Wahl.",
+        tip: "💡 Tipp: Erstelle einen Ordner \"UrbanCart\" auf deinem Desktop und lege alle Lab-Dateien dort ab."
+      },
+      {
+        title: "Tableau öffnen & Daten verbinden",
+        body: "Starte Tableau Public. Auf der Startseite siehst du links \"Verbinden\". Klicke auf <code>Textdatei</code> und wähle <code>orders.csv</code>. Tableau lädt die Daten automatisch.",
+        tip: null
+      },
+      {
+        title: "Zweite Tabelle hinzufügen (Join)",
+        body: "Ziehe <code>order_items.csv</code> aus dem linken Panel auf die Arbeitsfläche neben <code>orders.csv</code>. Tableau erkennt automatisch den Join über <code>order_id</code>. Klicke auf die Join-Verbindung und stelle sicher, dass <code>Order Id = Order Id</code> eingestellt ist.",
+        tip: "💡 Was ist ein Join? Du verbindest zwei Tabellen über ein gemeinsames Feld – wie ein SVERWEIS in Excel, nur mächtiger."
+      },
+      {
+        title: "Daten überprüfen",
+        body: "Scrolle unten durch die Vorschautabelle. Du siehst Spalten wie <code>order_date</code>, <code>total_revenue</code>, <code>region</code>, <code>channel</code>. Alles da? Dann klicke oben rechts auf <code>Arbeitsblatt 1</code>.",
+        tip: null
+      },
+    ],
+    // KPIs
+    s3eye: "Kennzahlen",
+    s3title: "Die drei wichtigsten KPIs",
+    s3lead: "Bevor du visualisierst, musst du wissen, was du messen willst. Diese drei KPIs sind das Fundament jedes E-Commerce-Dashboards.",
+    kpis: [
+      { icon:"💶", val:"∑ Umsatz", lbl:"Total Revenue", def:"Summe aller Bestellwerte. In Tableau: SUM([total_revenue])" },
+      { icon:"📦", val:"# Bestellungen", lbl:"Order Count", def:"Anzahl eindeutiger Bestellungen. In Tableau: COUNTD([order_id])" },
+      { icon:"🧮", val:"Ø Warenkorb", lbl:"Avg. Order Value", def:"Umsatz ÷ Bestellungen. In Tableau: SUM([total_revenue]) / COUNTD([order_id])" },
+    ],
+    // Steps 2
+    s4eye: "Visualisierung",
+    s4title: "Dein erstes Dashboard bauen",
+    viz_steps: [
+      {
+        title: "KPI 1: Gesamtumsatz als Zahl",
+        body: "Ziehe <code>Total Revenue</code> auf \"Text\" im Marks-Panel. Tableau zeigt dir die Summe. Ändere den Chart-Typ oben rechts auf \"Nur Text\".",
+        tip: null
+      },
+      {
+        title: "Umsatz über die Zeit: Liniendiagramm",
+        body: "Neues Arbeitsblatt. Ziehe <code>Order Date</code> auf Spalten, <code>Total Revenue</code> auf Zeilen. Tableau erstellt automatisch ein Liniendiagramm. Klicke auf <code>Order Date</code> → wähle \"Monat\" für eine monatliche Ansicht.",
+        tip: "💡 Du siehst einen Spike im November/Dezember? Das ist Black Friday + Weihnachten. Genau wie in der Realität!"
+      },
+      {
+        title: "Umsatz nach Region: Balkendiagramm",
+        body: "Neues Arbeitsblatt. <code>Region</code> auf Zeilen, <code>Total Revenue</code> auf Spalten. Klicke auf \"Absteigend sortieren\" (Symbol oben in der Toolbar). Welche Region verkauft am meisten?",
+        tip: null
+      },
+      {
+        title: "Dashboard zusammenbauen",
+        body: "Klicke unten links auf das <code>+</code>-Symbol → \"Neues Dashboard\". Ziehe deine drei Arbeitsblätter auf die Leinwand. Klicke auf \"Formatieren\" → \"Dashboard-Titel\" und nenne es: <strong>UrbanCart Sales Overview 2023–2024</strong>.",
+        tip: "💡 Tipp: Halte alle Farben konsistent. Nutze Tableau's Standardpalette – wir stylen später."
+      },
+    ],
+    // Quiz
+    quizTitle: "Quiz: Lab 01 – Grundlagen",
+    quizSub: "15 Fragen · Beantworte alle, bevor du zum nächsten Lab gehst.",
+    questions: [
+      {
+        q: "Was ist ein KPI?",
+        options: ["Eine Datenbankabfrage","Eine messbare Kennzahl zur Erfolgsbewertung","Ein Diagrammtyp in Tableau","Eine Excel-Funktion"],
+        correct: 1,
+        explain: "KPI = Key Performance Indicator – eine messbare Kennzahl, die zeigt, wie gut ein Unternehmen sein Ziel erreicht."
+      },
+      {
+        q: "Was zeigt der Durchschnittliche Bestellwert (Average Order Value)?",
+        options: ["Die Anzahl der Bestellungen","Den höchsten Einzelumsatz","Den durchschnittlichen Umsatz pro Bestellung","Die meistverkaufte Kategorie"],
+        correct: 2,
+        explain: "AOV = Gesamtumsatz ÷ Anzahl Bestellungen. Zeigt, wie viel ein Kunde im Schnitt pro Bestellung ausgibt."
+      },
+      {
+        q: "Welche Tableau-Funktion nutzt du, um die Anzahl eindeutiger Bestellungen zu zählen?",
+        options: ["SUM([order_id])","COUNT([order_id])","COUNTD([order_id])","AVG([order_id])"],
+        correct: 2,
+        explain: "COUNTD = Count Distinct. Zählt jeden Wert nur einmal – verhindert Doppelzählungen bei mehreren Positionen pro Bestellung."
+      },
+      {
+        q: "Was ist ein Join in Tableau?",
+        options: [
+          "Ein Diagrammtyp",
+          "Eine Verbindung zweier Tabellen über ein gemeinsames Feld",
+          "Eine Farboption",
+          "Ein Filter"
+        ],
+        correct: 1,
+        explain: "Join verbindet zwei Tabellen über ein gemeinsames Feld (hier: order_id). Entspricht einem SVERWEIS in Excel."
+      },
+      {
+        q: "Im UrbanCart-Datensatz gibt es einen deutlichen Umsatzpeak im November. Was ist die wahrscheinlichste Ursache?",
+        options: ["Saisonale Produkte","Black Friday und Cyber Monday","Technischer Fehler in den Daten","Neue Produktlinie"],
+        correct: 1,
+        explain: "Black Friday (letzter Freitag im November) ist der umsatzstärkste Tag im E-Commerce. UrbanCart simuliert dieses reale Muster."
+      },
+      {
+        q: "Was ist der Unterschied zwischen COUNT und COUNTD in Tableau?",
+        options: [
+          "Kein Unterschied",
+          "COUNT zählt alle Werte, COUNTD nur eindeutige",
+          "COUNTD ist schneller",
+          "COUNT ist nur für Zahlen"
+        ],
+        correct: 1,
+        explain: "COUNT zählt alle Zeilen (inkl. Duplikate), COUNTD zählt jeden Wert nur einmal. Wichtig bei Bestellpositionen, die mehrere Zeilen pro Bestellung haben."
+      },
+      {
+        q: "Was versteht man unter einem 'Dashboard' in Tableau?",
+        options: [
+          "Eine einzelne Visualisierung",
+          "Eine Sammlung mehrerer Arbeitsblätter auf einer Ansicht",
+          "Die Datenverbindung",
+          "Ein Exportformat"
+        ],
+        correct: 1,
+        explain: "Ein Dashboard kombiniert mehrere Visualisierungen (Arbeitsblätter) in einer zusammenhängenden Ansicht – ideal für Executive Präsentationen."
+      },
+      {
+        q: "Was bedeutet 'Total Revenue' im E-Commerce-Kontext?",
+        options: [
+          "Gewinn nach Abzug aller Kosten",
+          "Summe aller Bestellumsätze vor Retouren",
+          "Anzahl der verkauften Produkte",
+          "Marketingausgaben"
+        ],
+        correct: 1,
+        explain: "Total Revenue = Bruttoumsatz, also die Summe aller Bestellwerte. Noch kein Gewinn – Kosten und Retouren sind nicht abgezogen."
+      },
+      {
+        q: "Auf welchem Feld wird der Join zwischen orders.csv und order_items.csv aufgebaut?",
+        options: ["customer_id","product_id","order_id","order_date"],
+        correct: 2,
+        explain: "Die order_id ist der gemeinsame Schlüssel: Jede Bestellposition in order_items gehört zu genau einer Bestellung in orders."
+      },
+      {
+        q: "Was zeigt ein Liniendiagramm besser als ein Balkendiagramm?",
+        options: [
+          "Vergleiche zwischen Kategorien",
+          "Zeitliche Entwicklung und Trends",
+          "Anteile am Gesamtumsatz",
+          "Geografische Verteilung"
+        ],
+        correct: 1,
+        explain: "Liniendiagramme sind ideal für Zeitreihen: Sie zeigen Entwicklung, Trends und Saisonalität. Balken eignen sich besser für Kategorievergleiche."
+      },
+      {
+        q: "UrbanCart verkauft in 10 deutschen Regionen. Was ist eine gute Visualisierung für den regionalen Umsatz?",
+        options: [
+          "Kreisdiagramm",
+          "Liniendiagramm",
+          "Horizontales Balkendiagramm (sortiert)",
+          "Scatterplot"
+        ],
+        correct: 2,
+        explain: "Horizontale Balken, nach Größe sortiert, sind ideal für Ranking-Vergleiche. Das menschliche Auge kann Längen besser vergleichen als Winkel (Kreisdiagramm)."
+      },
+      {
+        q: "Was bedeutet 'granularity' (Granularität) bei Zeitreihen?",
+        options: [
+          "Die Anzahl der Datenpunkte",
+          "Der zeitliche Detailgrad (Tag / Monat / Jahr)",
+          "Die Genauigkeit der Umsatzdaten",
+          "Die Farbabstufung im Diagramm"
+        ],
+        correct: 1,
+        explain: "Granularität = zeitliche Auflösung. Tagesebene zeigt Details, Monatsebene zeigt Trends. Für ein Executive Dashboard ist Monat meist sinnvoll."
+      },
+      {
+        q: "Warum ist Tableau besser geeignet als Excel für große Datensätze?",
+        options: [
+          "Tableau ist kostenlos",
+          "Tableau verarbeitet Millionen Zeilen effizient, Excel hat Zeilenlimits",
+          "Excel kann keine Diagramme",
+          "Tableau hat mehr Farben"
+        ],
+        correct: 1,
+        explain: "Excel ist auf ~1 Mio. Zeilen limitiert und wird bei großen Daten langsam. Tableau ist für BI-Analysen optimiert und verarbeitet Millionen Zeilen performant."
+      },
+      {
+        q: "Was ist der erste Schritt beim Aufbau eines Dashboards?",
+        options: [
+          "Farben auswählen",
+          "Zielgruppe und Kernaussage definieren",
+          "Alle Daten in einem Diagramm zeigen",
+          "Schriftgröße festlegen"
+        ],
+        correct: 1,
+        explain: "Immer mit der Frage beginnen: Wer schaut sich das an, und welche Entscheidung soll er/sie treffen? Erst dann visualisieren."
+      },
+      {
+        q: "Du siehst im Datensatz den Status 'retourniert'. Was solltest du bei der Umsatzberechnung beachten?",
+        options: [
+          "Retouren immer ignorieren",
+          "Retournierte Bestellungen vom Nettoumsatz abziehen",
+          "Retouren verdoppeln den Umsatz",
+          "Retouren haben keinen Einfluss auf KPIs"
+        ],
+        correct: 1,
+        explain: "Für den Nettoumsatz (Net Revenue) müssen Retouren abgezogen werden. Im Lab nutzen wir zunächst den Bruttoumsatz – aber der Unterschied ist wichtig für die Interpretation."
+      },
+    ],
+    nextLab: "Lab 02: Wer kauft bei uns? →",
+    backHome: "← Zur Übersicht",
+    // AI section
+    aiEye: "KI-Ausblick",
+    aiTitle: "Wie würde das in Python + Plotly Dash aussehen?",
+    aiText: "Das Dashboard, das du gerade in Tableau gebaut hast, lässt sich mit Python und Plotly Dash reproduzieren – und automatisieren. Hier der Prompt und der technische Stack:",
+    aiPrompt: `# Prompt für ChatGPT / Claude:
+"Erstelle ein Python Plotly Dash Dashboard für E-Commerce-Daten.
+Lade 'orders.csv' mit pandas. Zeige drei KPI-Cards:
+- Gesamtumsatz (SUM total_revenue)
+- Anzahl Bestellungen (COUNTD order_id)  
+- Ø Warenkorbwert (ratio)
+Und ein Liniendiagramm: Umsatz pro Monat.
+Farbschema: Orange #E87722, Blau #005B9A.
+Nutze Dash Bootstrap Components für das Layout."`,
+  },
+  en: {
+    labNum: "Lab 01 of 09",
+    labTitle: ["Getting Started with ", "Tableau"],
+    labSub: "You open Tableau for the first time. No stress – we walk through every step together. By the end, you'll have a real sales dashboard for UrbanCart.",
+    metaDauer: "60–90 min.",
+    metaLevel: "Beginner",
+    metaData: "orders.csv · order_items.csv",
+    metaTool: "Tableau Public (free)",
+    progSteps: ["Introduction","Load Data","First Viz","Dashboard","Quiz","AI Outlook"],
+    s1eye: "Context",
+    s1title: "What is UrbanCart?",
+    s1lead: "Before we start: where does the data come from? UrbanCart is a fictional European online retailer. You are the new Junior Data Analyst on the team – and your first project is a sales dashboard for management.",
+    s2eye: "Step by Step",
+    s2title: "Set up Tableau & load data",
+    s2lead: "Tableau Public is free and runs on macOS and Windows. Download it, install it – then follow these steps.",
+    steps: [
+      {
+        title: "Download & install Tableau Public",
+        body: "Go to <strong>public.tableau.com</strong>, click \"Download Tableau Public\" and install. Free, no subscription needed.",
+        tip: "💡 Tip: Create a free Tableau account – you can save and share your visualisations there later."
+      },
+      {
+        title: "Download the dataset",
+        body: "Download <code>orders.csv</code> and <code>order_items.csv</code> from GitHub: <strong>github.com/swrobuts/e-comm/tree/main/data</strong>. Save both files in a folder of your choice.",
+        tip: "💡 Tip: Create an 'UrbanCart' folder on your Desktop and save all lab files there."
+      },
+      {
+        title: "Open Tableau & connect data",
+        body: "Start Tableau Public. On the start page, see \"Connect\" on the left. Click <code>Text File</code> and select <code>orders.csv</code>. Tableau loads the data automatically.",
+        tip: null
+      },
+      {
+        title: "Add second table (Join)",
+        body: "Drag <code>order_items.csv</code> from the left panel onto the canvas next to <code>orders.csv</code>. Tableau auto-detects the join via <code>order_id</code>. Click the join icon and make sure <code>Order Id = Order Id</code> is set.",
+        tip: "💡 What is a Join? You connect two tables via a shared field – like VLOOKUP in Excel, but more powerful."
+      },
+      {
+        title: "Check the data",
+        body: "Scroll through the preview table at the bottom. You'll see columns like <code>order_date</code>, <code>total_revenue</code>, <code>region</code>, <code>channel</code>. All there? Click <code>Sheet 1</code> at the top right.",
+        tip: null
+      },
+    ],
+    s3eye: "Key Metrics",
+    s3title: "The three most important KPIs",
+    s3lead: "Before you visualise, you need to know what to measure. These three KPIs are the foundation of every e-commerce dashboard.",
+    kpis: [
+      { icon:"💶", val:"∑ Revenue", lbl:"Total Revenue", def:"Sum of all order values. In Tableau: SUM([total_revenue])" },
+      { icon:"📦", val:"# Orders", lbl:"Order Count", def:"Count of unique orders. In Tableau: COUNTD([order_id])" },
+      { icon:"🧮", val:"Ø Basket", lbl:"Avg. Order Value", def:"Revenue ÷ Orders. In Tableau: SUM([total_revenue]) / COUNTD([order_id])" },
+    ],
+    s4eye: "Visualisation",
+    s4title: "Build your first dashboard",
+    viz_steps: [
+      {
+        title: "KPI 1: Total revenue as number",
+        body: "Drag <code>Total Revenue</code> onto \"Text\" in the Marks panel. Tableau shows the sum. Change chart type top right to \"Text\".",
+        tip: null
+      },
+      {
+        title: "Revenue over time: Line chart",
+        body: "New sheet. Drag <code>Order Date</code> to Columns, <code>Total Revenue</code> to Rows. Tableau creates a line chart automatically. Click <code>Order Date</code> → choose \"Month\".",
+        tip: "💡 See a spike in November/December? That's Black Friday + Christmas. Just like in reality!"
+      },
+      {
+        title: "Revenue by region: Bar chart",
+        body: "New sheet. <code>Region</code> to Rows, <code>Total Revenue</code> to Columns. Click \"Sort Descending\". Which region sells the most?",
+        tip: null
+      },
+      {
+        title: "Assemble the dashboard",
+        body: "Click the <code>+</code> at the bottom left → \"New Dashboard\". Drag your three sheets onto the canvas. Name it: <strong>UrbanCart Sales Overview 2023–2024</strong>.",
+        tip: "💡 Tip: Keep colours consistent. Use Tableau's default palette – we'll style later."
+      },
+    ],
+    quizTitle: "Quiz: Lab 01 – Foundations",
+    quizSub: "15 questions · Complete all before moving to the next lab.",
+    questions: [
+      { q:"What is a KPI?", options:["A database query","A measurable metric to evaluate performance","A chart type in Tableau","An Excel function"], correct:1, explain:"KPI = Key Performance Indicator – a measurable metric showing how well a company achieves its goal." },
+      { q:"What does Average Order Value (AOV) show?", options:["Number of orders","Highest single order","Average revenue per order","Best-selling category"], correct:2, explain:"AOV = Total Revenue ÷ Number of Orders. Shows how much a customer spends on average per order." },
+      { q:"Which Tableau function counts unique orders?", options:["SUM([order_id])","COUNT([order_id])","COUNTD([order_id])","AVG([order_id])"], correct:2, explain:"COUNTD = Count Distinct. Counts each value only once – prevents double-counting when multiple items belong to one order." },
+      { q:"What is a Join in Tableau?", options:["A chart type","Connecting two tables via a shared field","A colour option","A filter"], correct:1, explain:"A join connects two tables via a shared key field (here: order_id)." },
+      { q:"What causes UrbanCart's revenue spike in November?", options:["Seasonal products","Black Friday and Cyber Monday","Data error","New product line"], correct:1, explain:"Black Friday (last Friday in November) is the highest-revenue day in e-commerce." },
+      { q:"What is the difference between COUNT and COUNTD?", options:["No difference","COUNT counts all rows, COUNTD only unique values","COUNTD is faster","COUNT is only for numbers"], correct:1, explain:"COUNT counts all rows including duplicates; COUNTD counts each value only once." },
+      { q:"What is a Dashboard in Tableau?", options:["A single chart","Multiple worksheets combined in one view","The data connection","An export format"], correct:1, explain:"A dashboard combines multiple visualisations in one coherent view – ideal for executive presentations." },
+      { q:"What does Total Revenue mean in e-commerce?", options:["Profit after all costs","Sum of all order values before returns","Number of products sold","Marketing spend"], correct:1, explain:"Total Revenue = gross revenue, i.e. sum of all order values. Not yet profit – costs and returns are not deducted." },
+      { q:"Which field links orders.csv to order_items.csv?", options:["customer_id","product_id","order_id","order_date"], correct:2, explain:"The order_id is the shared key: each order item belongs to exactly one order." },
+      { q:"What does a line chart show better than a bar chart?", options:["Category comparisons","Trends over time","Share of total","Geographic distribution"], correct:1, explain:"Line charts are ideal for time series: they show development, trends and seasonality." },
+      { q:"Best chart for regional revenue comparison?", options:["Pie chart","Line chart","Sorted horizontal bar chart","Scatterplot"], correct:2, explain:"Horizontal bars sorted by size are ideal for ranking comparisons. Humans judge lengths better than angles." },
+      { q:"What is 'granularity' in time series?", options:["Number of data points","Level of time detail (day / month / year)","Accuracy of revenue data","Colour gradation"], correct:1, explain:"Granularity = time resolution. Daily shows detail, monthly shows trends." },
+      { q:"Why is Tableau better than Excel for large datasets?", options:["Tableau is free","Tableau handles millions of rows efficiently; Excel has row limits","Excel can't make charts","Tableau has more colours"], correct:1, explain:"Excel is limited to ~1M rows and gets slow with large data. Tableau is optimised for BI analysis." },
+      { q:"What is the first step in building a dashboard?", options:["Choose colours","Define audience and key question","Show all data in one chart","Set font size"], correct:1, explain:"Always start with: who will look at this, and what decision should they make? Then visualise." },
+      { q:"The dataset contains orders with status 'returned'. What matters for revenue KPIs?", options:["Always ignore returns","Deduct returned orders for net revenue","Returns double revenue","Returns don't affect KPIs"], correct:1, explain:"For net revenue, returns must be deducted. In this lab we use gross revenue first – but the difference matters for interpretation." },
+    ],
+    nextLab: "Lab 02: Who Buys from Us? →",
+    backHome: "← Back to Overview",
+    aiEye: "AI Outlook",
+    aiTitle: "How would this look in Python + Plotly Dash?",
+    aiText: "The dashboard you built in Tableau can be reproduced – and automated – with Python and Plotly Dash. Here's the prompt and tech stack:",
+    aiPrompt: `# Prompt for ChatGPT / Claude:
+"Create a Python Plotly Dash dashboard for e-commerce data.
+Load 'orders.csv' with pandas. Show three KPI cards:
+- Total Revenue (SUM total_revenue)
+- Order Count (COUNTD order_id)
+- Avg. Order Value (ratio)
+And a line chart: revenue per month.
+Colour scheme: Orange #E87722, Blue #005B9A.
+Use Dash Bootstrap Components for layout."`,
+  }
+};
+
+/* ── Quiz Component ── */
+function Quiz({ questions, t }) {
+  const [answers, setAnswers] = useState({});
+  const [revealed, setRevealed] = useState({});
+  const done = Object.keys(revealed).length === questions.length;
+  const score = Object.entries(answers).filter(([i, a]) => a === questions[i].correct).length;
+
+  const handleAnswer = (qi, oi) => {
+    if (revealed[qi] !== undefined) return;
+    setAnswers(prev => ({ ...prev, [qi]: oi }));
+    setRevealed(prev => ({ ...prev, [qi]: true }));
+  };
+
+  return (
+    <div className="quiz-section">
+      <h3 className="quiz-title">{t.quizTitle}</h3>
+      <p className="quiz-sub">{t.quizSub}</p>
+      <div className="quiz-progress">{Object.keys(revealed).length} / {questions.length} beantwortet</div>
+
+      {questions.map((q, qi) => (
+        <div key={qi} className="question-block">
+          <div className="question-num">Frage {qi + 1}</div>
+          <div className="question-text">{q.q}</div>
+          <div className="options">
+            {q.options.map((opt, oi) => {
+              let cls = "option-btn";
+              if (revealed[qi] !== undefined) {
+                cls += " revealed";
+                if (oi === q.correct) cls += " correct";
+                else if (oi === answers[qi]) cls += " wrong";
+              }
+              return (
+                <button key={oi} className={cls} onClick={() => handleAnswer(qi, oi)}>
+                  <span style={{marginRight:'8px', fontWeight:800}}>{String.fromCharCode(65+oi)}.</span>
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+          {revealed[qi] !== undefined && (
+            <div className={`feedback ${answers[qi] === q.correct ? 'correct' : 'wrong'}`}>
+              {answers[qi] === q.correct ? "✓ Richtig! " : "✗ Nicht ganz. "}
+              {q.explain}
+            </div>
+          )}
+        </div>
+      ))}
+
+      {done && (
+        <div className="quiz-result">
+          <div className="quiz-result-score">{score}/{questions.length}</div>
+          <div className="quiz-result-label">Punkte</div>
+          <div className="quiz-result-msg">
+            {score >= 13 ? "🎉 Ausgezeichnet! Weiter zu Lab 02." :
+             score >= 10 ? "👍 Gut! Lies die Erklärungen nochmal durch." :
+             "💪 Noch einmal! Schau dir die Erklärungen an."}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Main ── */
+function App() {
+  const [lang, setLang] = useState('de');
+  const t = T[lang];
+
+  useEffect(() => {
+    const els = document.querySelectorAll('.sr');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    els.forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  }, [lang]);
+
+  return (
+    <>
+      {/* Navbar */}
+      <nav className="navbar">
+        <div className="nav-brand">
+          <a href="index.html" style={{textDecoration:'none', display:'flex', alignItems:'center', gap:'10px'}}>
+            <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+              <rect width="28" height="28" rx="3" fill="#005B9A"/>
+              <rect x="6" y="6" width="6" height="6" fill="#E87722"/>
+              <rect x="16" y="6" width="6" height="6" fill="#fff" opacity="0.7"/>
+              <rect x="6" y="16" width="6" height="6" fill="#fff" opacity="0.7"/>
+              <rect x="16" y="16" width="6" height="6" fill="#E87722" opacity="0.5"/>
+            </svg>
+            <span className="nav-brand-text">E-Commerce Labs</span>
+          </a>
+          <span className="nav-lab-badge">{t.labNum}</span>
+        </div>
+        <div className="lang-wrap">
+          <button className={`lang-btn${lang==='de'?' active':''}`} onClick={()=>setLang('de')}>DE</button>
+          <button className={`lang-btn${lang==='en'?' active':''}`} onClick={()=>setLang('en')}>EN</button>
+        </div>
+      </nav>
+
+      {/* Progress */}
+      <div className="progress-bar">
+        {t.progSteps.map((s, i) => (
+          <React.Fragment key={i}>
+            <div className={`prog-step ${i===0?'done':i===1?'active':''}`}>
+              <div className={`prog-dot ${i===0?'done':i===1?'active':''}`}>
+                {i===0?'✓':i+1}
+              </div>
+              {s}
+            </div>
+            {i < t.progSteps.length-1 && <div className="prog-arrow">›</div>}
+          </React.Fragment>
+        ))}
+      </div>
+
+      {/* Hero */}
+      <div className="lab-hero">
+        <div className="lab-hero-inner">
+          <div className="lab-num">{t.labNum}</div>
+          <h1 className="lab-title">{t.labTitle[0]}<span>{t.labTitle[1]}</span></h1>
+          <p className="lab-sub">{t.labSub}</p>
+          <div className="lab-meta">
+            {[["⏱",t.metaDauer],["📊",t.metaLevel],["📁",t.metaData],["🔧",t.metaTool]].map(([icon,val],i) => (
+              <div key={i} className="lab-meta-item">{icon} <strong>{val}</strong></div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="content">
+
+        {/* Section 1: Context */}
+        <div className="section-block sr">
+          <div className="block-eyebrow">{t.s1eye}</div>
+          <h2 className="block-title">{t.s1title}</h2>
+          <div className="divider"/>
+          <p className="block-lead">{t.s1lead}</p>
+          <div style={{background:'rgba(232,119,34,0.08)', border:'1.5px solid rgba(232,119,34,0.2)', padding:'20px 24px'}}>
+            <div style={{fontSize:'0.72rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em', color:'#E87722', marginBottom:'8px'}}>UrbanCart im Überblick</div>
+            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(160px,1fr))', gap:'12px'}}>
+              {[
+                ["🛍️","6 Kategorien","Mode, Schuhe, Home..."],
+                ["📦","14.355 Bestellungen","Jan 2023 – Dez 2024"],
+                ["👥","8.000 Kunden","Aus ganz Deutschland"],
+                ["📣","6 Kanäle","SEA, Social, E-Mail..."],
+              ].map(([icon,title,sub]) => (
+                <div key={title} style={{background:'#fff', padding:'12px 14px'}}>
+                  <div style={{fontSize:'1.2rem', marginBottom:'4px'}}>{icon}</div>
+                  <div style={{fontSize:'0.84rem', fontWeight:800, color:'#212529'}}>{title}</div>
+                  <div style={{fontSize:'0.72rem', color:'#9ca3af'}}>{sub}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{marginTop:'12px', fontSize:'0.82rem', color:'#6c757d'}}>
+              → <a href="urbancart.html" style={{color:'#E87722', fontWeight:700}}>
+                {lang==='de'?'UrbanCart Webshop ansehen (Mockup)':'Visit UrbanCart webshop (mockup)'}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 2: Setup */}
+        <div className="section-block sr">
+          <div className="block-eyebrow">{t.s2eye}</div>
+          <h2 className="block-title">{t.s2title}</h2>
+          <div className="divider"/>
+          <p className="block-lead">{t.s2lead}</p>
+          <div className="steps">
+            {t.steps.map((step, i) => (
+              <div key={i} className="step-card">
+                <div className="step-header">
+                  <div className="step-num">{i+1}</div>
+                  <div className="step-title">{step.title}</div>
+                </div>
+                <div className="step-body" dangerouslySetInnerHTML={{__html: step.body}}/>
+                {step.tip && <div className="step-tip">{step.tip}</div>}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Section 3: KPIs */}
+        <div className="section-block sr">
+          <div className="block-eyebrow">{t.s3eye}</div>
+          <h2 className="block-title">{t.s3title}</h2>
+          <div className="divider"/>
+          <p className="block-lead">{t.s3lead}</p>
+          <div className="kpi-grid">
+            {t.kpis.map((k,i) => (
+              <div key={i} className="kpi-card">
+                <div className="kpi-icon">{k.icon}</div>
+                <div className="kpi-val">{k.val}</div>
+                <div className="kpi-lbl">{k.lbl}</div>
+                <div className="kpi-def">{k.def}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Section 4: Viz steps */}
+        <div className="section-block sr">
+          <div className="block-eyebrow">{t.s4eye}</div>
+          <h2 className="block-title">{t.s4title}</h2>
+          <div className="divider"/>
+          <div className="steps">
+            {t.viz_steps.map((step, i) => (
+              <div key={i} className="step-card">
+                <div className="step-header">
+                  <div className="step-num">{i+1}</div>
+                  <div className="step-title">{step.title}</div>
+                </div>
+                <div className="step-body" dangerouslySetInnerHTML={{__html: step.body}}/>
+                {step.tip && <div className="step-tip">{step.tip}</div>}
+                <div className="screenshot-placeholder">
+                  <div className="screenshot-placeholder-icon">📸</div>
+                  <div className="screenshot-placeholder-text">
+                    {lang==='de'?`Dein Ergebnis für Schritt ${i+1}`:`Your result for step ${i+1}`}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Quiz */}
+        <div className="section-block sr">
+          <Quiz questions={t.questions} t={t}/>
+        </div>
+
+        {/* AI Outlook */}
+        <div className="section-block sr">
+          <div className="ai-section">
+            <div className="ai-eyebrow">{t.aiEye}</div>
+            <h3 className="ai-title">{t.aiTitle}</h3>
+            <p className="ai-text">{t.aiText}</p>
+            <div className="code-block">{t.aiPrompt}</div>
+            <p style={{fontSize:'0.78rem', color:'rgba(255,255,255,0.4)', marginTop:'12px'}}>
+              {lang==='de'
+                ? '→ Referenz-Dashboard: whi-dashboard.butscher.cloud (Plotly Dash, interaktiv)'
+                : '→ Reference dashboard: whi-dashboard.butscher.cloud (Plotly Dash, interactive)'}
+            </p>
+          </div>
+        </div>
+
+      </div>{/* /content */}
+
+      {/* Lab Navigation */}
+      <div className="lab-nav">
+        <a href="index.html" className="lab-nav-btn">
+          ← {lang==='de'?'Zur Übersicht':'Overview'}
+        </a>
+        <a href="lab02.html" className="lab-nav-btn primary">
+          {t.nextLab}
+        </a>
+      </div>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

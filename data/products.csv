@@ -1,0 +1,42 @@
+product_id,name,category,price,cost,stock,return_rate
+P0001,Slim-Fit Bluse,Damenmode,77.99,34.02,354,0.38
+P0002,Maxi-Kleid Florencia,Damenmode,102.15,54.13,45,0.38
+P0003,High-Waist Jeans Luna,Damenmode,117.88,58.65,272,0.38
+P0004,Strickpullover Mila,Damenmode,101.61,53.34,63,0.38
+P0005,Businesshose Selene,Damenmode,43.52,15.39,276,0.38
+P0006,Cardigan Vera,Damenmode,45.66,21.39,273,0.38
+P0007,Off-Shoulder Top Ida,Damenmode,52.62,26.38,320,0.38
+P0008,Midi-Rock Nora,Damenmode,169.64,90.48,68,0.38
+P0009,Oxford Hemd Classic,Herrenmode,89.58,31.4,356,0.28
+P0010,Chino Slim Pierre,Herrenmode,191.35,92.9,203,0.28
+P0011,Kapuzenpulli Anton,Herrenmode,133.78,71.98,265,0.28
+P0012,Poloshirt Leon,Herrenmode,197.24,72.14,301,0.28
+P0013,Leinenhemd Matteo,Herrenmode,197.82,71.65,336,0.28
+P0014,Cargo-Shorts Marc,Herrenmode,195.97,88.69,136,0.28
+P0015,Strickjacke Finn,Herrenmode,31.66,15.69,452,0.28
+P0016,T-Shirt Basic Pack,Herrenmode,30.38,15.89,182,0.28
+P0017,Sneaker Urban Run,Schuhe,180.06,88.12,460,0.42
+P0018,Chelsea Boot Bruno,Schuhe,122.4,43.25,426,0.42
+P0019,Sandalen Riviera,Schuhe,184.15,71.84,434,0.42
+P0020,Pumps Elegante,Schuhe,221.21,89.55,484,0.42
+P0021,Laufschuh Sprint X,Schuhe,82.84,29.01,198,0.42
+P0022,Loafer Classic,Schuhe,138.58,53.94,67,0.42
+P0023,Boots Heritage,Schuhe,191.77,71.25,480,0.42
+P0024,Ballerina Soft,Schuhe,246.86,99.54,185,0.42
+P0025,Lederriemen Cognac,Accessoires,59.55,29.65,346,0.15
+P0026,Seidenschal Parisien,Accessoires,59.86,27.87,403,0.15
+P0027,Sonnenbrille Aviator,Accessoires,64.66,30.33,70,0.15
+P0028,Rucksack Campus,Accessoires,57.7,29.92,468,0.15
+P0029,Portemonnaie Slim,Accessoires,59.71,28.76,323,0.15
+P0030,Mütze Alpaka,Accessoires,79.13,31.41,164,0.15
+P0031,Kissen Lino 50x50,Home & Living,37.02,17.72,177,0.12
+P0032,Überwurfdecke Merino,Home & Living,334.67,155.22,24,0.12
+P0033,Kerzenset Nordic,Home & Living,319.43,164.61,308,0.12
+P0034,Vase Keramik Rund,Home & Living,116.37,55.5,417,0.12
+P0035,Bilderrahmen Set 3er,Home & Living,148.29,78.62,28,0.12
+P0036,Tablett Bambus,Home & Living,313.09,171.39,230,0.12
+P0037,Yoga-Matte Pro,Sport,250.85,88.48,402,0.22
+P0038,Trinkflasche Steel 750ml,Sport,42.99,22.73,436,0.22
+P0039,Laufjacke Wind,Sport,205.25,112.48,228,0.22
+P0040,Sporttasche Gym Plus,Sport,25.04,10.69,122,0.22
+P0041,Widerstandsband Set,Sport,190.36,80.48,447,0.22
