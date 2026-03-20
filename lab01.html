@@ -1,834 +1,1299 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lab 01 – Erste Schritte mit Tableau · UrbanCart · THWS</title>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif; background:#fff; color:#212529; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lab 01 – Erste Schritte mit Tableau · THWS E-Commerce</title>
+<style>
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  font-family:'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;
+  background:#fff;color:#212529;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  line-height:1.5
+}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
 
-    .top-bar { height:4px; background:#E87722; position:fixed; top:0; left:0; right:0; z-index:200; }
+/* ── GRID SYSTEM ── */
+/* 8px base, columns: max 1200px centered, 32px gutters */
+.container{max-width:1200px;margin:0 auto;padding:0 32px}
+@media(max-width:640px){.container{padding:0 16px}}
 
-    /* Navbar */
-    .navbar {
-      position:sticky; top:4px; z-index:100;
-      background:#fff; border-bottom:1px solid #E9ECEF;
-      box-shadow:0 1px 8px rgba(0,0,0,0.05);
-      height:52px; display:flex; align-items:center;
-      padding:0 32px; justify-content:space-between;
-    }
-    .nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
-    .nav-brand-text { font-size:0.78rem; font-weight:700; color:#005B9A; letter-spacing:0.04em; text-transform:uppercase; }
-    .nav-lab-badge {
-      background:rgba(232,119,34,0.12); color:#E87722;
-      font-size:0.68rem; font-weight:700;
-      padding:3px 10px; letter-spacing:0.06em; text-transform:uppercase;
-    }
-    .lang-wrap { display:flex; gap:4px; }
-    .lang-btn {
-      padding:4px 10px; border-radius:3px;
-      border:1.5px solid #E9ECEF; background:#fff;
-      cursor:pointer; font-weight:700; font-size:0.72rem;
-      color:#6C757D; transition:all 0.15s; font-family:inherit;
-    }
-    .lang-btn.active { background:#E87722; color:#fff; border-color:#E87722; }
+/* ── AICHER TOP BAR ── */
+.topbar{height:4px;background:#E87722;position:fixed;top:0;left:0;right:0;z-index:200}
 
-    /* Progress bar */
-    .progress-bar {
-      background:#F1F3F5; padding:12px 32px;
-      display:flex; align-items:center; gap:8px; overflow-x:auto;
-    }
-    .prog-step {
-      display:flex; align-items:center; gap:6px; white-space:nowrap;
-      font-size:0.72rem; font-weight:700; color:#9ca3af;
-    }
-    .prog-step.active { color:#E87722; }
-    .prog-step.done { color:#3D7A56; }
-    .prog-dot {
-      width:24px; height:24px; border-radius:50%;
-      background:#E9ECEF; display:flex; align-items:center;
-      justify-content:center; font-size:0.68rem; font-weight:800;
-      flex-shrink:0;
-    }
-    .prog-dot.active { background:#E87722; color:#fff; }
-    .prog-dot.done { background:#3D7A56; color:#fff; }
-    .prog-arrow { color:#D1D5DB; font-size:0.9rem; }
+/* ── NAVBAR ── */
+.navbar{
+  position:sticky;top:4px;z-index:100;
+  background:#fff;
+  border-bottom:1px solid #E9ECEF;
+  height:64px;
+}
+.navbar__inner{
+  max-width:1200px;margin:0 auto;padding:0 32px;
+  height:64px;display:flex;align-items:center;
+  justify-content:space-between;gap:24px;
+}
+.navbar__brand{display:flex;align-items:center;gap:16px;flex-shrink:0}
+.navbar__logo{height:28px;width:auto;flex-shrink:0}
+.navbar__sep{width:1px;height:24px;background:#E9ECEF;flex-shrink:0}
+.navbar__kurs{
+  font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:#6C757D;white-space:nowrap;
+}
+.navbar__right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.lang-btn{
+  padding:4px 12px;
+  border:1.5px solid #E9ECEF;background:#fff;
+  font-size:11px;font-weight:700;letter-spacing:.06em;
+  color:#6C757D;transition:all .15s;
+}
+.lang-btn.is-active{background:#E87722;color:#fff;border-color:#E87722}
+.lang-btn:hover:not(.is-active){border-color:#005B9A;color:#005B9A}
 
-    /* Hero */
-    .lab-hero {
-      background:#005B9A; padding:48px 32px;
-      position:relative; overflow:hidden;
-    }
-    .lab-hero-inner { max-width:800px; }
-    .lab-num {
-      font-size:0.72rem; font-weight:700; letter-spacing:0.18em;
-      text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:8px;
-    }
-    .lab-title { font-size:clamp(1.8rem,4vw,2.8rem); font-weight:800; color:#fff; line-height:1.1; margin-bottom:12px; }
-    .lab-title span { color:#E87722; }
-    .lab-sub { font-size:1rem; color:rgba(255,255,255,0.75); line-height:1.7; max-width:560px; }
-    .lab-meta {
-      display:flex; gap:16px; flex-wrap:wrap; margin-top:24px;
-    }
-    .lab-meta-item {
-      display:flex; align-items:center; gap:6px;
-      font-size:0.78rem; font-weight:600; color:rgba(255,255,255,0.6);
-    }
-    .lab-meta-item strong { color:#fff; }
+/* ── HERO ── */
+.hero{
+  background:#005B9A;
+  padding:80px 0 72px;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';
+  position:absolute;top:-80px;right:-80px;
+  width:480px;height:480px;border-radius:50%;
+  background:rgba(232,119,34,.1);
+  pointer-events:none;
+}
+.hero__inner{
+  max-width:1200px;margin:0 auto;padding:0 32px;
+  display:grid;grid-template-columns:1fr auto;
+  align-items:end;gap:64px;
+}
+@media(max-width:900px){.hero__inner{grid-template-columns:1fr;gap:40px}}
+.hero__label{
+  font-size:11px;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.5);
+  margin-bottom:16px;
+}
+.hero__title{
+  font-size:clamp(40px,6vw,72px);
+  font-weight:800;color:#fff;
+  line-height:1.05;letter-spacing:-.02em;
+  margin-bottom:0;
+}
+.hero__title em{color:#E87722;font-style:normal;display:block}
+.hero__sub{
+  font-size:17px;color:rgba(255,255,255,.72);
+  line-height:1.7;margin-top:24px;max-width:540px;
+}
+.hero__badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px}
+.hero__badge{
+  border:1.5px solid rgba(255,255,255,.3);
+  color:rgba(255,255,255,.7);
+  font-size:11px;font-weight:700;letter-spacing:.08em;
+  padding:5px 12px;text-transform:uppercase;
+}
+.hero__cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:40px}
+.btn-primary{
+  background:#E87722;color:#fff;
+  padding:12px 28px;font-size:13px;font-weight:700;
+  border:2px solid #E87722;letter-spacing:.04em;
+  transition:background .15s,transform .15s;
+  display:inline-block;
+}
+.btn-primary:hover{background:#cf6a1c;border-color:#cf6a1c;transform:translateY(-1px)}
+.btn-outline-white{
+  background:transparent;color:#fff;
+  padding:12px 28px;font-size:13px;font-weight:700;
+  border:2px solid rgba(255,255,255,.4);letter-spacing:.04em;
+  transition:border-color .15s;
+  display:inline-block;
+}
+.btn-outline-white:hover{border-color:rgba(255,255,255,.8)}
 
-    /* Content */
-    .content { max-width:800px; margin:0 auto; padding:48px 32px; }
-    .section-block { margin-bottom:48px; }
-    .block-eyebrow {
-      font-size:0.68rem; font-weight:700; letter-spacing:0.14em;
-      text-transform:uppercase; color:#E87722; margin-bottom:6px;
-    }
-    .block-title { font-size:1.3rem; font-weight:800; color:#005B9A; margin-bottom:8px; }
-    .block-lead { font-size:0.95rem; color:#6C757D; line-height:1.75; margin-bottom:20px; }
-    .divider { width:40px; height:3px; background:#E87722; margin:8px 0 16px; }
+/* ── STATS BAR ── */
+.statsbar{
+  background:#fff;
+  border-bottom:1px solid #E9ECEF;
+}
+.statsbar__inner{
+  max-width:1200px;margin:0 auto;padding:0 32px;
+  display:flex;flex-wrap:wrap;
+}
+.stat{
+  flex:1;min-width:150px;
+  padding:28px 24px;
+  text-align:center;
+  position:relative;
+}
+.stat+.stat::before{
+  content:'';position:absolute;
+  left:0;top:24px;height:calc(100% - 48px);
+  width:1px;background:#E9ECEF;
+}
+.stat__num{
+  font-size:36px;font-weight:900;
+  color:#E87722;line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.stat__lbl{
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;
+  color:#005B9A;margin-top:8px;
+}
 
-    /* Steps */
-    .steps { display:flex; flex-direction:column; gap:16px; }
-    .step-card {
-      border:1.5px solid #E9ECEF; padding:20px 24px;
-      border-left:3px solid #005B9A;
-      transition:border-color 0.2s;
-    }
-    .step-card:hover { border-left-color:#E87722; }
-    .step-header { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
-    .step-num {
-      width:28px; height:28px; border-radius:50%;
-      background:#005B9A; color:#fff;
-      display:flex; align-items:center; justify-content:center;
-      font-size:0.75rem; font-weight:800; flex-shrink:0;
-    }
-    .step-title { font-size:0.95rem; font-weight:800; color:#212529; }
-    .step-body { font-size:0.87rem; color:#6C757D; line-height:1.7; margin-left:40px; }
-    .step-body code {
-      background:#F1F3F5; padding:1px 6px;
-      font-family:'Consolas','Monaco',monospace; font-size:0.82rem;
-      color:#E87722; border-radius:2px;
-    }
-    .step-tip {
-      background:rgba(0,91,154,0.06); border-left:2px solid #005B9A;
-      padding:10px 14px; margin-top:10px; margin-left:40px;
-      font-size:0.82rem; color:#005B9A; line-height:1.6;
-    }
-    .step-tip strong { color:#005B9A; }
+/* ── SECTIONS ── */
+.section{padding:80px 0}
+.section--alt{background:#F8F9FA}
+.section__eyebrow{
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.14em;
+  color:#E87722;margin-bottom:8px;
+}
+.section__title{
+  font-size:clamp(24px,3vw,36px);
+  font-weight:800;color:#212529;
+  line-height:1.2;
+}
+.section__lead{
+  font-size:15px;color:#6C757D;
+  line-height:1.75;margin-top:16px;
+  max-width:640px;
+}
+.divider{width:48px;height:3px;background:#E87722;margin:12px 0 32px}
 
-    /* Screenshot placeholder */
-    .screenshot-placeholder {
-      background:#F1F3F5; border:1.5px dashed #D1D5DB;
-      padding:32px; text-align:center; margin:16px 0;
-      border-radius:2px;
-    }
-    .screenshot-placeholder-icon { font-size:2rem; opacity:0.3; margin-bottom:8px; }
-    .screenshot-placeholder-text { font-size:0.78rem; color:#9ca3af; font-weight:600; }
+/* ── DEMING QUOTE ── */
+.quote{
+  border-left:3px solid #E87722;
+  padding:32px 40px;
+  background:#F8F9FA;
+  margin-top:48px;
+}
+.quote__text{
+  font-size:clamp(18px,2.5vw,26px);
+  font-weight:700;color:#212529;
+  line-height:1.45;font-style:italic;
+}
+.quote__source{
+  margin-top:16px;
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.12em;
+  color:#E87722;
+}
 
-    /* KPI cards */
-    .kpi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; margin:16px 0; }
-    .kpi-card {
-      background:#fff; border:1.5px solid #E9ECEF;
-      border-top:3px solid #E87722; padding:20px 16px; text-align:center;
-    }
-    .kpi-icon { font-size:1.4rem; margin-bottom:8px; }
-    .kpi-val { font-size:1.6rem; font-weight:900; color:#E87722; line-height:1; }
-    .kpi-lbl { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#005B9A; margin-top:4px; }
-    .kpi-def { font-size:0.78rem; color:#9ca3af; margin-top:6px; line-height:1.5; }
+/* ── WORKFLOW ── */
+.workflow{
+  display:flex;align-items:stretch;
+  margin-top:40px;overflow-x:auto;
+  border:1px solid #E9ECEF;
+}
+.wf-step{
+  flex:1;min-width:120px;
+  padding:20px 16px;
+  text-align:center;
+  border-right:1px solid #E9ECEF;
+  position:relative;
+}
+.wf-step:last-child{border-right:0}
+.wf-step__num{
+  font-size:11px;font-weight:700;
+  color:#E87722;letter-spacing:.1em;
+  text-transform:uppercase;margin-bottom:8px;
+}
+.wf-step__label{
+  font-size:13px;font-weight:700;color:#212529;
+  line-height:1.3;
+}
+.wf-step__arrow{
+  position:absolute;right:-1px;top:50%;
+  transform:translateY(-50%);
+  width:8px;height:8px;
+  border-top:2px solid #E87722;
+  border-right:2px solid #E87722;
+  transform:translateY(-50%) rotate(45deg);
+  background:#fff;
+  z-index:1;
+}
+.wf-step:last-child .wf-step__arrow{display:none}
 
-    /* Quiz */
-    .quiz-section { background:#F1F3F5; padding:40px 32px; margin:0 -32px; border-radius:2px; }
-    .quiz-title { font-size:1.1rem; font-weight:800; color:#005B9A; margin-bottom:4px; }
-    .quiz-sub { font-size:0.84rem; color:#6C757D; margin-bottom:24px; }
-    .quiz-progress { font-size:0.72rem; font-weight:700; color:#9ca3af; margin-bottom:20px; text-transform:uppercase; letter-spacing:0.08em; }
-    .question-block { background:#fff; border:1.5px solid #E9ECEF; padding:24px; margin-bottom:16px; }
-    .question-num { font-size:0.68rem; font-weight:700; color:#E87722; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px; }
-    .question-text { font-size:0.95rem; font-weight:700; color:#212529; margin-bottom:16px; line-height:1.5; }
-    .options { display:flex; flex-direction:column; gap:8px; }
-    .option-btn {
-      background:#F9FAFB; border:1.5px solid #E9ECEF;
-      padding:10px 16px; text-align:left;
-      font-size:0.87rem; font-weight:600; color:#374151;
-      cursor:pointer; transition:all 0.15s; font-family:inherit;
-    }
-    .option-btn:hover { border-color:#005B9A; color:#005B9A; background:rgba(0,91,154,0.04); }
-    .option-btn.correct { background:rgba(61,122,86,0.1); border-color:#3D7A56; color:#3D7A56; }
-    .option-btn.wrong   { background:rgba(239,68,68,0.08); border-color:#ef4444; color:#ef4444; }
-    .option-btn.revealed { pointer-events:none; }
-    .feedback {
-      margin-top:10px; padding:10px 14px;
-      font-size:0.84rem; line-height:1.6; font-weight:600;
-    }
-    .feedback.correct { background:rgba(61,122,86,0.1); color:#3D7A56; border-left:2px solid #3D7A56; }
-    .feedback.wrong   { background:rgba(239,68,68,0.08); color:#dc2626; border-left:2px solid #dc2626; }
-    .quiz-result {
-      background:#fff; border:1.5px solid #E9ECEF; border-top:3px solid #E87722;
-      padding:32px; text-align:center; margin-top:16px;
-    }
-    .quiz-result-score { font-size:3rem; font-weight:900; color:#E87722; line-height:1; }
-    .quiz-result-label { font-size:0.84rem; color:#6C757D; margin-top:6px; }
-    .quiz-result-msg { font-size:1rem; font-weight:700; color:#212529; margin-top:16px; }
+/* ── LAB GRID ── */
+.lab-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;background:#E9ECEF;
+  border:1px solid #E9ECEF;
+  margin-top:48px;
+}
+@media(max-width:900px){.lab-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:580px){.lab-grid{grid-template-columns:1fr}}
 
-    /* AI Outlook */
-    .ai-section {
-      background:#0f172a; padding:32px;
-      border-left:3px solid #E87722; margin:32px 0;
-    }
-    .ai-eyebrow { font-size:0.68rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#E87722; margin-bottom:6px; }
-    .ai-title { font-size:1.1rem; font-weight:800; color:#fff; margin-bottom:12px; }
-    .ai-text { font-size:0.87rem; color:rgba(255,255,255,0.65); line-height:1.75; margin-bottom:16px; }
-    .code-block {
-      background:#1e293b; border-left:2px solid #E87722;
-      color:#e2e8f0; font-family:'Consolas','Monaco',monospace;
-      font-size:0.78rem; line-height:1.8; padding:16px 20px; overflow-x:auto;
-    }
-    .c-comment { color:#64748b; }
-    .c-str { color:#86efac; }
-    .c-kw { color:#93c5fd; }
+.lab-card{
+  background:#fff;
+  padding:32px 28px;
+  display:flex;flex-direction:column;
+  min-height:220px;
+  transition:background .15s;
+  position:relative;
+}
+.lab-card:hover{background:#F8F9FA}
+.lab-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;
+  height:3px;background:#E9ECEF;
+  transition:background .15s;
+}
+.lab-card:hover::before{background:#E87722}
+.lab-card__num{
+  font-size:11px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:#9CA3AF;margin-bottom:8px;
+}
+.lab-card__icon{
+  width:32px;height:32px;
+  margin-bottom:16px;color:#005B9A;
+  flex-shrink:0;
+}
+.lab-card__title{
+  font-size:15px;font-weight:800;
+  color:#212529;line-height:1.3;
+  margin-bottom:8px;
+}
+.lab-card__desc{
+  font-size:13px;color:#6C757D;
+  line-height:1.65;flex:1;
+}
+.lab-card__footer{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  margin-top:24px;padding-top:16px;
+  border-top:1px solid #F1F3F5;
+}
+.lab-card__diff{
+  font-size:10px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;
+}
+.diff--e{background:#D1FAE5;color:#065F46}
+.diff--m{background:#FEF3C7;color:#92400E}
+.diff--f{background:#FEE2E2;color:#991B1B}
+.lab-card__cta{
+  font-size:12px;font-weight:700;
+  color:#E87722;letter-spacing:.04em;
+  display:flex;align-items:center;gap:4px;
+}
 
-    /* Nav footer */
-    .lab-nav {
-      border-top:1px solid #E9ECEF; padding:32px;
-      display:flex; justify-content:space-between; align-items:center;
-      max-width:800px; margin:0 auto;
-    }
-    .lab-nav-btn {
-      display:flex; align-items:center; gap:8px;
-      font-size:0.87rem; font-weight:700; color:#005B9A;
-      text-decoration:none; cursor:pointer;
-      transition:color 0.15s;
-    }
-    .lab-nav-btn:hover { color:#E87722; }
-    .lab-nav-btn.primary {
-      background:#E87722; color:#fff;
-      padding:10px 20px; border:2px solid #E87722;
-    }
-    .lab-nav-btn.primary:hover { background:#d06a1a; border-color:#d06a1a; }
+/* ── INSTRUCTOR ── */
+.instructor{
+  display:grid;
+  grid-template-columns:320px 1fr;
+  gap:64px;align-items:start;
+  margin-top:48px;
+}
+@media(max-width:800px){.instructor{grid-template-columns:1fr;gap:32px}}
 
-    .sr { opacity:0; transform:translateY(12px); transition:opacity 0.5s ease,transform 0.5s ease; }
-    .sr.visible { opacity:1; transform:translateY(0); }
-  </style>
+.instructor-card{
+  border:1px solid #E9ECEF;
+  overflow:hidden;
+}
+.instructor-card__cover{
+  height:64px;background:#005B9A;
+  position:relative;
+}
+.instructor-card__cover::after{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    -45deg,
+    rgba(255,255,255,0) 0,
+    rgba(255,255,255,0) 6px,
+    rgba(255,255,255,.04) 6px,
+    rgba(255,255,255,.04) 7px
+  );
+}
+.instructor-card__avatar-row{
+  padding:0 24px;
+  margin-top:-36px;
+  position:relative;z-index:1;
+}
+.instructor-card__avatar{
+  width:72px;height:72px;border-radius:50%;
+  border:3px solid #fff;
+  object-fit:cover;object-position:top;
+}
+.instructor-card__body{padding:12px 24px 24px}
+.instructor-card__name{
+  font-size:16px;font-weight:800;color:#212529;
+  line-height:1.2;
+}
+.instructor-card__role{
+  font-size:13px;color:#6C757D;
+  line-height:1.5;margin-top:4px;
+}
+.instructor-card__org{
+  display:flex;align-items:center;gap:8px;
+  margin-top:12px;
+  font-size:12px;font-weight:700;color:#005B9A;
+}
+.instructor-card__tags{
+  display:flex;flex-wrap:wrap;gap:6px;
+  margin-top:12px;
+}
+.instructor-card__tag{
+  background:rgba(0,91,154,.08);
+  color:#005B9A;
+  font-size:11px;font-weight:700;
+  padding:3px 10px;
+  border-radius:20px;
+}
+.instructor-card__contact{
+  display:flex;align-items:center;gap:8px;
+  margin-top:16px;
+  font-size:12px;color:#6C757D;
+  border-top:1px solid #F1F3F5;
+  padding-top:16px;
+}
+.instructor-card__contact a{color:#005B9A;font-weight:600}
+
+.instructor__bio p{
+  font-size:15px;color:#6C757D;
+  line-height:1.75;margin-bottom:16px;
+}
+.instructor__bio p:last-child{margin-bottom:0}
+
+/* ── AI SECTION ── */
+.ai-cards{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:24px;margin-top:40px;
+}
+@media(max-width:800px){.ai-cards{grid-template-columns:1fr}}
+.ai-card{
+  background:#F8F9FA;
+  border-left:3px solid #E87722;
+  padding:24px;
+}
+.ai-card__title{
+  font-size:13px;font-weight:800;
+  color:#212529;margin-bottom:8px;
+}
+.ai-card__body{
+  font-size:13px;color:#6C757D;
+  line-height:1.65;
+}
+.code-block{
+  background:#0F172A;
+  border-left:3px solid #E87722;
+  padding:24px;
+  margin-top:32px;
+  overflow-x:auto;
+}
+.code-block code{
+  font-family:'Consolas','Monaco','Courier New',monospace;
+  font-size:12px;color:#E2E8F0;
+  line-height:1.8;
+  white-space:pre;
+  display:block;
+}
+.code-block .c{color:#64748B}
+.code-block .s{color:#86EFAC}
+
+/* ── FOOTER ── */
+.footer{
+  background:#212529;
+  padding:56px 0;
+}
+.footer__inner{
+  max-width:1200px;margin:0 auto;padding:0 32px;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:64px;align-items:start;
+}
+@media(max-width:700px){.footer__inner{grid-template-columns:1fr;gap:32px}}
+.footer__brand{}
+.footer__thws{filter:brightness(0) invert(1) opacity(.6);height:20px;width:auto}
+.footer__title{
+  font-size:13px;font-weight:700;color:rgba(255,255,255,.9);
+  margin-top:16px;
+}
+.footer__sub{
+  font-size:12px;color:rgba(255,255,255,.4);
+  margin-top:6px;line-height:1.6;
+}
+.footer__links{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+@media(max-width:700px){.footer__links{align-items:flex-start}}
+.footer__link{
+  font-size:12px;font-weight:600;
+  color:rgba(255,255,255,.45);
+  transition:color .15s;
+}
+.footer__link:hover{color:#E87722}
+.footer__disclaimer{
+  grid-column:1/-1;
+  font-size:11px;color:rgba(255,255,255,.2);
+  line-height:1.6;padding-top:32px;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+
+/* ── SCROLL REVEAL ── */
+.sr{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease}
+.sr.visible{opacity:1;transform:none}
+
+/* ── RESPONSIVE HELPERS ── */
+@media(max-width:640px){
+  .hero{padding:56px 0 48px}
+  .section{padding:56px 0}
+  .hero__inner{grid-template-columns:1fr}
+  .stat{min-width:120px;padding:20px 12px}
+  .stat__num{font-size:28px}
+}
+
+/* ── LAB-SPECIFIC ── */
+.progress-bar{
+  background:#F8F9FA;
+  border-bottom:1px solid #E9ECEF;
+  overflow-x:auto;
+}
+.progress-bar__inner{
+  max-width:1200px;margin:0 auto;padding:0 32px;
+  display:flex;align-items:center;gap:0;
+  height:48px;
+}
+.prog-step{
+  display:flex;align-items:center;gap:8px;
+  padding:0 16px;height:48px;
+  font-size:11px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;
+  color:#9CA3AF;white-space:nowrap;
+  border-right:1px solid #E9ECEF;
+  position:relative;
+}
+.prog-step:last-child{border-right:0}
+.prog-step.is-done{color:#3D7A56}
+.prog-step.is-active{color:#E87722;background:rgba(232,119,34,.04)}
+.prog-step__dot{
+  width:20px;height:20px;border-radius:50%;
+  border:1.5px solid currentColor;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;flex-shrink:0;
+}
+.prog-step.is-done .prog-step__dot{
+  background:#3D7A56;border-color:#3D7A56;color:#fff;
+}
+.prog-step.is-active .prog-step__dot{
+  background:#E87722;border-color:#E87722;color:#fff;
+}
+
+.lab-hero{
+  background:#005B9A;
+  padding:56px 0 48px;
+  position:relative;overflow:hidden;
+}
+.lab-hero::before{
+  content:'';position:absolute;
+  top:-60px;right:-60px;
+  width:320px;height:320px;border-radius:50%;
+  background:rgba(232,119,34,.1);pointer-events:none;
+}
+.lab-hero__inner{
+  max-width:1200px;margin:0 auto;padding:0 32px;
+}
+.lab-hero__num{
+  font-size:11px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.45);margin-bottom:8px;
+}
+.lab-hero__title{
+  font-size:clamp(28px,4vw,48px);
+  font-weight:800;color:#fff;
+  line-height:1.1;letter-spacing:-.02em;
+}
+.lab-hero__title em{color:#E87722;font-style:normal}
+.lab-hero__sub{
+  font-size:15px;color:rgba(255,255,255,.7);
+  line-height:1.7;margin-top:16px;max-width:600px;
+}
+.lab-hero__meta{
+  display:flex;flex-wrap:wrap;gap:24px;
+  margin-top:32px;
+}
+.lab-hero__meta-item{
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;color:rgba(255,255,255,.55);
+}
+.lab-hero__meta-item strong{color:rgba(255,255,255,.85)}
+.lab-hero__meta-item svg{flex-shrink:0;opacity:.6}
+
+/* Content layout */
+.lab-content{max-width:800px;margin:0 auto;padding:0 32px}
+@media(max-width:640px){.lab-content{padding:0 16px}}
+
+.lab-section{padding:56px 0}
+.lab-section+.lab-section{border-top:1px solid #E9ECEF}
+
+.block-label{
+  font-size:11px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:#E87722;margin-bottom:8px;
+}
+.block-title{
+  font-size:22px;font-weight:800;
+  color:#212529;line-height:1.25;
+}
+.block-divider{width:32px;height:2px;background:#E87722;margin:10px 0 20px}
+.block-lead{
+  font-size:14px;color:#6C757D;
+  line-height:1.8;margin-bottom:0;
+}
+
+/* Steps */
+.steps{display:flex;flex-direction:column;gap:2px;margin-top:32px}
+.step{
+  border:1px solid #E9ECEF;
+  border-left:2px solid #005B9A;
+  background:#fff;
+  transition:border-left-color .15s;
+}
+.step:hover{border-left-color:#E87722}
+.step__head{
+  display:flex;align-items:center;gap:16px;
+  padding:20px 24px;
+  cursor:pointer;
+}
+.step__head::-webkit-details-marker{display:none}
+.step__num{
+  width:28px;height:28px;border-radius:50%;
+  background:#005B9A;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;flex-shrink:0;
+}
+.step__title{font-size:14px;font-weight:700;color:#212529;flex:1}
+.step__body{
+  padding:0 24px 20px 68px;
+  font-size:13px;color:#6C757D;
+  line-height:1.8;
+}
+.step__body code{
+  background:#F1F3F5;padding:1px 6px;
+  font-family:'Consolas','Monaco',monospace;
+  font-size:12px;color:#E87722;
+}
+.step__tip{
+  background:rgba(0,91,154,.06);
+  border-left:2px solid #005B9A;
+  padding:10px 14px;margin-top:12px;
+  font-size:12px;color:#005B9A;line-height:1.6;
+}
+
+/* KPI Cards */
+.kpi-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;background:#E9ECEF;
+  border:1px solid #E9ECEF;
+  margin-top:32px;
+}
+@media(max-width:560px){.kpi-grid{grid-template-columns:1fr}}
+.kpi-card{
+  background:#fff;padding:24px;
+  border-top:2px solid #E87722;
+}
+.kpi-card__icon{color:#005B9A;margin-bottom:12px}
+.kpi-card__val{
+  font-size:20px;font-weight:800;
+  color:#E87722;line-height:1;
+}
+.kpi-card__lbl{
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;
+  color:#005B9A;margin-top:6px;
+}
+.kpi-card__def{
+  font-size:12px;color:#9CA3AF;
+  margin-top:8px;line-height:1.55;
+}
+
+/* Info box */
+.info-box{
+  background:#F8F9FA;
+  border-left:3px solid #E87722;
+  padding:20px 24px;margin-top:24px;
+}
+.info-box__title{
+  font-size:12px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.1em;
+  color:#E87722;margin-bottom:8px;
+}
+.info-box__body{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:16px;
+}
+.info-box__item{}
+.info-box__item-icon{font-size:16px;margin-bottom:4px}
+.info-box__item-title{font-size:13px;font-weight:800;color:#212529}
+.info-box__item-sub{font-size:11px;color:#9CA3AF;margin-top:2px}
+
+/* Screenshot placeholder */
+.screen-placeholder{
+  background:#F8F9FA;
+  border:1px dashed #D1D5DB;
+  padding:28px;
+  text-align:center;
+  margin-top:16px;
+}
+.screen-placeholder__icon{color:#D1D5DB;margin:0 auto 8px}
+.screen-placeholder__text{
+  font-size:12px;color:#9CA3AF;font-weight:600;
+  text-transform:uppercase;letter-spacing:.08em;
+}
+
+/* Quiz */
+.quiz{
+  background:#F8F9FA;
+  padding:40px;
+  margin:0 -32px;
+}
+@media(max-width:640px){.quiz{margin:0 -16px;padding:32px 16px}}
+.quiz__header{margin-bottom:32px}
+.quiz__title{font-size:20px;font-weight:800;color:#212529}
+.quiz__sub{font-size:13px;color:#6C757D;margin-top:6px}
+.quiz__progress{
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:#9CA3AF;margin-top:12px;
+}
+
+.question{
+  background:#fff;
+  border:1px solid #E9ECEF;
+  padding:24px;
+  margin-bottom:8px;
+}
+.question__num{
+  font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;
+  color:#E87722;margin-bottom:8px;
+}
+.question__text{
+  font-size:14px;font-weight:700;
+  color:#212529;line-height:1.55;
+  margin-bottom:16px;
+}
+.question__options{display:flex;flex-direction:column;gap:6px}
+.opt{
+  background:#F8F9FA;border:1px solid #E9ECEF;
+  padding:10px 16px;
+  font-size:13px;font-weight:600;color:#374151;
+  cursor:pointer;text-align:left;
+  transition:all .12s;width:100%;
+  display:flex;align-items:center;gap:10px;
+}
+.opt:hover:not(:disabled){border-color:#005B9A;color:#005B9A;background:rgba(0,91,154,.04)}
+.opt.is-correct{background:rgba(61,122,86,.1);border-color:#3D7A56;color:#3D7A56}
+.opt.is-wrong{background:rgba(239,68,68,.08);border-color:#ef4444;color:#dc2626}
+.opt:disabled{cursor:default}
+.opt__letter{
+  width:20px;height:20px;border-radius:50%;
+  background:currentColor;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;flex-shrink:0;
+  opacity:.25;
+}
+.opt.is-correct .opt__letter,.opt.is-wrong .opt__letter{opacity:1}
+.feedback{
+  margin-top:10px;padding:10px 14px;
+  font-size:13px;font-weight:600;line-height:1.6;
+}
+.feedback.is-correct{background:rgba(61,122,86,.08);color:#3D7A56;border-left:2px solid #3D7A56}
+.feedback.is-wrong{background:rgba(239,68,68,.06);color:#dc2626;border-left:2px solid #ef4444}
+
+.quiz__result{
+  background:#fff;border:1px solid #E9ECEF;
+  border-top:2px solid #E87722;
+  padding:40px;text-align:center;
+  margin-top:16px;display:none;
+}
+.quiz__result.is-visible{display:block}
+.quiz__result-score{
+  font-size:56px;font-weight:900;
+  color:#E87722;line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.quiz__result-label{font-size:13px;color:#6C757D;margin-top:6px}
+.quiz__result-msg{font-size:15px;font-weight:700;color:#212529;margin-top:16px}
+.quiz__result-btn{
+  display:inline-block;
+  margin-top:24px;background:#E87722;color:#fff;
+  padding:10px 24px;font-size:12px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;
+  border:0;cursor:pointer;
+}
+
+/* AI block */
+.ai-block{
+  background:#0F172A;
+  border-left:3px solid #E87722;
+  padding:32px;
+}
+.ai-block__eyebrow{
+  font-size:11px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:#E87722;margin-bottom:8px;
+}
+.ai-block__title{font-size:18px;font-weight:800;color:#fff;margin-bottom:12px}
+.ai-block__text{font-size:13px;color:rgba(255,255,255,.6);line-height:1.75;margin-bottom:20px}
+.ai-block pre{
+  background:#1E293B;
+  border-left:2px solid #E87722;
+  padding:20px 24px;
+  font-family:'Consolas','Monaco',monospace;
+  font-size:12px;color:#E2E8F0;
+  line-height:1.8;overflow-x:auto;
+}
+.ai-block .c{color:#64748B}
+.ai-block .s{color:#86EFAC}
+
+/* Lab nav */
+.lab-nav{
+  border-top:1px solid #E9ECEF;
+  padding:32px 0;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:16px;
+}
+.lab-nav__back{
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:700;color:#6C757D;
+  transition:color .15s;
+}
+.lab-nav__back:hover{color:#005B9A}
+.lab-nav__next{
+  display:flex;align-items:center;gap:8px;
+  background:#E87722;color:#fff;
+  padding:12px 24px;
+  font-size:13px;font-weight:700;letter-spacing:.04em;
+  border:2px solid #E87722;
+  transition:background .15s,transform .15s;
+}
+.lab-nav__next:hover{background:#cf6a1c;border-color:#cf6a1c;transform:translateY(-1px)}
+</style>
 </head>
 <body>
-<div class="top-bar"></div>
-<div id="root"></div>
 
-<script type="text/babel">
-const { useState, useEffect } = React;
+<div class="topbar"></div>
 
-/* ── i18n ── */
-const T = {
-  de: {
-    labNum: "Lab 01 von 09",
-    labTitle: ["Erste Schritte mit ", "Tableau"],
-    labSub: "Du öffnest Tableau zum ersten Mal. Kein Stress – wir gehen jeden Schritt gemeinsam durch. Am Ende hast du ein echtes Sales-Dashboard für UrbanCart.",
-    metaDauer: "60–90 Min.",
-    metaLevel: "Einstieg",
-    metaData: "orders.csv · order_items.csv",
-    metaTool: "Tableau Public (kostenlos)",
-    progSteps: ["Einführung","Daten laden","Erste Viz","Dashboard","Quiz","KI-Ausblick"],
-    // Section 1
-    s1eye: "Kontext",
-    s1title: "Was ist UrbanCart?",
-    s1lead: "Bevor wir anfangen: Woher kommen die Daten, mit denen wir arbeiten? UrbanCart ist ein fiktiver europäischer Online-Händler. Du bist der neue Junior Data Analyst im Team – und dein erstes Projekt ist ein Sales-Dashboard für die Geschäftsführung.",
-    // Section 2
-    s2eye: "Schritt-für-Schritt",
-    s2title: "Tableau einrichten & Daten laden",
-    s2lead: "Tableau Public ist kostenlos und läuft auf macOS und Windows. Lade es herunter, installiere es – und dann folge diesen Schritten.",
-    steps: [
-      {
-        title: "Tableau Public herunterladen & installieren",
-        body: "Gehe auf <strong>public.tableau.com</strong>, klicke auf \"Tableau Public herunterladen\" und installiere die App. Kostenlos, kein Abo nötig.",
-        tip: "💡 Tipp: Erstelle ein kostenloses Tableau-Konto – du kannst deine Visualisierungen später dort speichern und teilen."
-      },
-      {
-        title: "Datensatz herunterladen",
-        body: "Lade <code>orders.csv</code> und <code>order_items.csv</code> von GitHub herunter: <strong>github.com/swrobuts/e-comm/tree/main/data</strong>. Speichere beide Dateien in einem Ordner deiner Wahl.",
-        tip: "💡 Tipp: Erstelle einen Ordner \"UrbanCart\" auf deinem Desktop und lege alle Lab-Dateien dort ab."
-      },
-      {
-        title: "Tableau öffnen & Daten verbinden",
-        body: "Starte Tableau Public. Auf der Startseite siehst du links \"Verbinden\". Klicke auf <code>Textdatei</code> und wähle <code>orders.csv</code>. Tableau lädt die Daten automatisch.",
-        tip: null
-      },
-      {
-        title: "Zweite Tabelle hinzufügen (Join)",
-        body: "Ziehe <code>order_items.csv</code> aus dem linken Panel auf die Arbeitsfläche neben <code>orders.csv</code>. Tableau erkennt automatisch den Join über <code>order_id</code>. Klicke auf die Join-Verbindung und stelle sicher, dass <code>Order Id = Order Id</code> eingestellt ist.",
-        tip: "💡 Was ist ein Join? Du verbindest zwei Tabellen über ein gemeinsames Feld – wie ein SVERWEIS in Excel, nur mächtiger."
-      },
-      {
-        title: "Daten überprüfen",
-        body: "Scrolle unten durch die Vorschautabelle. Du siehst Spalten wie <code>order_date</code>, <code>total_revenue</code>, <code>region</code>, <code>channel</code>. Alles da? Dann klicke oben rechts auf <code>Arbeitsblatt 1</code>.",
-        tip: null
-      },
-    ],
-    // KPIs
-    s3eye: "Kennzahlen",
-    s3title: "Die drei wichtigsten KPIs",
-    s3lead: "Bevor du visualisierst, musst du wissen, was du messen willst. Diese drei KPIs sind das Fundament jedes E-Commerce-Dashboards.",
-    kpis: [
-      { icon:"💶", val:"∑ Umsatz", lbl:"Total Revenue", def:"Summe aller Bestellwerte. In Tableau: SUM([total_revenue])" },
-      { icon:"📦", val:"# Bestellungen", lbl:"Order Count", def:"Anzahl eindeutiger Bestellungen. In Tableau: COUNTD([order_id])" },
-      { icon:"🧮", val:"Ø Warenkorb", lbl:"Avg. Order Value", def:"Umsatz ÷ Bestellungen. In Tableau: SUM([total_revenue]) / COUNTD([order_id])" },
-    ],
-    // Steps 2
-    s4eye: "Visualisierung",
-    s4title: "Dein erstes Dashboard bauen",
-    viz_steps: [
-      {
-        title: "KPI 1: Gesamtumsatz als Zahl",
-        body: "Ziehe <code>Total Revenue</code> auf \"Text\" im Marks-Panel. Tableau zeigt dir die Summe. Ändere den Chart-Typ oben rechts auf \"Nur Text\".",
-        tip: null
-      },
-      {
-        title: "Umsatz über die Zeit: Liniendiagramm",
-        body: "Neues Arbeitsblatt. Ziehe <code>Order Date</code> auf Spalten, <code>Total Revenue</code> auf Zeilen. Tableau erstellt automatisch ein Liniendiagramm. Klicke auf <code>Order Date</code> → wähle \"Monat\" für eine monatliche Ansicht.",
-        tip: "💡 Du siehst einen Spike im November/Dezember? Das ist Black Friday + Weihnachten. Genau wie in der Realität!"
-      },
-      {
-        title: "Umsatz nach Region: Balkendiagramm",
-        body: "Neues Arbeitsblatt. <code>Region</code> auf Zeilen, <code>Total Revenue</code> auf Spalten. Klicke auf \"Absteigend sortieren\" (Symbol oben in der Toolbar). Welche Region verkauft am meisten?",
-        tip: null
-      },
-      {
-        title: "Dashboard zusammenbauen",
-        body: "Klicke unten links auf das <code>+</code>-Symbol → \"Neues Dashboard\". Ziehe deine drei Arbeitsblätter auf die Leinwand. Klicke auf \"Formatieren\" → \"Dashboard-Titel\" und nenne es: <strong>UrbanCart Sales Overview 2023–2024</strong>.",
-        tip: "💡 Tipp: Halte alle Farben konsistent. Nutze Tableau's Standardpalette – wir stylen später."
-      },
-    ],
-    // Quiz
-    quizTitle: "Quiz: Lab 01 – Grundlagen",
-    quizSub: "15 Fragen · Beantworte alle, bevor du zum nächsten Lab gehst.",
-    questions: [
-      {
-        q: "Was ist ein KPI?",
-        options: ["Eine Datenbankabfrage","Eine messbare Kennzahl zur Erfolgsbewertung","Ein Diagrammtyp in Tableau","Eine Excel-Funktion"],
-        correct: 1,
-        explain: "KPI = Key Performance Indicator – eine messbare Kennzahl, die zeigt, wie gut ein Unternehmen sein Ziel erreicht."
-      },
-      {
-        q: "Was zeigt der Durchschnittliche Bestellwert (Average Order Value)?",
-        options: ["Die Anzahl der Bestellungen","Den höchsten Einzelumsatz","Den durchschnittlichen Umsatz pro Bestellung","Die meistverkaufte Kategorie"],
-        correct: 2,
-        explain: "AOV = Gesamtumsatz ÷ Anzahl Bestellungen. Zeigt, wie viel ein Kunde im Schnitt pro Bestellung ausgibt."
-      },
-      {
-        q: "Welche Tableau-Funktion nutzt du, um die Anzahl eindeutiger Bestellungen zu zählen?",
-        options: ["SUM([order_id])","COUNT([order_id])","COUNTD([order_id])","AVG([order_id])"],
-        correct: 2,
-        explain: "COUNTD = Count Distinct. Zählt jeden Wert nur einmal – verhindert Doppelzählungen bei mehreren Positionen pro Bestellung."
-      },
-      {
-        q: "Was ist ein Join in Tableau?",
-        options: [
-          "Ein Diagrammtyp",
-          "Eine Verbindung zweier Tabellen über ein gemeinsames Feld",
-          "Eine Farboption",
-          "Ein Filter"
-        ],
-        correct: 1,
-        explain: "Join verbindet zwei Tabellen über ein gemeinsames Feld (hier: order_id). Entspricht einem SVERWEIS in Excel."
-      },
-      {
-        q: "Im UrbanCart-Datensatz gibt es einen deutlichen Umsatzpeak im November. Was ist die wahrscheinlichste Ursache?",
-        options: ["Saisonale Produkte","Black Friday und Cyber Monday","Technischer Fehler in den Daten","Neue Produktlinie"],
-        correct: 1,
-        explain: "Black Friday (letzter Freitag im November) ist der umsatzstärkste Tag im E-Commerce. UrbanCart simuliert dieses reale Muster."
-      },
-      {
-        q: "Was ist der Unterschied zwischen COUNT und COUNTD in Tableau?",
-        options: [
-          "Kein Unterschied",
-          "COUNT zählt alle Werte, COUNTD nur eindeutige",
-          "COUNTD ist schneller",
-          "COUNT ist nur für Zahlen"
-        ],
-        correct: 1,
-        explain: "COUNT zählt alle Zeilen (inkl. Duplikate), COUNTD zählt jeden Wert nur einmal. Wichtig bei Bestellpositionen, die mehrere Zeilen pro Bestellung haben."
-      },
-      {
-        q: "Was versteht man unter einem 'Dashboard' in Tableau?",
-        options: [
-          "Eine einzelne Visualisierung",
-          "Eine Sammlung mehrerer Arbeitsblätter auf einer Ansicht",
-          "Die Datenverbindung",
-          "Ein Exportformat"
-        ],
-        correct: 1,
-        explain: "Ein Dashboard kombiniert mehrere Visualisierungen (Arbeitsblätter) in einer zusammenhängenden Ansicht – ideal für Executive Präsentationen."
-      },
-      {
-        q: "Was bedeutet 'Total Revenue' im E-Commerce-Kontext?",
-        options: [
-          "Gewinn nach Abzug aller Kosten",
-          "Summe aller Bestellumsätze vor Retouren",
-          "Anzahl der verkauften Produkte",
-          "Marketingausgaben"
-        ],
-        correct: 1,
-        explain: "Total Revenue = Bruttoumsatz, also die Summe aller Bestellwerte. Noch kein Gewinn – Kosten und Retouren sind nicht abgezogen."
-      },
-      {
-        q: "Auf welchem Feld wird der Join zwischen orders.csv und order_items.csv aufgebaut?",
-        options: ["customer_id","product_id","order_id","order_date"],
-        correct: 2,
-        explain: "Die order_id ist der gemeinsame Schlüssel: Jede Bestellposition in order_items gehört zu genau einer Bestellung in orders."
-      },
-      {
-        q: "Was zeigt ein Liniendiagramm besser als ein Balkendiagramm?",
-        options: [
-          "Vergleiche zwischen Kategorien",
-          "Zeitliche Entwicklung und Trends",
-          "Anteile am Gesamtumsatz",
-          "Geografische Verteilung"
-        ],
-        correct: 1,
-        explain: "Liniendiagramme sind ideal für Zeitreihen: Sie zeigen Entwicklung, Trends und Saisonalität. Balken eignen sich besser für Kategorievergleiche."
-      },
-      {
-        q: "UrbanCart verkauft in 10 deutschen Regionen. Was ist eine gute Visualisierung für den regionalen Umsatz?",
-        options: [
-          "Kreisdiagramm",
-          "Liniendiagramm",
-          "Horizontales Balkendiagramm (sortiert)",
-          "Scatterplot"
-        ],
-        correct: 2,
-        explain: "Horizontale Balken, nach Größe sortiert, sind ideal für Ranking-Vergleiche. Das menschliche Auge kann Längen besser vergleichen als Winkel (Kreisdiagramm)."
-      },
-      {
-        q: "Was bedeutet 'granularity' (Granularität) bei Zeitreihen?",
-        options: [
-          "Die Anzahl der Datenpunkte",
-          "Der zeitliche Detailgrad (Tag / Monat / Jahr)",
-          "Die Genauigkeit der Umsatzdaten",
-          "Die Farbabstufung im Diagramm"
-        ],
-        correct: 1,
-        explain: "Granularität = zeitliche Auflösung. Tagesebene zeigt Details, Monatsebene zeigt Trends. Für ein Executive Dashboard ist Monat meist sinnvoll."
-      },
-      {
-        q: "Warum ist Tableau besser geeignet als Excel für große Datensätze?",
-        options: [
-          "Tableau ist kostenlos",
-          "Tableau verarbeitet Millionen Zeilen effizient, Excel hat Zeilenlimits",
-          "Excel kann keine Diagramme",
-          "Tableau hat mehr Farben"
-        ],
-        correct: 1,
-        explain: "Excel ist auf ~1 Mio. Zeilen limitiert und wird bei großen Daten langsam. Tableau ist für BI-Analysen optimiert und verarbeitet Millionen Zeilen performant."
-      },
-      {
-        q: "Was ist der erste Schritt beim Aufbau eines Dashboards?",
-        options: [
-          "Farben auswählen",
-          "Zielgruppe und Kernaussage definieren",
-          "Alle Daten in einem Diagramm zeigen",
-          "Schriftgröße festlegen"
-        ],
-        correct: 1,
-        explain: "Immer mit der Frage beginnen: Wer schaut sich das an, und welche Entscheidung soll er/sie treffen? Erst dann visualisieren."
-      },
-      {
-        q: "Du siehst im Datensatz den Status 'retourniert'. Was solltest du bei der Umsatzberechnung beachten?",
-        options: [
-          "Retouren immer ignorieren",
-          "Retournierte Bestellungen vom Nettoumsatz abziehen",
-          "Retouren verdoppeln den Umsatz",
-          "Retouren haben keinen Einfluss auf KPIs"
-        ],
-        correct: 1,
-        explain: "Für den Nettoumsatz (Net Revenue) müssen Retouren abgezogen werden. Im Lab nutzen wir zunächst den Bruttoumsatz – aber der Unterschied ist wichtig für die Interpretation."
-      },
-    ],
-    nextLab: "Lab 02: Wer kauft bei uns? →",
-    backHome: "← Zur Übersicht",
-    // AI section
-    aiEye: "KI-Ausblick",
-    aiTitle: "Wie würde das in Python + Plotly Dash aussehen?",
-    aiText: "Das Dashboard, das du gerade in Tableau gebaut hast, lässt sich mit Python und Plotly Dash reproduzieren – und automatisieren. Hier der Prompt und der technische Stack:",
-    aiPrompt: `# Prompt für ChatGPT / Claude:
-"Erstelle ein Python Plotly Dash Dashboard für E-Commerce-Daten.
-Lade 'orders.csv' mit pandas. Zeige drei KPI-Cards:
-- Gesamtumsatz (SUM total_revenue)
-- Anzahl Bestellungen (COUNTD order_id)  
-- Ø Warenkorbwert (ratio)
-Und ein Liniendiagramm: Umsatz pro Monat.
-Farbschema: Orange #E87722, Blau #005B9A.
-Nutze Dash Bootstrap Components für das Layout."`,
-  },
-  en: {
-    labNum: "Lab 01 of 09",
-    labTitle: ["Getting Started with ", "Tableau"],
-    labSub: "You open Tableau for the first time. No stress – we walk through every step together. By the end, you'll have a real sales dashboard for UrbanCart.",
-    metaDauer: "60–90 min.",
-    metaLevel: "Beginner",
-    metaData: "orders.csv · order_items.csv",
-    metaTool: "Tableau Public (free)",
-    progSteps: ["Introduction","Load Data","First Viz","Dashboard","Quiz","AI Outlook"],
-    s1eye: "Context",
-    s1title: "What is UrbanCart?",
-    s1lead: "Before we start: where does the data come from? UrbanCart is a fictional European online retailer. You are the new Junior Data Analyst on the team – and your first project is a sales dashboard for management.",
-    s2eye: "Step by Step",
-    s2title: "Set up Tableau & load data",
-    s2lead: "Tableau Public is free and runs on macOS and Windows. Download it, install it – then follow these steps.",
-    steps: [
-      {
-        title: "Download & install Tableau Public",
-        body: "Go to <strong>public.tableau.com</strong>, click \"Download Tableau Public\" and install. Free, no subscription needed.",
-        tip: "💡 Tip: Create a free Tableau account – you can save and share your visualisations there later."
-      },
-      {
-        title: "Download the dataset",
-        body: "Download <code>orders.csv</code> and <code>order_items.csv</code> from GitHub: <strong>github.com/swrobuts/e-comm/tree/main/data</strong>. Save both files in a folder of your choice.",
-        tip: "💡 Tip: Create an 'UrbanCart' folder on your Desktop and save all lab files there."
-      },
-      {
-        title: "Open Tableau & connect data",
-        body: "Start Tableau Public. On the start page, see \"Connect\" on the left. Click <code>Text File</code> and select <code>orders.csv</code>. Tableau loads the data automatically.",
-        tip: null
-      },
-      {
-        title: "Add second table (Join)",
-        body: "Drag <code>order_items.csv</code> from the left panel onto the canvas next to <code>orders.csv</code>. Tableau auto-detects the join via <code>order_id</code>. Click the join icon and make sure <code>Order Id = Order Id</code> is set.",
-        tip: "💡 What is a Join? You connect two tables via a shared field – like VLOOKUP in Excel, but more powerful."
-      },
-      {
-        title: "Check the data",
-        body: "Scroll through the preview table at the bottom. You'll see columns like <code>order_date</code>, <code>total_revenue</code>, <code>region</code>, <code>channel</code>. All there? Click <code>Sheet 1</code> at the top right.",
-        tip: null
-      },
-    ],
-    s3eye: "Key Metrics",
-    s3title: "The three most important KPIs",
-    s3lead: "Before you visualise, you need to know what to measure. These three KPIs are the foundation of every e-commerce dashboard.",
-    kpis: [
-      { icon:"💶", val:"∑ Revenue", lbl:"Total Revenue", def:"Sum of all order values. In Tableau: SUM([total_revenue])" },
-      { icon:"📦", val:"# Orders", lbl:"Order Count", def:"Count of unique orders. In Tableau: COUNTD([order_id])" },
-      { icon:"🧮", val:"Ø Basket", lbl:"Avg. Order Value", def:"Revenue ÷ Orders. In Tableau: SUM([total_revenue]) / COUNTD([order_id])" },
-    ],
-    s4eye: "Visualisation",
-    s4title: "Build your first dashboard",
-    viz_steps: [
-      {
-        title: "KPI 1: Total revenue as number",
-        body: "Drag <code>Total Revenue</code> onto \"Text\" in the Marks panel. Tableau shows the sum. Change chart type top right to \"Text\".",
-        tip: null
-      },
-      {
-        title: "Revenue over time: Line chart",
-        body: "New sheet. Drag <code>Order Date</code> to Columns, <code>Total Revenue</code> to Rows. Tableau creates a line chart automatically. Click <code>Order Date</code> → choose \"Month\".",
-        tip: "💡 See a spike in November/December? That's Black Friday + Christmas. Just like in reality!"
-      },
-      {
-        title: "Revenue by region: Bar chart",
-        body: "New sheet. <code>Region</code> to Rows, <code>Total Revenue</code> to Columns. Click \"Sort Descending\". Which region sells the most?",
-        tip: null
-      },
-      {
-        title: "Assemble the dashboard",
-        body: "Click the <code>+</code> at the bottom left → \"New Dashboard\". Drag your three sheets onto the canvas. Name it: <strong>UrbanCart Sales Overview 2023–2024</strong>.",
-        tip: "💡 Tip: Keep colours consistent. Use Tableau's default palette – we'll style later."
-      },
-    ],
-    quizTitle: "Quiz: Lab 01 – Foundations",
-    quizSub: "15 questions · Complete all before moving to the next lab.",
-    questions: [
-      { q:"What is a KPI?", options:["A database query","A measurable metric to evaluate performance","A chart type in Tableau","An Excel function"], correct:1, explain:"KPI = Key Performance Indicator – a measurable metric showing how well a company achieves its goal." },
-      { q:"What does Average Order Value (AOV) show?", options:["Number of orders","Highest single order","Average revenue per order","Best-selling category"], correct:2, explain:"AOV = Total Revenue ÷ Number of Orders. Shows how much a customer spends on average per order." },
-      { q:"Which Tableau function counts unique orders?", options:["SUM([order_id])","COUNT([order_id])","COUNTD([order_id])","AVG([order_id])"], correct:2, explain:"COUNTD = Count Distinct. Counts each value only once – prevents double-counting when multiple items belong to one order." },
-      { q:"What is a Join in Tableau?", options:["A chart type","Connecting two tables via a shared field","A colour option","A filter"], correct:1, explain:"A join connects two tables via a shared key field (here: order_id)." },
-      { q:"What causes UrbanCart's revenue spike in November?", options:["Seasonal products","Black Friday and Cyber Monday","Data error","New product line"], correct:1, explain:"Black Friday (last Friday in November) is the highest-revenue day in e-commerce." },
-      { q:"What is the difference between COUNT and COUNTD?", options:["No difference","COUNT counts all rows, COUNTD only unique values","COUNTD is faster","COUNT is only for numbers"], correct:1, explain:"COUNT counts all rows including duplicates; COUNTD counts each value only once." },
-      { q:"What is a Dashboard in Tableau?", options:["A single chart","Multiple worksheets combined in one view","The data connection","An export format"], correct:1, explain:"A dashboard combines multiple visualisations in one coherent view – ideal for executive presentations." },
-      { q:"What does Total Revenue mean in e-commerce?", options:["Profit after all costs","Sum of all order values before returns","Number of products sold","Marketing spend"], correct:1, explain:"Total Revenue = gross revenue, i.e. sum of all order values. Not yet profit – costs and returns are not deducted." },
-      { q:"Which field links orders.csv to order_items.csv?", options:["customer_id","product_id","order_id","order_date"], correct:2, explain:"The order_id is the shared key: each order item belongs to exactly one order." },
-      { q:"What does a line chart show better than a bar chart?", options:["Category comparisons","Trends over time","Share of total","Geographic distribution"], correct:1, explain:"Line charts are ideal for time series: they show development, trends and seasonality." },
-      { q:"Best chart for regional revenue comparison?", options:["Pie chart","Line chart","Sorted horizontal bar chart","Scatterplot"], correct:2, explain:"Horizontal bars sorted by size are ideal for ranking comparisons. Humans judge lengths better than angles." },
-      { q:"What is 'granularity' in time series?", options:["Number of data points","Level of time detail (day / month / year)","Accuracy of revenue data","Colour gradation"], correct:1, explain:"Granularity = time resolution. Daily shows detail, monthly shows trends." },
-      { q:"Why is Tableau better than Excel for large datasets?", options:["Tableau is free","Tableau handles millions of rows efficiently; Excel has row limits","Excel can't make charts","Tableau has more colours"], correct:1, explain:"Excel is limited to ~1M rows and gets slow with large data. Tableau is optimised for BI analysis." },
-      { q:"What is the first step in building a dashboard?", options:["Choose colours","Define audience and key question","Show all data in one chart","Set font size"], correct:1, explain:"Always start with: who will look at this, and what decision should they make? Then visualise." },
-      { q:"The dataset contains orders with status 'returned'. What matters for revenue KPIs?", options:["Always ignore returns","Deduct returned orders for net revenue","Returns double revenue","Returns don't affect KPIs"], correct:1, explain:"For net revenue, returns must be deducted. In this lab we use gross revenue first – but the difference matters for interpretation." },
-    ],
-    nextLab: "Lab 02: Who Buys from Us? →",
-    backHome: "← Back to Overview",
-    aiEye: "AI Outlook",
-    aiTitle: "How would this look in Python + Plotly Dash?",
-    aiText: "The dashboard you built in Tableau can be reproduced – and automated – with Python and Plotly Dash. Here's the prompt and tech stack:",
-    aiPrompt: `# Prompt for ChatGPT / Claude:
-"Create a Python Plotly Dash dashboard for e-commerce data.
-Load 'orders.csv' with pandas. Show three KPI cards:
-- Total Revenue (SUM total_revenue)
-- Order Count (COUNTD order_id)
-- Avg. Order Value (ratio)
-And a line chart: revenue per month.
-Colour scheme: Orange #E87722, Blue #005B9A.
-Use Dash Bootstrap Components for layout."`,
-  }
-};
-
-/* ── Quiz Component ── */
-function Quiz({ questions, t }) {
-  const [answers, setAnswers] = useState({});
-  const [revealed, setRevealed] = useState({});
-  const done = Object.keys(revealed).length === questions.length;
-  const score = Object.entries(answers).filter(([i, a]) => a === questions[i].correct).length;
-
-  const handleAnswer = (qi, oi) => {
-    if (revealed[qi] !== undefined) return;
-    setAnswers(prev => ({ ...prev, [qi]: oi }));
-    setRevealed(prev => ({ ...prev, [qi]: true }));
-  };
-
-  return (
-    <div className="quiz-section">
-      <h3 className="quiz-title">{t.quizTitle}</h3>
-      <p className="quiz-sub">{t.quizSub}</p>
-      <div className="quiz-progress">{Object.keys(revealed).length} / {questions.length} beantwortet</div>
-
-      {questions.map((q, qi) => (
-        <div key={qi} className="question-block">
-          <div className="question-num">Frage {qi + 1}</div>
-          <div className="question-text">{q.q}</div>
-          <div className="options">
-            {q.options.map((opt, oi) => {
-              let cls = "option-btn";
-              if (revealed[qi] !== undefined) {
-                cls += " revealed";
-                if (oi === q.correct) cls += " correct";
-                else if (oi === answers[qi]) cls += " wrong";
-              }
-              return (
-                <button key={oi} className={cls} onClick={() => handleAnswer(qi, oi)}>
-                  <span style={{marginRight:'8px', fontWeight:800}}>{String.fromCharCode(65+oi)}.</span>
-                  {opt}
-                </button>
-              );
-            })}
-          </div>
-          {revealed[qi] !== undefined && (
-            <div className={`feedback ${answers[qi] === q.correct ? 'correct' : 'wrong'}`}>
-              {answers[qi] === q.correct ? "✓ Richtig! " : "✗ Nicht ganz. "}
-              {q.explain}
-            </div>
-          )}
-        </div>
-      ))}
-
-      {done && (
-        <div className="quiz-result">
-          <div className="quiz-result-score">{score}/{questions.length}</div>
-          <div className="quiz-result-label">Punkte</div>
-          <div className="quiz-result-msg">
-            {score >= 13 ? "🎉 Ausgezeichnet! Weiter zu Lab 02." :
-             score >= 10 ? "👍 Gut! Lies die Erklärungen nochmal durch." :
-             "💪 Noch einmal! Schau dir die Erklärungen an."}
-          </div>
-        </div>
-      )}
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar__inner">
+    <div class="navbar__brand">
+      <a href="index.html" style="display:flex;align-items:center;gap:0">
+        <svg class="navbar__logo" viewBox="0 0 274.3 91.2" xmlns="http://www.w3.org/2000/svg"><style>.st0{fill:#FF6A00}</style><g><g><path class="st0" d="M15,32.6h2.6c1.1,0,2-0.9,2-2v-9.1c0-1.1,0.9-2,2-2h15.6c1.1,0,2-0.9,2-2v-2.6c0-1.1-0.9-2-2-2H21.5 c-1.1,0-2,0.9-2,2v2.6c0,1.1-0.9,2-2,2H15c-1.1,0-2,0.9-2,2v9.1C13,31.7,13.9,32.6,15,32.6z"/><path class="st0" d="M63.1,0H47.5c-1.1,0-2,0.9-2,2v2.6c0,1.1,0.9,2,2,2h15.6c1.1,0,2-0.9,2-2V2C65.1,0.9,64.2,0,63.1,0z"/><path class="st0" d="M76.1,13h-2.6c-1.1,0-2,0.9-2,2v9.1c0,1.1,0.9,2,2,2h2.6c1.1,0,2-0.9,2-2V15C78.1,13.9,77.2,13,76.1,13z"/><path class="st0" d="M76.1,32.6h-2.6c-1.1,0-2,0.9-2,2v2.5c0,1.1,0.9,2,2,2h2.6c1.1,0,2-0.9,2-2v-2.6 C78.1,33.4,77.2,32.6,76.1,32.6z"/><path class="st0" d="M52.1,34.5c0-1.1-0.9-2-2-2h-2.6c-1.1,0-2,0.9-2,2v22.1c0,1.1-0.9,2-2,2h-9.1c-1.1,0-2-0.9-2-2V34.5 c0-1.1,0.9-2,2-2H37c1.1,0,2-0.9,2-2v-2.6c0-1.1-0.9-2-2-2h-2.6c-1.1,0-2,0.9-2,2v2.6c0,1.1-0.9,2-2,2H28c-1.1,0-2,0.9-2,2v28.6 c0,1.1,0.9,2,2,2h15.6c1.1,0,2-0.9,2-2v-2.6c0-1.1,0.9-2,2-2h2.6c1.1,0,2-0.9,2-2L52.1,34.5L52.1,34.5z"/><path class="st0" d="M63.1,13H47.5c-1.1,0-2,0.9-2,2v2.6c0,1.1,0.9,2,2,2h9.1c1.1,0,2,0.9,2,2v15.5c0,1.1,0.9,2,2,2h2.6 c1.1,0,2-0.9,2-2V15C65.1,13.9,64.2,13,63.1,13z"/><path class="st0" d="M63.1,45.6h-2.6c-1.1,0-2,0.9-2,2v22.1c0,1.1-0.9,2-2,2H54c-1.1,0-2,0.9-2,2v2.6c0,1.1,0.9,2,2,2h2.6 c1.1,0,2-0.9,2-2v-2.6c0-1.1,0.9-2,2-2h2.6c1.1,0,2-0.9,2-2V47.5C65.1,46.5,64.2,45.6,63.1,45.6z"/><path class="st0" d="M43.6,71.6H21.5c-1.1,0-2-0.9-2-2V47.5c0-1.1-0.9-2-2-2H15c-1.1,0-2,0.9-2,2v22.1c0,1.1,0.9,2,2,2h2.6 c1.1,0,2,0.9,2,2v2.6c0,1.1,0.9,2,2,2h22.1c1.1,0,2-0.9,2-2v-2.6C45.5,72.5,44.7,71.6,43.6,71.6z"/><path class="st0" d="M30.6,84.6H15c-1.1,0-2,0.9-2,2v2.6c0,1.1,0.9,2,2,2h15.6c1.1,0,2-0.9,2-2v-2.6 C32.5,85.5,31.7,84.6,30.6,84.6z"/><path class="st0" d="M4.6,58.6H2c-1.1,0-2,0.9-2,2v9.1c0,1.1,0.9,2,2,2h2.6c1.1,0,2-0.9,2-2v-9.1C6.5,59.5,5.6,58.6,4.6,58.6z"/></g><g><path class="st0" d="M103.1,55.2V34.5h-10v-8.4h10V14.6h9.5v11.5h11.9v8.4h-11.9v18.6c0,2.6,1,3.7,3.7,3.7h8.2v8.3h-11.4 C106.3,65.1,103.1,62.3,103.1,55.2z"/><path class="st0" d="M131.7,9.1h9.5v20c2.5-2.8,6.2-4.2,10.6-4.2c9.6,0,15.5,6.1,15.5,16.6v23.6h-9.5V42.5c0-6.1-2.9-9-7.9-9 c-5.2,0-8.6,3.7-8.6,9.3v22.3h-9.5v-56H131.7z"/><path class="st0" d="M172.1,26.1h9.9l7.6,28.4l7.6-28.4h11l7.6,28.4l7.6-28.4h9.9l-11.7,39h-11.3l-7.6-28.3l-7.6,28.3h-11.3 L172.1,26.1z"/><path class="st0" d="M236.3,53.7h9.8c0.3,3.3,3.1,4.9,7.9,4.9c4.3,0,7-1.8,7-4.7c0-2.5-1.9-3.8-5.4-4.1l-6.2-0.6 c-7.3-0.8-11.8-5.1-11.8-11.8c0-7.8,6.2-12.6,16.2-12.6c9.8,0,16.1,4.2,16.6,12.3h-9.5c-0.2-3.1-2.9-4.6-7.2-4.6 c-4.1,0-6.6,1.6-6.6,4.3c0,2.3,1.8,3.6,5.8,4.1l6.3,0.7c7.4,0.9,11.6,5.2,11.6,11.7c0,7.8-6.5,12.9-16.9,12.9 C243.1,66.3,236.7,62,236.3,53.7z"/></g></g></svg>
+      </a>
+      <div class="navbar__sep"></div>
+      <span class="navbar__kurs" data-de="E-Commerce Labs" data-en="E-Commerce Labs"></span>
+      <span style="margin-left:8px;background:rgba(232,119,34,.12);color:#E87722;font-size:10px;font-weight:700;padding:3px 10px;letter-spacing:.08em;text-transform:uppercase" data-de="Lab 01 von 09" data-en="Lab 01 of 09"></span>
     </div>
-  );
-}
+    <div class="navbar__right">
+      <button class="lang-btn is-active" onclick="setLang('de')">DE</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
 
-/* ── Main ── */
-function App() {
-  const [lang, setLang] = useState('de');
-  const t = T[lang];
-
-  useEffect(() => {
-    const els = document.querySelectorAll('.sr');
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.08 });
-    els.forEach(el => obs.observe(el));
-    return () => obs.disconnect();
-  }, [lang]);
-
-  return (
-    <>
-      {/* Navbar */}
-      <nav className="navbar">
-        <div className="nav-brand">
-          <a href="index.html" style={{textDecoration:'none', display:'flex', alignItems:'center', gap:'10px'}}>
-            <img src={"data:image/png;base64,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"} alt="THWS Business School" style={{height:'30px',width:'auto'}}/>
-            <div style={{width:'1px',height:'24px',background:'#E9ECEF'}}/>
-            <span className="nav-brand-text">E-Commerce Labs</span>
-          </a>
-          <span className="nav-lab-badge">{t.labNum}</span>
-        </div>
-        <div className="lang-wrap">
-          <button className={`lang-btn${lang==='de'?' active':''}`} onClick={()=>setLang('de')}>DE</button>
-          <button className={`lang-btn${lang==='en'?' active':''}`} onClick={()=>setLang('en')}>EN</button>
-        </div>
-      </nav>
-
-      {/* Progress */}
-      <div className="progress-bar">
-        {t.progSteps.map((s, i) => (
-          <React.Fragment key={i}>
-            <div className={`prog-step ${i===0?'done':i===1?'active':''}`}>
-              <div className={`prog-dot ${i===0?'done':i===1?'active':''}`}>
-                {i===0?'✓':i+1}
-              </div>
-              {s}
-            </div>
-            {i < t.progSteps.length-1 && <div className="prog-arrow">›</div>}
-          </React.Fragment>
-        ))}
+<!-- PROGRESS -->
+<div class="progress-bar">
+  <div class="progress-bar__inner">
+    <div class="prog-step is-done">
+      <div class="prog-step__dot">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
+      <span data-de="Kontext" data-en="Context"></span>
+    </div>
+    <div class="prog-step is-active">
+      <div class="prog-step__dot">2</div>
+      <span data-de="Tableau Setup" data-en="Tableau Setup"></span>
+    </div>
+    <div class="prog-step">
+      <div class="prog-step__dot">3</div>
+      <span data-de="KPIs" data-en="KPIs"></span>
+    </div>
+    <div class="prog-step">
+      <div class="prog-step__dot">4</div>
+      <span data-de="Dashboard" data-en="Dashboard"></span>
+    </div>
+    <div class="prog-step">
+      <div class="prog-step__dot">5</div>
+      <span data-de="Quiz" data-en="Quiz"></span>
+    </div>
+    <div class="prog-step">
+      <div class="prog-step__dot">6</div>
+      <span data-de="KI-Ausblick" data-en="AI Outlook"></span>
+    </div>
+  </div>
+</div>
 
-      {/* Hero */}
-      <div className="lab-hero">
-        <div className="lab-hero-inner">
-          <div className="lab-num">{t.labNum}</div>
-          <h1 className="lab-title">{t.labTitle[0]}<span>{t.labTitle[1]}</span></h1>
-          <p className="lab-sub">{t.labSub}</p>
-          <div className="lab-meta">
-            {[["⏱",t.metaDauer],["📊",t.metaLevel],["📁",t.metaData],["🔧",t.metaTool]].map(([icon,val],i) => (
-              <div key={i} className="lab-meta-item">{icon} <strong>{val}</strong></div>
-            ))}
-          </div>
+<!-- HERO -->
+<div class="lab-hero">
+  <div class="lab-hero__inner">
+    <div class="lab-hero__num" data-de="Lab 01 von 09 · Einstieg" data-en="Lab 01 of 09 · Beginner"></div>
+    <h1 class="lab-hero__title">
+      <span data-de="Erste Schritte mit " data-en="Getting Started with "></span><em>Tableau</em>
+    </h1>
+    <p class="lab-hero__sub" data-de="Du öffnest Tableau zum ersten Mal. Wir gehen jeden Schritt gemeinsam durch – am Ende hast du ein echtes Sales-Dashboard für UrbanCart." data-en="You open Tableau for the first time. We walk through every step together – by the end you'll have a real sales dashboard for UrbanCart."></p>
+    <div class="lab-hero__meta">
+      <div class="lab-hero__meta-item">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span data-de="<strong>60–90 Min.</strong>" data-en="<strong>60–90 min.</strong>"></span>
+      </div>
+      <div class="lab-hero__meta-item">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span><strong>orders.csv · order_items.csv</strong></span>
+      </div>
+      <div class="lab-hero__meta-item">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span><strong>Tableau Public</strong></span>
+      </div>
+      <div class="lab-hero__meta-item">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span><strong data-de="15 Quiz-Fragen" data-en="15 quiz questions"></strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="lab-content">
+
+  <!-- Section 1: Context -->
+  <div class="lab-section">
+    <p class="block-label sr" data-de="Kontext" data-en="Context"></p>
+    <h2 class="block-title sr" data-de="Was ist UrbanCart?" data-en="What is UrbanCart?"></h2>
+    <div class="block-divider sr"></div>
+    <p class="block-lead sr" data-de="UrbanCart ist ein fiktiver europäischer Online-Händler für Mode, Lifestyle und Home. Du bist der neue Junior Data Analyst – dein erstes Projekt ist ein Sales-Dashboard für die Geschäftsführung. Alle Datensätze sind synthetisch und spiegeln reale E-Commerce-Muster wider." data-en="UrbanCart is a fictional European online retailer for fashion, lifestyle and home goods. You are the new Junior Data Analyst – your first project is a sales dashboard for management. All datasets are synthetic and mirror real e-commerce patterns."></p>
+
+    <div class="info-box sr" style="margin-top:24px">
+      <div class="info-box__title" data-de="UrbanCart auf einen Blick" data-en="UrbanCart at a glance"></div>
+      <div class="info-box__body">
+        <div class="info-box__item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#005B9A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:6px"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <div class="info-box__item-title" data-de="6 Kategorien" data-en="6 Categories"></div>
+          <div class="info-box__item-sub" data-de="Mode, Schuhe, Home, Sport ..." data-en="Fashion, Shoes, Home, Sport ..."></div>
+        </div>
+        <div class="info-box__item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#005B9A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:6px"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          <div class="info-box__item-title" data-de="14.355 Bestellungen" data-en="14,355 Orders"></div>
+          <div class="info-box__item-sub">Jan 2023 – Dez 2024</div>
+        </div>
+        <div class="info-box__item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#005B9A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:6px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <div class="info-box__item-title" data-de="8.000 Kunden" data-en="8,000 Customers"></div>
+          <div class="info-box__item-sub" data-de="10 deutsche Regionen" data-en="10 German regions"></div>
+        </div>
+        <div class="info-box__item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#005B9A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:6px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          <div class="info-box__item-title" data-de="6 Kanäle" data-en="6 Channels"></div>
+          <div class="info-box__item-sub">SEA · Social · E-Mail · Organic</div>
         </div>
       </div>
-
-      {/* Content */}
-      <div className="content">
-
-        {/* Section 1: Context */}
-        <div className="section-block sr">
-          <div className="block-eyebrow">{t.s1eye}</div>
-          <h2 className="block-title">{t.s1title}</h2>
-          <div className="divider"/>
-          <p className="block-lead">{t.s1lead}</p>
-          <div style={{background:'rgba(232,119,34,0.08)', border:'1.5px solid rgba(232,119,34,0.2)', padding:'20px 24px'}}>
-            <div style={{fontSize:'0.72rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em', color:'#E87722', marginBottom:'8px'}}>UrbanCart im Überblick</div>
-            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(160px,1fr))', gap:'12px'}}>
-              {[
-                ["🛍️","6 Kategorien","Mode, Schuhe, Home..."],
-                ["📦","14.355 Bestellungen","Jan 2023 – Dez 2024"],
-                ["👥","8.000 Kunden","Aus ganz Deutschland"],
-                ["📣","6 Kanäle","SEA, Social, E-Mail..."],
-              ].map(([icon,title,sub]) => (
-                <div key={title} style={{background:'#fff', padding:'12px 14px'}}>
-                  <div style={{fontSize:'1.2rem', marginBottom:'4px'}}>{icon}</div>
-                  <div style={{fontSize:'0.84rem', fontWeight:800, color:'#212529'}}>{title}</div>
-                  <div style={{fontSize:'0.72rem', color:'#9ca3af'}}>{sub}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{marginTop:'12px', fontSize:'0.82rem', color:'#6c757d'}}>
-              → <a href="urbancart.html" style={{color:'#E87722', fontWeight:700}}>
-                {lang==='de'?'UrbanCart Webshop ansehen (Mockup)':'Visit UrbanCart webshop (mockup)'}
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Section 2: Setup */}
-        <div className="section-block sr">
-          <div className="block-eyebrow">{t.s2eye}</div>
-          <h2 className="block-title">{t.s2title}</h2>
-          <div className="divider"/>
-          <p className="block-lead">{t.s2lead}</p>
-          <div className="steps">
-            {t.steps.map((step, i) => (
-              <div key={i} className="step-card">
-                <div className="step-header">
-                  <div className="step-num">{i+1}</div>
-                  <div className="step-title">{step.title}</div>
-                </div>
-                <div className="step-body" dangerouslySetInnerHTML={{__html: step.body}}/>
-                {step.tip && <div className="step-tip">{step.tip}</div>}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Section 3: KPIs */}
-        <div className="section-block sr">
-          <div className="block-eyebrow">{t.s3eye}</div>
-          <h2 className="block-title">{t.s3title}</h2>
-          <div className="divider"/>
-          <p className="block-lead">{t.s3lead}</p>
-          <div className="kpi-grid">
-            {t.kpis.map((k,i) => (
-              <div key={i} className="kpi-card">
-                <div className="kpi-icon">{k.icon}</div>
-                <div className="kpi-val">{k.val}</div>
-                <div className="kpi-lbl">{k.lbl}</div>
-                <div className="kpi-def">{k.def}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Section 4: Viz steps */}
-        <div className="section-block sr">
-          <div className="block-eyebrow">{t.s4eye}</div>
-          <h2 className="block-title">{t.s4title}</h2>
-          <div className="divider"/>
-          <div className="steps">
-            {t.viz_steps.map((step, i) => (
-              <div key={i} className="step-card">
-                <div className="step-header">
-                  <div className="step-num">{i+1}</div>
-                  <div className="step-title">{step.title}</div>
-                </div>
-                <div className="step-body" dangerouslySetInnerHTML={{__html: step.body}}/>
-                {step.tip && <div className="step-tip">{step.tip}</div>}
-                <div className="screenshot-placeholder">
-                  <div className="screenshot-placeholder-icon">📸</div>
-                  <div className="screenshot-placeholder-text">
-                    {lang==='de'?`Dein Ergebnis für Schritt ${i+1}`:`Your result for step ${i+1}`}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Quiz */}
-        <div className="section-block sr">
-          <Quiz questions={t.questions} t={t}/>
-        </div>
-
-        {/* AI Outlook */}
-        <div className="section-block sr">
-          <div className="ai-section">
-            <div className="ai-eyebrow">{t.aiEye}</div>
-            <h3 className="ai-title">{t.aiTitle}</h3>
-            <p className="ai-text">{t.aiText}</p>
-            <div className="code-block">{t.aiPrompt}</div>
-            <p style={{fontSize:'0.78rem', color:'rgba(255,255,255,0.4)', marginTop:'12px'}}>
-              {lang==='de'
-                ? '→ Referenz-Dashboard: whi-dashboard.butscher.cloud (Plotly Dash, interaktiv)'
-                : '→ Reference dashboard: whi-dashboard.butscher.cloud (Plotly Dash, interactive)'}
-            </p>
-          </div>
-        </div>
-
-      </div>{/* /content */}
-
-      {/* Lab Navigation */}
-      <div className="lab-nav">
-        <a href="index.html" className="lab-nav-btn">
-          ← {lang==='de'?'Zur Übersicht':'Overview'}
-        </a>
-        <a href="lab02.html" className="lab-nav-btn primary">
-          {t.nextLab}
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid #E9ECEF">
+        <a href="urbancart.html" style="font-size:12px;font-weight:700;color:#005B9A;display:inline-flex;align-items:center;gap:6px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <span data-de="UrbanCart Webshop ansehen" data-en="View UrbanCart webshop"></span>
         </a>
       </div>
-    </>
-  );
+    </div>
+  </div>
+
+  <!-- Section 2: Setup -->
+  <div class="lab-section">
+    <p class="block-label sr" data-de="Schritt-für-Schritt" data-en="Step by Step"></p>
+    <h2 class="block-title sr" data-de="Tableau einrichten &amp; Daten laden" data-en="Set up Tableau &amp; load data"></h2>
+    <div class="block-divider sr"></div>
+    <p class="block-lead sr" data-de="Tableau Public ist kostenlos und läuft auf macOS und Windows. Folge diesen 5 Schritten." data-en="Tableau Public is free and runs on macOS and Windows. Follow these 5 steps."></p>
+
+    <div class="steps sr">
+
+      <details class="step" open>
+        <summary class="step__head">
+          <div class="step__num">1</div>
+          <div class="step__title" data-de="Tableau Public herunterladen &amp; installieren" data-en="Download &amp; install Tableau Public"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="step__body">
+          <p data-de="Gehe auf <strong>public.tableau.com</strong>, klicke auf „Tableau Public herunterladen" und installiere die App. Kostenlos, kein Abo nötig. Erstelle ein kostenloses Konto, um Visualisierungen später speichern und teilen zu können." data-en="Go to <strong>public.tableau.com</strong>, click &ldquo;Download Tableau Public&rdquo; and install. Free, no subscription needed. Create a free account to save and share visualisations later."></p>
+        </div>
+      </details>
+
+      <details class="step">
+        <summary class="step__head">
+          <div class="step__num">2</div>
+          <div class="step__title" data-de="Datensätze herunterladen" data-en="Download datasets"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="step__body">
+          <p data-de="Lade <code>orders.csv</code> und <code>order_items.csv</code> von GitHub herunter: <strong>github.com/swrobuts/e-comm/tree/main/data</strong>. Speichere beide Dateien in einem Ordner, z.&thinsp;B. <code>UrbanCart/</code> auf dem Desktop." data-en="Download <code>orders.csv</code> and <code>order_items.csv</code> from GitHub: <strong>github.com/swrobuts/e-comm/tree/main/data</strong>. Save both files in a folder, e.g. <code>UrbanCart/</code> on your Desktop."></p>
+        </div>
+      </details>
+
+      <details class="step">
+        <summary class="step__head">
+          <div class="step__num">3</div>
+          <div class="step__title" data-de="Tableau öffnen &amp; Daten verbinden" data-en="Open Tableau &amp; connect data"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="step__body">
+          <p data-de="Starte Tableau Public. Auf der Startseite links: <strong>Verbinden → Textdatei</strong>. Wähle <code>orders.csv</code>. Tableau lädt die Daten automatisch und zeigt eine Vorschau." data-en="Start Tableau Public. On the start page, left side: <strong>Connect → Text File</strong>. Select <code>orders.csv</code>. Tableau loads the data automatically and shows a preview."></p>
+        </div>
+      </details>
+
+      <details class="step">
+        <summary class="step__head">
+          <div class="step__num">4</div>
+          <div class="step__title" data-de="Zweite Tabelle hinzufügen (Join)" data-en="Add second table (Join)"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="step__body">
+          <p data-de="Ziehe <code>order_items.csv</code> aus dem linken Panel auf die Arbeitsfläche neben <code>orders.csv</code>. Tableau erkennt den Join über <code>order_id</code> automatisch." data-en="Drag <code>order_items.csv</code> from the left panel onto the canvas next to <code>orders.csv</code>. Tableau auto-detects the join via <code>order_id</code>."></p>
+          <div class="step__tip" data-de="<strong>Was ist ein Join?</strong> Du verbindest zwei Tabellen über ein gemeinsames Feld – wie SVERWEIS in Excel, aber mächtiger." data-en="<strong>What is a Join?</strong> You connect two tables via a shared field – like VLOOKUP in Excel, but more powerful."></div>
+        </div>
+      </details>
+
+      <details class="step">
+        <summary class="step__head">
+          <div class="step__num">5</div>
+          <div class="step__title" data-de="Daten prüfen &amp; zu Arbeitsblatt 1 wechseln" data-en="Check data &amp; go to Sheet 1"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="step__body">
+          <p data-de="Prüfe in der Vorschau: Spalten <code>order_date</code>, <code>total_revenue</code>, <code>region</code>, <code>channel</code> vorhanden? Dann unten rechts auf <code>Arbeitsblatt 1</code> klicken." data-en="Check the preview: columns <code>order_date</code>, <code>total_revenue</code>, <code>region</code>, <code>channel</code> present? Then click <code>Sheet 1</code> at the bottom right."></p>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- Section 3: KPIs -->
+  <div class="lab-section">
+    <p class="block-label sr" data-de="Kennzahlen" data-en="Key Metrics"></p>
+    <h2 class="block-title sr" data-de="Die drei wichtigsten KPIs" data-en="The three most important KPIs"></h2>
+    <div class="block-divider sr"></div>
+    <p class="block-lead sr" data-de="Bevor du visualisierst, musst du wissen, was du messen willst. Diese drei KPIs sind das Fundament jedes E-Commerce-Dashboards." data-en="Before you visualise, you need to know what to measure. These three KPIs are the foundation of every e-commerce dashboard."></p>
+
+    <div class="kpi-grid sr">
+      <div class="kpi-card">
+        <svg class="kpi-card__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <div class="kpi-card__val" data-de="∑ Umsatz" data-en="∑ Revenue"></div>
+        <div class="kpi-card__lbl">Total Revenue</div>
+        <div class="kpi-card__def">SUM([total_revenue])</div>
+      </div>
+      <div class="kpi-card">
+        <svg class="kpi-card__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        <div class="kpi-card__val" data-de="# Bestellungen" data-en="# Orders"></div>
+        <div class="kpi-card__lbl">Order Count</div>
+        <div class="kpi-card__def">COUNTD([order_id])</div>
+      </div>
+      <div class="kpi-card">
+        <svg class="kpi-card__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <div class="kpi-card__val" data-de="Ø Warenkorb" data-en="Avg. Basket"></div>
+        <div class="kpi-card__lbl">Avg. Order Value</div>
+        <div class="kpi-card__def">SUM([revenue]) / COUNTD([order_id])</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Viz -->
+  <div class="lab-section">
+    <p class="block-label sr" data-de="Visualisierung" data-en="Visualisation"></p>
+    <h2 class="block-title sr" data-de="Das Sales-Dashboard bauen" data-en="Build the Sales Dashboard"></h2>
+    <div class="block-divider sr"></div>
+
+    <div class="steps sr">
+      <details class="step" open>
+        <summary class="step__head">
+          <div class="step__num">1</div>
+          <div class="step__title" data-de="Umsatz als Kennzahl-Karte" data-en="Revenue as KPI card"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="step__body">
+          <p data-de="Ziehe <code>Total Revenue</code> auf das Feld <strong>Text</strong> im Marks-Panel. Oben rechts Chart-Typ auf <strong>Nur Text</strong> stellen. Tableau zeigt den Gesamtumsatz als Zahl." data-en="Drag <code>Total Revenue</code> onto the <strong>Text</strong> field in the Marks panel. Top right, change chart type to <strong>Text</strong>. Tableau shows total revenue as a number."></p>
+        </div>
+      </details>
+      <details class="step">
+        <summary class="step__head">
+          <div class="step__num">2</div>
+          <div class="step__title" data-de="Umsatz über Zeit: Liniendiagramm" data-en="Revenue over time: Line chart"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="step__body">
+          <p data-de="Neues Arbeitsblatt. <code>Order Date</code> auf Spalten, <code>Total Revenue</code> auf Zeilen. Klicke <code>Order Date</code> → <strong>Monat</strong> für monatliche Ansicht." data-en="New sheet. <code>Order Date</code> to Columns, <code>Total Revenue</code> to Rows. Click <code>Order Date</code> → <strong>Month</strong> for monthly view."></p>
+          <div class="step__tip" data-de="Du siehst einen Peak im November/Dezember? Das ist Black Friday + Weihnachten." data-en="You see a spike in November/December? That's Black Friday + Christmas."></div>
+        </div>
+      </details>
+      <details class="step">
+        <summary class="step__head">
+          <div class="step__num">3</div>
+          <div class="step__title" data-de="Umsatz nach Region: Balkendiagramm" data-en="Revenue by region: Bar chart"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="step__body">
+          <p data-de="<code>Region</code> auf Zeilen, <code>Total Revenue</code> auf Spalten. Klicke <strong>Absteigend sortieren</strong>. Welche Region verkauft am meisten?" data-en="<code>Region</code> to Rows, <code>Total Revenue</code> to Columns. Click <strong>Sort descending</strong>. Which region sells the most?"></p>
+        </div>
+      </details>
+      <details class="step">
+        <summary class="step__head">
+          <div class="step__num">4</div>
+          <div class="step__title" data-de="Dashboard zusammenbauen" data-en="Assemble the dashboard"></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="step__body">
+          <p data-de="Unten links <code>+</code> → <strong>Neues Dashboard</strong>. Ziehe alle drei Arbeitsblätter auf die Leinwand. Titel: <strong>UrbanCart Sales Overview 2023–2024</strong>." data-en="Bottom left <code>+</code> → <strong>New Dashboard</strong>. Drag all three sheets onto the canvas. Title: <strong>UrbanCart Sales Overview 2023–2024</strong>."></p>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="lab-section">
+    <p class="block-label" data-de="Quiz" data-en="Quiz"></p>
+    <h2 class="block-title" data-de="15 Fragen zu Lab 01" data-en="15 questions on Lab 01"></h2>
+    <div class="block-divider"></div>
+
+    <div class="quiz" id="quiz">
+      <div class="quiz__header">
+        <p class="quiz__sub" data-de="Beantworte alle Fragen, bevor du zum nächsten Lab gehst. Sofortiges Feedback." data-en="Answer all questions before moving to the next lab. Immediate feedback."></p>
+        <p class="quiz__progress" id="quiz-progress">0 / 15</p>
+      </div>
+
+      <div id="quiz-questions"></div>
+      <div class="quiz__result" id="quiz-result">
+        <div class="quiz__result-score" id="quiz-score">0/15</div>
+        <div class="quiz__result-label" data-de="Punkte" data-en="Points"></div>
+        <div class="quiz__result-msg" id="quiz-msg"></div>
+        <button class="quiz__result-btn" onclick="resetQuiz()" data-de="Nochmal versuchen" data-en="Try again"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Outlook -->
+  <div class="lab-section">
+    <div class="ai-block sr">
+      <div class="ai-block__eyebrow" data-de="KI-Ausblick" data-en="AI Outlook"></div>
+      <div class="ai-block__title" data-de="Wie würde das in Python + Plotly Dash aussehen?" data-en="How would this look in Python + Plotly Dash?"></div>
+      <div class="ai-block__text" data-de="Das Dashboard, das du in Tableau gebaut hast, lässt sich mit Python und Plotly Dash reproduzieren – und automatisieren. Stack: Python · Plotly Dash · pandas. Nutze diesen Prompt:" data-en="The dashboard you built in Tableau can be reproduced – and automated – with Python and Plotly Dash. Stack: Python · Plotly Dash · pandas. Use this prompt:"></div>
+      <pre><span class="c"># Prompt für ChatGPT / Claude:</span>
+
+<span class="s">"Erstelle ein Python Plotly Dash Dashboard.
+Lade orders.csv mit pandas. Zeige:
+- KPI-Card: Gesamtumsatz (SUM total_revenue)
+- KPI-Card: Anzahl Bestellungen (COUNTD order_id)
+- KPI-Card: Ø Warenkorbwert (ratio)
+- Liniendiagramm: Umsatz pro Monat
+Farbschema: Orange #E87722 · Blau #005B9A.
+Nutze Dash Bootstrap Components."</span></pre>
+    </div>
+  </div>
+
+  <!-- Lab Nav -->
+  <div class="lab-nav sr">
+    <a href="index.html" class="lab-nav__back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      <span data-de="Zur Übersicht" data-en="Back to Overview"></span>
+    </a>
+    <a href="lab02.html" class="lab-nav__next">
+      <span data-de="Lab 02: Kundenstruktur" data-en="Lab 02: Customer Structure"></span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+
+</div><!-- /lab-content -->
+
+<script>
+// Language
+function setLang(lang) {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-de]').forEach(el => {
+    const v = el.getAttribute('data-' + lang);
+    if (v !== null) el.innerHTML = v;
+  });
+  document.querySelectorAll('.lang-btn').forEach(b =>
+    b.classList.toggle('is-active', b.textContent.toLowerCase() === lang));
+  localStorage.setItem('lang', lang);
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+// Scroll reveal
+(function(){
+  const obs = new IntersectionObserver(entries =>
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }),
+    {threshold:.08});
+  document.querySelectorAll('.sr').forEach(el => obs.observe(el));
+})();
+
+// Quiz
+const QUESTIONS = [
+  {q:{de:'Was ist ein KPI?',en:'What is a KPI?'},
+   opts:{de:['Eine Datenbankabfrage','Eine messbare Kennzahl zur Erfolgsbewertung','Ein Diagrammtyp in Tableau','Eine Excel-Funktion'],
+         en:['A database query','A measurable metric to evaluate performance','A chart type in Tableau','An Excel function']},
+   correct:1,
+   explain:{de:'KPI = Key Performance Indicator – eine messbare Kennzahl, die zeigt, wie gut ein Unternehmen sein Ziel erreicht.',
+            en:'KPI = Key Performance Indicator – a measurable metric showing how well a company achieves its goal.'}},
+  {q:{de:'Was zeigt der Average Order Value (AOV)?',en:'What does Average Order Value (AOV) show?'},
+   opts:{de:['Die Anzahl der Bestellungen','Den höchsten Einzelumsatz','Den durchschnittlichen Umsatz pro Bestellung','Die meistverkaufte Kategorie'],
+         en:['Number of orders','Highest single order','Average revenue per order','Best-selling category']},
+   correct:2,
+   explain:{de:'AOV = Gesamtumsatz ÷ Anzahl Bestellungen.',en:'AOV = Total Revenue ÷ Number of Orders.'}},
+  {q:{de:'Welche Tableau-Funktion zählt eindeutige Bestellungen?',en:'Which Tableau function counts unique orders?'},
+   opts:{de:['SUM([order_id])','COUNT([order_id])','COUNTD([order_id])','AVG([order_id])'],
+         en:['SUM([order_id])','COUNT([order_id])','COUNTD([order_id])','AVG([order_id])']},
+   correct:2,
+   explain:{de:'COUNTD = Count Distinct. Verhindert Doppelzählungen.',en:'COUNTD = Count Distinct. Prevents double-counting.'}},
+  {q:{de:'Was ist ein Join in Tableau?',en:'What is a Join in Tableau?'},
+   opts:{de:['Ein Diagrammtyp','Verbindung zweier Tabellen über ein gemeinsames Feld','Eine Farboption','Ein Filter'],
+         en:['A chart type','Connecting two tables via a shared field','A colour option','A filter']},
+   correct:1,
+   explain:{de:'Join verbindet zwei Tabellen über ein gemeinsames Schlüsselfeld.',en:'Join connects two tables via a shared key field.'}},
+  {q:{de:'Warum gibt es im November einen Umsatzpeak?',en:'Why is there a revenue spike in November?'},
+   opts:{de:['Saisonale Produkte','Black Friday und Cyber Monday','Technischer Fehler','Neue Produktlinie'],
+         en:['Seasonal products','Black Friday and Cyber Monday','Data error','New product line']},
+   correct:1,
+   explain:{de:'Black Friday am letzten Freitag im November ist der umsatzstärkste Tag im E-Commerce.',en:'Black Friday on the last Friday in November is the highest-revenue day in e-commerce.'}},
+  {q:{de:'Unterschied COUNT und COUNTD?',en:'Difference between COUNT and COUNTD?'},
+   opts:{de:['Kein Unterschied','COUNT zählt alle, COUNTD nur eindeutige Werte','COUNTD ist schneller','COUNT nur für Zahlen'],
+         en:['No difference','COUNT counts all, COUNTD only unique values','COUNTD is faster','COUNT only for numbers']},
+   correct:1,
+   explain:{de:'COUNT zählt alle Zeilen inkl. Duplikate, COUNTD nur eindeutige.',en:'COUNT counts all rows including duplicates, COUNTD only unique ones.'}},
+  {q:{de:'Was ist ein Dashboard in Tableau?',en:'What is a Dashboard in Tableau?'},
+   opts:{de:['Eine einzelne Visualisierung','Mehrere Arbeitsblätter in einer Ansicht','Die Datenverbindung','Ein Exportformat'],
+         en:['A single chart','Multiple worksheets in one view','The data connection','An export format']},
+   correct:1,
+   explain:{de:'Ein Dashboard kombiniert mehrere Visualisierungen auf einer Seite.',en:'A dashboard combines multiple visualisations on one page.'}},
+  {q:{de:'Was bedeutet Total Revenue im E-Commerce?',en:'What does Total Revenue mean in e-commerce?'},
+   opts:{de:['Gewinn nach Kosten','Summe aller Bestellumsätze','Anzahl Produkte','Marketingausgaben'],
+         en:['Profit after costs','Sum of all order values','Number of products','Marketing spend']},
+   correct:1,
+   explain:{de:'Total Revenue = Bruttoumsatz, noch kein Gewinn.',en:'Total Revenue = gross revenue, not yet profit.'}},
+  {q:{de:'Welches Feld verbindet orders.csv und order_items.csv?',en:'Which field links orders.csv and order_items.csv?'},
+   opts:{de:['customer_id','product_id','order_id','order_date'],
+         en:['customer_id','product_id','order_id','order_date']},
+   correct:2,
+   explain:{de:'Die order_id ist der gemeinsame Schlüssel beider Tabellen.',en:'The order_id is the shared key between both tables.'}},
+  {q:{de:'Was zeigt ein Liniendiagramm besser als ein Balkendiagramm?',en:'What does a line chart show better than a bar chart?'},
+   opts:{de:['Kategorievergleiche','Zeitliche Entwicklung und Trends','Anteile am Gesamtumsatz','Geografische Verteilung'],
+         en:['Category comparisons','Trends over time','Share of total','Geographic distribution']},
+   correct:1,
+   explain:{de:'Liniendiagramme sind ideal für Zeitreihen und Trends.',en:'Line charts are ideal for time series and trends.'}},
+  {q:{de:'Welches Diagramm eignet sich für den regionalen Umsatzvergleich?',en:'Best chart for regional revenue comparison?'},
+   opts:{de:['Kreisdiagramm','Liniendiagramm','Sortiertes horizontales Balkendiagramm','Scatterplot'],
+         en:['Pie chart','Line chart','Sorted horizontal bar chart','Scatterplot']},
+   correct:2,
+   explain:{de:'Horizontale Balken, sortiert, sind ideal für Rankings.',en:'Horizontal bars, sorted, are ideal for rankings.'}},
+  {q:{de:'Was bedeutet Granularität bei Zeitreihen?',en:'What is granularity in time series?'},
+   opts:{de:['Anzahl Datenpunkte','Zeitlicher Detailgrad (Tag / Monat / Jahr)','Genauigkeit der Daten','Farbabstufung'],
+         en:['Number of data points','Level of time detail (day/month/year)','Data accuracy','Colour gradation']},
+   correct:1,
+   explain:{de:'Granularität = zeitliche Auflösung. Monat zeigt Trends, Tag zeigt Details.',en:'Granularity = time resolution. Month shows trends, day shows details.'}},
+  {q:{de:'Warum ist Tableau besser für große Datensätze als Excel?',en:'Why is Tableau better for large datasets than Excel?'},
+   opts:{de:['Tableau ist kostenlos','Tableau verarbeitet Millionen Zeilen, Excel hat Zeilenlimits','Excel kann keine Diagramme','Tableau hat mehr Farben'],
+         en:['Tableau is free','Tableau handles millions of rows; Excel has row limits','Excel cannot make charts','Tableau has more colours']},
+   correct:1,
+   explain:{de:'Excel ist auf ~1 Mio. Zeilen begrenzt, Tableau für BI-Analysen optimiert.',en:'Excel is limited to ~1M rows; Tableau is optimised for BI analysis.'}},
+  {q:{de:'Was ist der erste Schritt beim Dashboard-Aufbau?',en:'What is the first step in building a dashboard?'},
+   opts:{de:['Farben auswählen','Zielgruppe und Kernaussage definieren','Alle Daten anzeigen','Schriftgröße festlegen'],
+         en:['Choose colours','Define audience and key question','Show all data','Set font size']},
+   correct:1,
+   explain:{de:'Immer zuerst: Wer schaut das an, und welche Entscheidung soll getroffen werden?',en:'Always first: who will look at this, and what decision should they make?'}},
+  {q:{de:'Was gilt für retournierte Bestellungen beim Umsatz?',en:'What applies to returned orders for revenue?'},
+   opts:{de:['Immer ignorieren','Vom Nettoumsatz abziehen','Verdoppeln den Umsatz','Kein Einfluss'],
+         en:['Always ignore','Deduct from net revenue','Double the revenue','No impact']},
+   correct:1,
+   explain:{de:'Für Nettoumsatz müssen Retouren abgezogen werden.',en:'For net revenue, returns must be deducted.'}}
+];
+
+let answers = {};
+let lang = () => document.documentElement.lang || 'de';
+
+function buildQuiz() {
+  const container = document.getElementById('quiz-questions');
+  container.innerHTML = '';
+  answers = {};
+  updateProgress();
+
+  QUESTIONS.forEach((q, qi) => {
+    const div = document.createElement('div');
+    div.className = 'question';
+    div.id = 'q' + qi;
+
+    const l = lang();
+    const opts = q.opts[l].map((opt, oi) =>
+      `<button class="opt" onclick="answer(${qi},${oi})" id="opt-${qi}-${oi}">
+        <span class="opt__letter">${'ABCD'[oi]}</span>
+        ${opt}
+      </button>`
+    ).join('');
+
+    div.innerHTML = `
+      <div class="question__num">Frage ${qi+1} / 15</div>
+      <div class="question__text">${q.q[l]}</div>
+      <div class="question__options">${opts}</div>
+      <div class="feedback" id="fb-${qi}" style="display:none"></div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function answer(qi, oi) {
+  if (answers[qi] !== undefined) return;
+  answers[qi] = oi;
+
+  const l = lang();
+  const q = QUESTIONS[qi];
+  const correct = oi === q.correct;
+
+  // Disable all options
+  for (let i = 0; i < 4; i++) {
+    const btn = document.getElementById(`opt-${qi}-${i}`);
+    btn.disabled = true;
+    if (i === q.correct) btn.classList.add('is-correct');
+    else if (i === oi) btn.classList.add('is-wrong');
+  }
+
+  const fb = document.getElementById(`fb-${qi}`);
+  fb.style.display = 'block';
+  fb.className = `feedback ${correct ? 'is-correct' : 'is-wrong'}`;
+  fb.innerHTML = `${correct ? '&#10003; Richtig. ' : '&#10007; Nicht ganz. '}${q.explain[l]}`;
+
+  updateProgress();
+  if (Object.keys(answers).length === QUESTIONS.length) showResult();
+}
+
+function updateProgress() {
+  const done = Object.keys(answers).length;
+  document.getElementById('quiz-progress').textContent = `${done} / 15`;
+}
+
+function showResult() {
+  const score = Object.entries(answers).filter(([i,a]) => a === QUESTIONS[i].correct).length;
+  const el = document.getElementById('quiz-result');
+  const l = lang();
+  el.classList.add('is-visible');
+  document.getElementById('quiz-score').textContent = `${score}/15`;
+  document.getElementById('quiz-msg').textContent =
+    score >= 13 ? (l==='de'?'Ausgezeichnet! Weiter zu Lab 02.':'Excellent! Continue to Lab 02.') :
+    score >= 10 ? (l==='de'?'Gut! Lies die Erklärungen noch einmal.':'Good! Review the explanations.') :
+                  (l==='de'?'Noch einmal versuchen.':'Try again.');
+}
+
+function resetQuiz() {
+  document.getElementById('quiz-result').classList.remove('is-visible');
+  buildQuiz();
+}
+
+// Init
+(function(){
+  const l = localStorage.getItem('lang') || 'de';
+  setLang(l);
+  buildQuiz();
+})();
 </script>
+
 </body>
 </html>
