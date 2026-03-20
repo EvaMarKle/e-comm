@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lab 05 – Saisonalität & Zeitreihen · UrbanCart · THWS</title>
+  <title>Lab 06 – Conversion Funnel & Drop-off-Analyse · UrbanCart · THWS</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -22,11 +22,9 @@
     .lang-btn.active { background:#E87722; color:#fff; border-color:#E87722; }
     .progress-bar { background:#F1F3F5; padding:12px 32px; display:flex; align-items:center; gap:8px; overflow-x:auto; }
     .prog-step { display:flex; align-items:center; gap:6px; white-space:nowrap; font-size:0.72rem; font-weight:700; color:#9ca3af; }
-    .prog-step.active { color:#E87722; }
-    .prog-step.done { color:#3D7A56; }
+    .prog-step.active { color:#E87722; } .prog-step.done { color:#3D7A56; }
     .prog-dot { width:24px; height:24px; border-radius:50%; background:#E9ECEF; display:flex; align-items:center; justify-content:center; font-size:0.68rem; font-weight:800; flex-shrink:0; }
-    .prog-dot.active { background:#E87722; color:#fff; }
-    .prog-dot.done { background:#3D7A56; color:#fff; }
+    .prog-dot.active { background:#E87722; color:#fff; } .prog-dot.done { background:#3D7A56; color:#fff; }
     .prog-arrow { color:#D1D5DB; font-size:0.9rem; }
     .lab-hero { background:#005B9A; padding:48px 32px; position:relative; overflow:hidden; }
     .lab-hero-inner { max-width:800px; }
@@ -66,11 +64,13 @@
     .concept-title { font-size:0.95rem; font-weight:800; color:#212529; margin-bottom:8px; }
     .concept-body { font-size:0.87rem; color:#6C757D; line-height:1.7; }
     .concept-tip { background:rgba(232,119,34,0.06); border-left:2px solid #E87722; padding:10px 14px; margin-top:10px; font-size:0.82rem; color:#92400e; line-height:1.6; }
-    .peer-table { width:100%; border-collapse:collapse; font-size:0.84rem; margin:16px 0; }
-    .peer-table th { background:#005B9A; color:#fff; padding:10px 14px; text-align:left; font-weight:700; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em; }
-    .peer-table td { padding:10px 14px; border-bottom:1px solid #E9ECEF; color:#374151; vertical-align:top; }
-    .peer-table tr:last-child td { border-bottom:none; }
-    .peer-table tr:nth-child(even) td { background:#F9FAFB; }
+    .funnel-viz { display:flex; flex-direction:column; gap:4px; margin:20px 0; }
+    .funnel-row { display:flex; align-items:center; gap:12px; }
+    .funnel-bar-wrap { flex:1; background:#F1F3F5; height:36px; position:relative; }
+    .funnel-bar { height:100%; background:#005B9A; display:flex; align-items:center; padding-left:12px; transition:width 0.5s; }
+    .funnel-bar-label { font-size:0.78rem; font-weight:700; color:#fff; white-space:nowrap; }
+    .funnel-stage { font-size:0.78rem; font-weight:700; color:#374151; width:120px; flex-shrink:0; }
+    .funnel-pct { font-size:0.78rem; font-weight:700; color:#E87722; width:60px; text-align:right; flex-shrink:0; }
     .quiz-section { background:#F1F3F5; padding:40px 32px; margin:0 -32px; border-radius:2px; }
     .quiz-title { font-size:1.1rem; font-weight:800; color:#005B9A; margin-bottom:4px; }
     .quiz-sub { font-size:0.84rem; color:#6C757D; margin-bottom:24px; }
@@ -101,9 +101,6 @@
     .lab-nav-btn:hover { color:#E87722; }
     .lab-nav-btn.primary { background:#E87722; color:#fff; padding:10px 20px; border:2px solid #E87722; }
     .lab-nav-btn.primary:hover { background:#d06a1a; border-color:#d06a1a; }
-    .completion-banner { background:rgba(61,122,86,0.08); border:2px solid #3D7A56; padding:24px 32px; text-align:center; margin-top:32px; }
-    .completion-title { font-size:1.3rem; font-weight:900; color:#3D7A56; }
-    .completion-sub { font-size:0.87rem; color:#6C757D; margin-top:8px; }
     .sr { opacity:0; transform:translateY(12px); transition:opacity 0.5s ease,transform 0.5s ease; }
     .sr.visible { opacity:1; transform:translateY(0); }
   </style>
@@ -114,155 +111,180 @@
 <script type="text/babel">
 
 const { useState, useEffect } = React;
-
 const LOGO = "data:image/png;base64,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";
-
 const T = {
   de: {
-    labNum:"Lab 05 von 09", labTitle:["Saisonalität & ","Zeitreihen"],
-    labSub:"Wie entwickelt sich der Umsatz über die Zeit? Du lernst, Saisonalität von echten Trends zu unterscheiden, den Black-Friday-Peak zu erkennen und mit Tableau's Forecast-Funktion die Zukunft vorherzusagen.",
-    metaDauer:"75–90 Min.", metaLevel:"Fortgeschritten", metaData:"orders.csv", metaTool:"Tableau Public",
+    labNum:"Lab 06 von 09", labTitle:["Conversion Funnel & ","Drop-off-Analyse"],
+    labSub:"Wo verlieren wir unsere Besucher? Du lernst den Conversion-Funnel kennen, berechnest Drop-off-Raten zwischen den Stufen und vergleichst die Performance verschiedener Marketing-Kanäle.",
+    metaDauer:"75–90 Min.", metaLevel:"Fortgeschritten", metaData:"sessions.csv", metaTool:"Tableau Public",
     progSteps:["Einführung","Daten laden","Analyse","Visualisierung","Quiz","KI-Ausblick"],
-    s1eye:"Konzept", s1title:"Zeitreihenanalyse verstehen",
-    s1lead:"Eine Zeitreihe ist eine Folge von Messwerten über die Zeit. Im E-Commerce klassisch: Umsatz pro Monat. Es gibt zwei Grundmuster: Trend (langfristige Richtung) und Saisonalität (wiederkehrende Muster). Du musst beide verstehen, bevor du Prognosen erstellen kannst.",
-    s2eye:"Schritt-für-Schritt", s2title:"Tableau: Zeitreihen aufbauen",
-    s2lead:"Verbinde orders.csv in Tableau Public. Folge diesen 5 Schritten für ein vollständiges Sales-Trend-Dashboard.",
+    s1eye:"Konzept", s1title:"Was ist ein Conversion Funnel?",
+    s1lead:"Ein Conversion Funnel (Trichter) zeigt, wie viele Nutzer jede Stufe des Kaufprozesses durchlaufen. Typisch im E-Commerce: Besucher → Produktansicht → In den Warenkorb → Checkout → Kauf. An jeder Stufe springen Nutzer ab – das nennt man Drop-off. Dein Ziel: Den größten Drop-off finden und beheben.",
+    funnelData:[
+      {stage:"Besucher", val:100, pct:"100%"},
+      {stage:"Produktansicht", val:58, pct:"58%"},
+      {stage:"Warenkorb", val:22, pct:"22%"},
+      {stage:"Checkout", val:14, pct:"14%"},
+      {stage:"Kauf", val:9, pct:"9%"}
+    ],
+    s2eye:"Schritt-für-Schritt", s2title:"Tableau: Funnel aufbauen",
+    s2lead:"Verbinde sessions.csv. Diese Datei enthält die Besucherzahlen pro Funnel-Stufe, Kanal und Monat.",
     steps:[
-      {title:"orders.csv laden & Datumsfeld formatieren", body:"Verbinde <code>orders.csv</code>. Klicke auf das Datentyp-Symbol neben <code>order_date</code> → stelle auf <strong>Datum</strong> um. Tableau zeigt dann das Kalender-Icon. Ziehe <code>order_date</code> auf Spalten.", tip:"Wenn order_date als Text erkannt wird: Klicke # Symbol → 'Datum' wählen. Tableau zeigt dann Datumshierarchien (Jahr → Quartal → Monat)."},
-      {title:"Liniendiagramm: Monatsumsatz 2023 + 2024", body:"Ziehe <code>total_revenue</code> auf Zeilen. Klicke auf <code>YEAR(order_date)</code> in den Spalten → wähle <strong>Monat (diskret)</strong>. Ziehe <code>YEAR(order_date)</code> auf 'Farbe' im Marks-Panel – du siehst 2023 und 2024 als unterschiedliche Linien.", tip:"Kontinuierlich vs. diskret: Kontinuierlich zeigt Zeitachse; diskret zeigt Kategorien. Für YoY-Vergleich: diskrete Monate + Farbe = Jahr."},
-      {title:"Dual-Line: Year over Year Vergleich", body:"Neue Arbeitsmappe. <code>MONTH(order_date)</code> (diskret) auf Spalten, <code>SUM(total_revenue)</code> auf Zeilen. <code>YEAR(order_date)</code> auf Farbe ziehen. Du siehst 2023 und 2024 übereinander – perfekt für Vergleiche. Achte auf den November-Spike!", tip:"YoY = Year over Year. Statt absoluten Zahlen siehst du direkt: 'Im November 2024 haben wir 18% mehr verkauft als November 2023.'"},
-      {title:"Forecast einschalten", body:"Im Analytics-Pane (Links, Reiter 'Analytics'): Ziehe <strong>Forecast</strong> auf das Diagramm. Tableau berechnet eine automatische Vorhersage. Rechtsklick auf Forecast → 'Forecast-Optionen' → stelle 6 Monate ein. Das Konfidenzintervall zeigt Unsicherheit.", tip:"Tableau nutzt exponentielles Glätten (Holt-Winters). Das Konfidenzband (hellblau): In 95% der Fälle liegt der echte Wert innerhalb dieser Grenzen."},
-      {title:"Dashboard: UrbanCart Sales Trend & Forecast", body:"Neues Dashboard. Füge ein: (1) YoY-Liniendiagramm, (2) Forecast-Chart, (3) Drei KPI-Cards: Stärkstes Quartal, Wachstum YoY, Forecast-Konfidenz. Titel: <strong>UrbanCart Sales Trend & Forecast</strong>. Nutze Filter für Channel und Region.", tip:"Tipp: Setze YoY-Chart oben (Überblick) und Forecast darunter (Ausblick). So führst du den Leser von Vergangenheit in die Zukunft."}
+      {title:"sessions.csv laden", body:"Verbinde <code>sessions.csv</code>. Die Tabelle enthält: <code>visitors</code>, <code>product_views</code>, <code>add_to_cart</code>, <code>checkout</code>, <code>purchase</code>, <code>channel</code>, <code>year_month</code>.", tip:"Tipp: Prüfe, ob alle numerischen Spalten als Measure (grünes Symbol) erkannt werden. Falls als Dimension: Rechtsklick → 'In Measure konvertieren'."},
+      {title:"Calculated Fields: Conversion Rates berechnen", body:"Erstelle 4 berechnete Felder: <br>• <code>CR Besucher→Produkt</code>: <code>SUM([product_views]) / SUM([visitors])</code><br>• <code>CR Produkt→Warenkorb</code>: <code>SUM([add_to_cart]) / SUM([product_views])</code><br>• <code>CR Warenkorb→Checkout</code>: <code>SUM([checkout]) / SUM([add_to_cart])</code><br>• <code>CR Checkout→Kauf</code>: <code>SUM([purchase]) / SUM([checkout])</code>", tip:"Tipp: Formatiere die Calculated Fields als Prozent (Rechtsklick → Formatieren → Prozent). So siehst du sofort '64%' statt '0.64'."},
+      {title:"Funnel-Balkendiagramm", body:"Erstelle ein horizontales Balkendiagramm. Zeilen: Funnel-Stufen (visitors, product_views, add_to_cart, checkout, purchase) als manuell sortierte Dimension. Spalten: SUM der jeweiligen Stufe. Sortiere absteigend – der Trichter soll sichtbar werden.", tip:"Für den echten Funnel-Look: Sortiere die Balken absteigend und wähle eine einheitliche THWS-Blau Farbe. Markiere den größten Drop-off in Orange."},
+      {title:"Heatmap: Conversion Rate pro Kanal", body:"Neues Arbeitsblatt. Zeilen: <code>channel</code>. Spalten: Die 4 berechneten CR-Felder nebeneinander (als separate Measures). Chart-Typ: <code>Square</code>. Farbe: CR-Wert (dunkel = höhere CR). Welcher Kanal performt wo am besten?", tip:"Heatmap-Tipp: Nutze eine Farbe von weiß (niedrig) bis THWS-Blau (hoch). So siehst du auf einen Blick, welcher Kanal welche Funnel-Stufe dominiert."},
+      {title:"Dashboard: UrbanCart Conversion Funnel", body:"Kombiniere Funnel-Chart + Heatmap + 3 KPI-Cards (Gesamt-CR, Größter Drop-off, Bester Kanal). Füge einen Channel-Filter hinzu. Titel: <strong>UrbanCart Conversion Funnel Analysis</strong>.", tip:"Dashboard-Tipp: Setze die KPI-Cards oben für den Kontext, den Funnel-Chart in die Mitte und die Heatmap nach rechts für den Kanalvergleich."}
     ],
-    s3eye:"Kennzahlen", s3title:"KPIs für das Sales-Dashboard",
-    s3lead:"Diese drei KPIs stehen im Header deines Dashboards und geben der Geschäftsführung sofort wichtigen Kontext.",
+    s3eye:"Kennzahlen", s3title:"Funnel-KPIs auf einen Blick",
+    s3lead:"Diese KPIs zeigen die Gesundheit des UrbanCart-Funnels.",
     kpis:[
-      {icon:"📈", val:"Q4 2024", lbl:"Stärkstes Quartal", def:"Oktober–Dezember: Black Friday + Weihnachtsgeschäft treiben den Umsatz auf Jahreshöchststand."},
-      {icon:"📊", val:"+12,4%", lbl:"Wachstum YoY", def:"2024 vs. 2023: UrbanCart wächst im Jahresvergleich. Echter Trend oder nur Saisoneffekt?"},
-      {icon:"🎯", val:"85%", lbl:"Forecast-Konfidenz", def:"Tableau's Vorhersage-Konfidenz: Mit 85% Wahrscheinlichkeit liegt der Wert im Konfidenzband."}
+      {icon:"🎯", val:"9,2%", lbl:"Gesamt-CR", def:"9,2% aller Besucher kaufen. E-Commerce-Benchmark: 2–5%. UrbanCart liegt gut – aber wo verlieren wir die 90,8%?"},
+      {icon:"📉", val:"64%", lbl:"Größter Drop-off", def:"Besucher → Produktansicht: 42% springen schon auf der Homepage ab. Hier liegt das größte Optimierungspotenzial."},
+      {icon:"📣", val:"E-Mail", lbl:"Bester Kanal", def:"E-Mail-Marketing hat die höchste Gesamt-Conversion Rate. Warum? Vorqualifizierte Nutzer – sie kennen UrbanCart bereits."}
     ],
-    s4eye:"Konzepte", s4title:"Saisonalität vs. Trend",
+    s4eye:"Konzepte", s4title:"Drop-off-Analyse – Wo brennt es?",
     concepts:[
-      {title:"Was ist Saisonalität?", body:"Saisonalität = regelmäßig wiederkehrende Muster in festen Zeitabständen. Im E-Commerce: Jedes Jahr im November steigt der Umsatz (Black Friday). Im Dezember ebenfalls (Weihnachten). Im Januar sinkt er. Diese Muster wiederholen sich.", tip:null},
-      {title:"Was ist ein Trend?", body:"Ein Trend ist die langfristige Grundrichtung einer Zeitreihe. UrbanCart wächst: Die Basislinie steigt Jahr für Jahr, unabhängig von saisonalen Schwankungen. Tableau's Decomposition kann Trend und Saisonalität trennen.", tip:"Praxistest: Wenn du die Saisonalität herausnimmst und der Umsatz immer noch steigt – das ist der Trend."},
-      {title:"Ausreißer erkennen und behandeln", body:"Ein Ausreißer weicht stark vom erwarteten Muster ab. Ursachen: Marketingkampagne, technischer Fehler, externe Ereignisse. Prüfe ungewöhnliche Spikes außerhalb von Nov/Dez. Ausreißer sollten erklärt, nicht einfach gelöscht werden.", tip:"Bei echten Ausreißern: Kommentiere im Dashboard ('Systemausfall 15. März'). So weiß das Management, warum der Wert abweicht."}
+      {title:"Was ist Cart Abandonment?", body:"Cart Abandonment = Warenkorbabbruch. Nutzer legen Produkte in den Warenkorb, kaufen aber nicht. Typische Rate im E-Commerce: 70–80%. Ursachen: Hohe Versandkosten, komplizierter Checkout, fehlende Zahlungsoptionen, Preisvergleich.", tip:"Quick Win: Sende automatisierte Cart-Abandonment-E-Mails nach 1h und 24h. Bringt typisch 5–15% der abgebrochenen Käufe zurück."},
+      {title:"Bounce Rate vs. Exit Rate", body:"Bounce Rate = Nutzer verlässt die Seite nach genau EINER Seite (ohne weitere Klicks). Exit Rate = Nutzer verlässt die Seite auf DIESER Seite (kann vorher andere Seiten besucht haben). Für Funnel-Analyse relevanter: Exit Rate pro Funnel-Stufe.", tip:null},
+      {title:"A/B-Testing zur Funnel-Optimierung", body:"A/B-Testing = du testest zwei Versionen einer Seite gegeneinander. Version A: Standard-Checkout. Version B: Vereinfachter 1-Klick-Checkout. Welche Version konvertiert besser? Dann die bessere Variante ausrollen.", tip:"Wichtig: Teste immer nur EINE Variable gleichzeitig. Wenn du Farbe UND Layout gleichzeitig änderst, weißt du nicht, was den Unterschied gemacht hat."}
     ],
-    quizTitle:"Quiz: Lab 05 – Zeitreihen & Saisonalität",
+    quizTitle:"Quiz: Lab 06 – Conversion Funnel",
     quizSub:"15 Fragen · Beantworte alle, bevor du zum nächsten Lab gehst.",
     questions:[
-      {q:"Was ist Saisonalität in einer Zeitreihe?",options:["Ein langfristiger Aufwärtstrend","Regelmäßig wiederkehrende Muster in festen Zeitabständen","Zufällige Datenschwankungen","Ein technischer Fehler"],correct:1,explain:"Saisonalität = wiederkehrende Muster in festen Intervallen (z.B. jedes Jahr im November steigen E-Commerce-Umsätze durch Black Friday)."},
-      {q:"Was ist ein Trend in einer Zeitreihe?",options:["Ein kurzfristiger Spike","Die langfristige Grundrichtung (steigend oder fallend)","Das Konfidenzintervall des Forecasts","Die Differenz zwischen zwei Monaten"],correct:1,explain:"Ein Trend beschreibt die langfristige Richtung einer Zeitreihe, unabhängig von kurzfristigen Schwankungen oder Saisonalität."},
-      {q:"Wie berechnet man YoY-Wachstum?",options:["(aktueller_Wert - Vorjahreswert) / Vorjahreswert × 100","Summe aller Monate / 12","Differenz zwischen Jahresanfang und -ende","Durchschnitt aller Monate"],correct:0,explain:"YoY = (aktueller Wert - Vorjahreswert) / Vorjahreswert × 100. Beispiel: Nov 2024 = 120k, Nov 2023 = 100k → YoY = +20%."},
-      {q:"In welchem Monat findet Black Friday statt?",options:["Oktober","November","Dezember","Januar"],correct:1,explain:"Black Friday ist immer der vierte Freitag im November (Tag nach US-Thanksgiving). Er ist der umsatzstärkste Einzeltag im E-Commerce weltweit."},
-      {q:"Was ist ein Konfidenzintervall beim Forecast?",options:["Die genaue Vorhersage des Umsatzes","Der Bereich, in dem der echte Wert mit einer bestimmten Wahrscheinlichkeit liegt","Die Abweichung vom Vorjahr","Die maximale historische Schwankungsbreite"],correct:1,explain:"Das Konfidenzintervall (z.B. 95%) zeigt: In 95% der Fälle wird der tatsächliche Wert innerhalb dieser Bandbreite liegen. Je breiter das Band, desto unsicherer die Prognose."},
-      {q:"Wann ist ein Liniendiagramm besser als ein Balkendiagramm?",options:["Für Kategorievergleiche","Für zeitliche Verläufe und Trends über Perioden","Für Anteile am Gesamtumsatz","Für geografische Verteilungen"],correct:1,explain:"Liniendiagramme sind ideal für Zeitreihen: Sie betonen Verlauf und Richtung. Balkendiagramme eignen sich besser für diskrete Kategorienvergleiche."},
-      {q:"Was macht die MONTH()-Funktion in Tableau?",options:["Gibt den Jahresumsatz zurück","Extrahiert die Monatsnummer (1-12) aus einem Datum","Berechnet den monatlichen Durchschnitt","Filtert Daten nach Monat"],correct:1,explain:"MONTH([order_date]) gibt eine Zahl von 1 (Januar) bis 12 (Dezember) zurück. Damit kannst du alle Januar-Werte gruppieren, unabhängig vom Jahr."},
-      {q:"Was bedeutet 'Granularität' in einer Zeitreihe?",options:["Die Anzahl der Datenquellen","Der zeitliche Detailgrad (Tag / Monat / Quartal / Jahr)","Die Genauigkeit der Umsatzdaten","Die Farbabstufung im Diagramm"],correct:1,explain:"Granularität = zeitliche Auflösung. Tagesebene zeigt Details; Monatsebene zeigt Trends; Jahresebene zeigt Gesamtentwicklung."},
-      {q:"Was ist ein Rolling Average (gleitender Durchschnitt)?",options:["Der Durchschnitt aller Datenpunkte","Ein Durchschnitt über ein gleitendes Zeitfenster (z.B. letzte 3 Monate)","Die Summe aller Umsätze","Der Forecast für den nächsten Monat"],correct:1,explain:"Rolling Average = gleitender Durchschnitt über ein fixes Zeitfenster. Beispiel: 3-Monats-Rolling-Avg glättet kurzfristige Schwankungen und macht Trends sichtbarer."},
-      {q:"Was tun bei starken Ausreißern in einer Zeitreihe?",options:["Immer löschen, damit der Forecast stimmt","Ursache klären, im Dashboard kommentieren, dann entscheiden","Ignorieren, da statistisch irrelevant","Durch den Durchschnitt ersetzen"],correct:1,explain:"Ausreißer haben immer eine Ursache (Kampagne, Fehler, Ereignis). Versteh sie erst, dann entscheide: Kommentar im Dashboard oder Bereinigung für Prognose."},
-      {q:"Was zeigt ein Tableau-Forecast?",options:["Den Rückblick auf die Vergangenheit","Eine statistische Vorhersage künftiger Werte basierend auf Vergangenheitsmustern","Den Vergleich zwischen zwei Jahren","Die kumulierte Summe aller Umsätze"],correct:1,explain:"Tableau's Forecast nutzt exponentielles Glätten (Holt-Winters-Methode) und berechnet Prognosen mit Konfidenzintervall."},
-      {q:"Was ist eine Zeitreihe?",options:["Eine Tabelle mit Produkten sortiert nach Preis","Eine Folge von Messwerten, die zeitlich aufgezeichnet wurden","Eine geografische Karte der Verkäufe","Ein Diagramm mit mehreren Kategorien"],correct:1,explain:"Eine Zeitreihe ist eine geordnete Folge von Datenpunkten über die Zeit (z.B. Umsatz pro Tag/Monat/Jahr)."},
-      {q:"Warum ist November oft der umsatzstärkste Monat im E-Commerce?",options:["Weil im November das Schuljahr beginnt","Wegen Black Friday und Cyber Monday – die größten Shopping-Events des Jahres","Weil Winterkleidung teurer ist","Weil im November weniger Retouren anfallen"],correct:1,explain:"Black Friday (letzter Freitag im November) und Cyber Monday sind die umsatzstärksten Shopping-Tage weltweit und treiben den November-Peak."},
-      {q:"Was ist der Unterschied zwischen kontinuierlichem und diskretem Datum in Tableau?",options:["Kein Unterschied","Kontinuierlich zeigt Zeitachse; diskret zeigt Datumspunkte als Kategorien","Diskret ist ungenauer","Kontinuierlich kann nicht gefiltert werden"],correct:1,explain:"Kontinuierlich (grüne Datumspille): Zeitachse – ideal für Zeitreihen. Diskret (blaue Datumspille): Kategorien – ideal für Vergleiche wie 'alle Januar-Werte'."},
-      {q:"Was ist 'Dual-Axis' in Tableau?",options:["Zwei Farbskalen für ein Diagramm","Zwei übereinandergelegte Y-Achsen für unterschiedliche Maßeinheiten","Ein zweites Datenblatt","Zwei Filter gleichzeitig"],correct:1,explain:"Dual-Axis erlaubt zwei Y-Achsen: z.B. Umsatz (links) und Anzahl Bestellungen (rechts) in einem Chart. Ideal für YoY-Vergleiche mit unterschiedlichen Skalen."}
+      {q:"Was ist eine Conversion Rate?",options:["Die Anzahl der Seitenaufrufe","Der Prozentsatz der Nutzer, die eine gewünschte Aktion ausführen","Der Umsatz pro Kunde","Die Absprungrate der Startseite"],correct:1,explain:"Conversion Rate = Anzahl Conversions / Gesamtbesucher × 100. Beispiel: 100 Besucher, 5 Käufe → CR = 5%."},
+      {q:"Wo ist der typische größte Drop-off im E-Commerce-Funnel?",options:["Checkout → Kauf","Besucher → Produktansicht (Homepage-Absprung)","Warenkorb → Checkout","Produktansicht → Warenkorb"],correct:1,explain:"Der größte Drop-off ist meist am Anfang: Viele Besucher verlassen die Seite schon auf der Homepage, ohne auch nur ein Produkt anzuklicken."},
+      {q:"Was ist A/B-Testing?",options:["Eine Datenbankabfrage","Das gleichzeitige Testen zweier Varianten einer Seite gegen einander","Eine Analysemethode für Zeitreihen","Ein Tableau-Chart-Typ"],correct:1,explain:"A/B-Testing: Version A (Kontrolle) vs. Version B (Variante). Durch zufällige Zuteilung der Nutzer misst man, welche Version besser konvertiert."},
+      {q:"Was ist der Unterschied zwischen Bounce Rate und Exit Rate?",options:["Kein Unterschied","Bounce Rate: Absprung nach einer Seite; Exit Rate: Verlassen auf einer bestimmten Seite (nach mehreren)","Bounce Rate ist immer höher","Exit Rate gilt nur für Checkout-Seiten"],correct:1,explain:"Bounce Rate = Nutzer sieht nur EINE Seite und geht. Exit Rate = Nutzer verlässt auf DIESER Seite (kann vorher mehrere Seiten besucht haben)."},
+      {q:"Was bedeutet 'Cart Abandonment'?",options:["Ein Kunde kehrt zum Warenkorb zurück","Ein Kunde legt Produkte in den Warenkorb, kauft aber nicht","Ein leerer Warenkorb","Ein technischer Fehler beim Checkout"],correct:1,explain:"Cart Abandonment = Warenkorbabbruch. Typische Rate: 70-80% im E-Commerce. Ursachen: Versandkosten, komplizierter Checkout, fehlende Zahlungsoptionen."},
+      {q:"Welcher Kanal hat typischerweise die höchste Conversion Rate?",options:["Social Media","Direktzugriff / E-Mail (vorqualifizierte Nutzer)","SEA (bezahlte Suche)","Display-Werbung"],correct:1,explain:"E-Mail-Marketing und Direktzugriff haben meist die höchste CR, weil die Nutzer vorqualifiziert sind – sie kennen die Marke bereits."},
+      {q:"Wie berechnet man eine Conversion Rate in Tableau?",options:["COUNT([purchase]) / MAX([visitors])","SUM([purchase]) / SUM([visitors])","AVG([purchase])","COUNTD([purchase]) / COUNT([visitors])"],correct:1,explain:"CR = SUM(Conversions) / SUM(Gesamtbesucher). Wichtig: SUM verwenden, da wir über alle Zeilen aggregieren wollen."},
+      {q:"Was ist ein Conversion Funnel?",options:["Ein Balkendiagramm in Tableau","Eine Darstellung des Kaufprozesses von Besucher bis Kauf, die Abbrüche sichtbar macht","Ein KPI für den Gesamtumsatz","Ein Filter in Tableau"],correct:1,explain:"Der Conversion Funnel visualisiert den Kaufprozess: An jeder Stufe (Besucher → Ansicht → Warenkorb → Checkout → Kauf) springen Nutzer ab – sichtbar als sich verjüngender Trichter."},
+      {q:"Was ist Multi-Touch Attribution?",options:["Ein Tableau-Feature","Eine Methode, die den Beitrag mehrerer Marketing-Touchpoints zur Conversion bewertet","Eine Heatmap-Visualisierung","Ein A/B-Test für mehrere Kanäle gleichzeitig"],correct:1,explain:"Multi-Touch Attribution: Welcher Kanal hat welchen Anteil am Kauf? Last-Click gibt dem letzten Kanal 100% – Multi-Touch verteilt den Kredit auf alle beteiligten Touchpoints."},
+      {q:"Wann ist ein Funnel-Diagramm besser als eine Zeitreihe?",options:["Bei saisonalen Analysen","Wenn man die Abbruchrate zwischen Prozessschritten analysieren will","Für geografische Vergleiche","Für Budget-Prognosen"],correct:1,explain:"Funnel-Diagramme visualisieren Prozessschritte und Abbruchraten. Zeitreihen zeigen Entwicklung über Zeit. Für Conversion-Analyse ist der Funnel das richtige Tool."},
+      {q:"Was ist der Benchmark für eine 'gute' E-Commerce Conversion Rate?",options:["Unter 1%","2–5%","10–15%","Über 20%"],correct:1,explain:"Branchenüblicher E-Commerce CR-Benchmark: 2–5%. Unter 2% = Optimierungsbedarf. Über 5% = sehr gut. UrbanCarts 9,2% = überdurchschnittlich."},
+      {q:"Warum ist E-Mail-Marketing oft der beste Conversion-Kanal?",options:["Weil E-Mails immer geöffnet werden","Weil die Empfänger die Marke bereits kennen und Vertrauen haben (vorqualifiziert)","Weil E-Mail-Marketing kostenlos ist","Weil E-Mails keine Abmeldungen haben"],correct:1,explain:"E-Mail-Empfänger sind vorqualifiziert: Sie haben sich bewusst angemeldet und kennen die Marke. Das erhöht die Bereitschaft zum Kauf deutlich."},
+      {q:"Was ist ein 'Micro-Conversion'?",options:["Ein sehr kleiner Kauf","Eine Zwischenaktion vor dem eigentlichen Kauf (z.B. Newsletter-Anmeldung, Produktansicht)","Eine mobile Conversion","Eine Conversion unter 5€"],correct:1,explain:"Micro-Conversions sind Zwischenziele: Newsletter-Anmeldung, Produkt gemerkt, Bewertung gelesen. Sie messen Engagement und gehen dem Kauf (Macro-Conversion) voraus."},
+      {q:"Was ist 'Retargeting' in Bezug auf den Conversion Funnel?",options:["Das erneute Analysieren des Funnels","Werbung für Nutzer, die den Funnel verlassen haben, um sie zurückzuholen","Eine Tableau-Funktion","Das Umbenennen von Funnel-Stufen"],correct:1,explain:"Retargeting: Nutzer, die Produkte angesehen oder in den Warenkorb gelegt haben, werden mit gezielter Werbung wieder angesprochen, um sie zur Conversion zu bringen."},
+      {q:"Welche Metrik zeigt den Wert jedes Besuchers für das Unternehmen?",options:["Bounce Rate","Revenue per Visitor (RPV = Gesamtumsatz / Besucher)","Seitenaufrufe pro Session","Zeit auf der Seite"],correct:1,explain:"Revenue per Visitor (RPV) = Gesamtumsatz / Gesamtbesucher. Zeigt, wie viel jeder Besucher im Durchschnitt wert ist. Wichtig für Marketing-Budget-Entscheidungen."}
     ],
-    aiEye:"KI-Ausblick", aiTitle:"Zeitreihen in Python: pandas + Prophet Forecast",
-    aiText:"Das, was du in Tableau gebaut hast, lässt sich in Python automatisieren – mit Facebook Prophet sogar besser. Hier der Prompt und Code-Einstieg:",
+    aiEye:"KI-Ausblick", aiTitle:"Funnel-Analyse in Python: Plotly go.Funnel + Heatmap",
+    aiText:"Der Funnel-Chart und die Heatmap lassen sich in Python mit Plotly sehr elegant bauen. Hier der Prompt und der Code:",
     aiCode:`# Prompt für ChatGPT / Claude:
-"Ich habe orders.csv mit Spalten: order_date, total_revenue.
-Schreibe Python-Code der:
-1. Daten mit pandas lädt und auf Monat resampelt (resample('ME'))
-2. Ein Plotly-Liniendiagramm erstellt: 2023 vs. 2024 YoY
-3. Facebook Prophet installiert und einen 6-Monats-Forecast erstellt
-4. Alles in einem Plotly-Dashboard zusammenfasst
-Farbschema: Orange #E87722 für 2024, Blau #005B9A für 2023."
+"Ich habe sessions.csv mit: visitors, product_views, add_to_cart,
+checkout, purchase, channel, year_month.
+Erstelle:
+1. Einen Plotly Funnel-Chart (go.Funnel) für den Gesamt-Funnel
+2. Eine Heatmap (seaborn oder plotly) der CR pro Kanal × Stufe
+3. Berechne alle 4 Conversion Rates zwischen den Stufen
+Farbschema: Orange #E87722 + Blau #005B9A."
 
 import pandas as pd
 import plotly.graph_objects as go
-from prophet import Prophet
+import plotly.express as px
 
-df = pd.read_csv('orders.csv', parse_dates=['order_date'])
-monthly = df.resample('ME', on='order_date')['total_revenue'].sum().reset_index()
-prophet_df = monthly.rename(columns={'order_date':'ds','total_revenue':'y'})
-model = Prophet(yearly_seasonality=True, weekly_seasonality=False)
-model.fit(prophet_df)
-future = model.make_future_dataframe(periods=6, freq='ME')
-forecast = model.predict(future)`,
-    prevLab:"← Lab 04", nextLab:"Lab 06: Conversion Funnel →",
-    prevHref:"lab04.html", nextHref:"lab06.html"
+df = pd.read_csv('sessions.csv')
+total = df.sum(numeric_only=True)
+
+# Funnel Chart
+fig = go.Figure(go.Funnel(
+    y=["Besucher","Produktansicht","Warenkorb","Checkout","Kauf"],
+    x=[total['visitors'], total['product_views'],
+       total['add_to_cart'], total['checkout'], total['purchase']],
+    marker=dict(color=["#005B9A","#1e7ab8","#E87722","#d06a1a","#3D7A56"])
+))
+
+# Channel Heatmap
+cr_df = df.groupby('channel').sum(numeric_only=True)
+cr_df['CR_visit_view'] = cr_df['product_views'] / cr_df['visitors']
+cr_df['CR_view_cart'] = cr_df['add_to_cart'] / cr_df['product_views']
+cr_df['CR_cart_checkout'] = cr_df['checkout'] / cr_df['add_to_cart']
+cr_df['CR_checkout_buy'] = cr_df['purchase'] / cr_df['checkout']`,
+    prevLab:"← Lab 05", nextLab:"Lab 07: Sentiment-Analyse →",
+    prevHref:"lab05.html", nextHref:"lab07.html"
   },
   en: {
-    labNum:"Lab 05 of 09", labTitle:["Seasonality & ","Time Series"],
-    labSub:"How does revenue develop over time? You'll learn to distinguish seasonality from real trends, identify the Black Friday peak, and use Tableau's Forecast function to predict the future.",
-    metaDauer:"75–90 min.", metaLevel:"Intermediate", metaData:"orders.csv", metaTool:"Tableau Public",
+    labNum:"Lab 06 of 09", labTitle:["Conversion Funnel & ","Drop-off Analysis"],
+    labSub:"Where do we lose our visitors? You'll learn the conversion funnel, calculate drop-off rates between stages, and compare the performance of different marketing channels.",
+    metaDauer:"75–90 min.", metaLevel:"Intermediate", metaData:"sessions.csv", metaTool:"Tableau Public",
     progSteps:["Introduction","Load Data","Analysis","Visualisation","Quiz","AI Outlook"],
-    s1eye:"Concept", s1title:"Understanding Time Series Analysis",
-    s1lead:"A time series is a sequence of measurements over time. In e-commerce: revenue per month. Two fundamental patterns exist: trend (long-term direction) and seasonality (recurring patterns). Understand both before forecasting.",
-    s2eye:"Step by Step", s2title:"Tableau: Building Time Series",
-    s2lead:"Connect orders.csv in Tableau Public. Follow these 5 steps to build a complete sales trend dashboard.",
+    s1eye:"Concept", s1title:"What is a Conversion Funnel?",
+    s1lead:"A conversion funnel shows how many users pass through each stage of the buying process. Typical in e-commerce: Visitors → Product View → Add to Cart → Checkout → Purchase. Users drop off at every stage – that's called drop-off. Your goal: find and fix the biggest drop-off.",
+    funnelData:[
+      {stage:"Visitors", val:100, pct:"100%"},
+      {stage:"Product Views", val:58, pct:"58%"},
+      {stage:"Add to Cart", val:22, pct:"22%"},
+      {stage:"Checkout", val:14, pct:"14%"},
+      {stage:"Purchase", val:9, pct:"9%"}
+    ],
+    s2eye:"Step by Step", s2title:"Tableau: Building the Funnel",
+    s2lead:"Connect sessions.csv. This file contains visitor counts per funnel stage, channel and month.",
     steps:[
-      {title:"Load orders.csv & format date field", body:"Connect <code>orders.csv</code>. Click the data type icon next to <code>order_date</code> → set to <strong>Date</strong>. Drag <code>order_date</code> to Columns.", tip:"If order_date reads as text: click # symbol → select 'Date'. Tableau shows date hierarchies (Year → Quarter → Month)."},
-      {title:"Line chart: monthly revenue 2023 + 2024", body:"Drag <code>total_revenue</code> to Rows. Click <code>YEAR(order_date)</code> in Columns → select <strong>Month (discrete)</strong>. Drag <code>YEAR(order_date)</code> to Color – you'll see 2023 and 2024 as separate lines.", tip:"Continuous vs. discrete: Continuous shows time axis; discrete shows categories. For YoY: discrete months + Color = Year."},
-      {title:"Dual-Line: Year over Year comparison", body:"New worksheet. <code>MONTH(order_date)</code> (discrete) on Columns, <code>SUM(total_revenue)</code> on Rows. Drag <code>YEAR(order_date)</code> to Color. See 2023 and 2024 overlaid – perfect for comparison. Note the November spike!", tip:"YoY = Year over Year. Instead of absolute numbers, you see: 'In November 2024 we sold 18% more than November 2023.'"},
-      {title:"Enable Forecast", body:"In Analytics pane (left, 'Analytics' tab): Drag <strong>Forecast</strong> onto chart. Right-click Forecast → 'Forecast Options' → set 6 months. The confidence interval shows uncertainty.", tip:"Tableau uses exponential smoothing (Holt-Winters). The confidence band (light blue): in 95% of cases the real value falls within these bounds."},
-      {title:"Dashboard: UrbanCart Sales Trend & Forecast", body:"New dashboard. Add: (1) YoY line chart, (2) Forecast chart, (3) Three KPI cards: Strongest Quarter, YoY Growth, Forecast Confidence. Title: <strong>UrbanCart Sales Trend & Forecast</strong>.", tip:"Tip: Put YoY chart on top (overview) and forecast below (outlook). Leads the reader from past to future."}
+      {title:"Load sessions.csv", body:"Connect <code>sessions.csv</code>. The table contains: <code>visitors</code>, <code>product_views</code>, <code>add_to_cart</code>, <code>checkout</code>, <code>purchase</code>, <code>channel</code>, <code>year_month</code>.", tip:"Check that all numeric columns are recognised as Measures (green icon). If listed as Dimension: right-click → 'Convert to Measure'."},
+      {title:"Calculated Fields: Compute Conversion Rates", body:"Create 4 calculated fields:<br>• <code>CR Visitors→Product</code>: <code>SUM([product_views]) / SUM([visitors])</code><br>• <code>CR Product→Cart</code>: <code>SUM([add_to_cart]) / SUM([product_views])</code><br>• <code>CR Cart→Checkout</code>: <code>SUM([checkout]) / SUM([add_to_cart])</code><br>• <code>CR Checkout→Purchase</code>: <code>SUM([purchase]) / SUM([checkout])</code>", tip:"Format CFs as percentage (right-click → Format → Percentage) so you see '64%' instead of '0.64'."},
+      {title:"Funnel Bar Chart", body:"Create a horizontal bar chart. Rows: funnel stages (manually sorted). Columns: SUM of each stage. Sort descending – the funnel shape should be visible.", tip:"For a real funnel look: sort bars descending and use THWS blue. Mark the largest drop-off in orange."},
+      {title:"Heatmap: Conversion Rate per Channel", body:"New worksheet. Rows: <code>channel</code>. Columns: 4 CR calculated fields side by side. Chart type: <code>Square</code>. Colour: CR value (darker = higher). Which channel performs best at which stage?", tip:"Heatmap tip: Use white (low) to THWS blue (high). See at a glance which channel dominates which funnel stage."},
+      {title:"Dashboard: UrbanCart Conversion Funnel", body:"Combine Funnel chart + Heatmap + 3 KPI cards (Overall CR, Biggest Drop-off, Best Channel). Add channel filter. Title: <strong>UrbanCart Conversion Funnel Analysis</strong>.", tip:"Tip: KPI cards on top for context, funnel chart in the middle, heatmap on the right for channel comparison."}
     ],
-    s3eye:"Key Metrics", s3title:"KPIs for the Sales Dashboard",
-    s3lead:"These three KPIs appear in your dashboard header, giving management immediate context.",
+    s3eye:"Key Metrics", s3title:"Funnel KPIs at a Glance",
+    s3lead:"These KPIs show the health of the UrbanCart funnel.",
     kpis:[
-      {icon:"📈", val:"Q4 2024", lbl:"Strongest Quarter", def:"October–December: Black Friday + Christmas drive revenue to the annual peak."},
-      {icon:"📊", val:"+12.4%", lbl:"YoY Growth", def:"2024 vs. 2023: UrbanCart grows year-over-year. Real trend or seasonal effect?"},
-      {icon:"🎯", val:"85%", lbl:"Forecast Confidence", def:"Tableau's prediction confidence: with 85% probability the real value falls within the band."}
+      {icon:"🎯", val:"9.2%", lbl:"Overall CR", def:"9.2% of all visitors purchase. E-commerce benchmark: 2–5%. UrbanCart performs well – but where do we lose the 90.8%?"},
+      {icon:"📉", val:"64%", lbl:"Biggest Drop-off", def:"Visitors → Product View: 42% leave already on the homepage. Biggest optimisation potential here."},
+      {icon:"📣", val:"Email", lbl:"Best Channel", def:"Email marketing has the highest overall conversion rate. Why? Pre-qualified users who already know UrbanCart."}
     ],
-    s4eye:"Concepts", s4title:"Seasonality vs. Trend",
+    s4eye:"Concepts", s4title:"Drop-off Analysis – Where is it burning?",
     concepts:[
-      {title:"What is seasonality?", body:"Seasonality = regularly recurring patterns at fixed intervals. In e-commerce: every November revenue rises (Black Friday). December too (Christmas). January falls. These patterns repeat.", tip:null},
-      {title:"What is a trend?", body:"A trend is the long-term direction of a time series. UrbanCart is growing: the baseline rises year after year, independent of seasonal fluctuations.", tip:"Reality check: Remove the seasonal pattern – if revenue still rises, that's the trend."},
-      {title:"Detecting and handling outliers", body:"An outlier deviates strongly from expected patterns. Causes: marketing campaigns, technical errors, external events. Check unusual spikes outside Nov/Dec.", tip:"Annotate outliers in dashboard ('System outage 15 March'). Management needs to know why values deviate."}
+      {title:"What is Cart Abandonment?", body:"Cart abandonment: users add products to cart but don't buy. Typical rate: 70–80%. Causes: high shipping costs, complicated checkout, missing payment options, price comparison.", tip:"Quick win: Send automated cart abandonment emails after 1h and 24h. Typically recovers 5–15% of abandoned purchases."},
+      {title:"Bounce Rate vs. Exit Rate", body:"Bounce Rate = user leaves after exactly ONE page (no further clicks). Exit Rate = user leaves on THIS page (may have visited others before). For funnel analysis: exit rate per funnel stage is more relevant.", tip:null},
+      {title:"A/B Testing for Funnel Optimisation", body:"A/B testing = comparing two versions of a page. Version A: standard checkout. Version B: simplified 1-click checkout. Which converts better? Then roll out the winning variant.", tip:"Important: test only ONE variable at a time. If you change colour AND layout simultaneously, you won't know what made the difference."}
     ],
-    quizTitle:"Quiz: Lab 05 – Time Series & Seasonality",
+    quizTitle:"Quiz: Lab 06 – Conversion Funnel",
     quizSub:"15 questions · Complete all before moving to the next lab.",
     questions:[
-      {q:"What is seasonality in a time series?",options:["A long-term upward trend","Regularly recurring patterns at fixed time intervals","Random data fluctuations","A technical error"],correct:1,explain:"Seasonality = recurring patterns at fixed intervals (e.g. every November e-commerce revenue rises due to Black Friday)."},
-      {q:"What is a trend in a time series?",options:["A short-term spike","The long-term underlying direction","The forecast confidence interval","The difference between two months"],correct:1,explain:"A trend describes the long-term direction of a time series, independent of short-term fluctuations or seasonality."},
-      {q:"How do you calculate YoY growth?",options:["(current - prior_year) / prior_year × 100","Sum of all months / 12","Difference between year start and end","Average of all months"],correct:0,explain:"YoY = (current value - prior year value) / prior year value × 100. Example: Nov 2024 = 120k, Nov 2023 = 100k → YoY = +20%."},
-      {q:"In which month does Black Friday take place?",options:["October","November","December","January"],correct:1,explain:"Black Friday is always the fourth Friday in November (day after US Thanksgiving). It's the highest-revenue single day in e-commerce worldwide."},
-      {q:"What is a confidence interval in a forecast?",options:["The precise revenue prediction","The range within which the real value falls with a given probability","The deviation from prior year","The maximum historical range"],correct:1,explain:"The confidence interval (e.g. 95%) means: in 95% of cases the actual value will be within this range. Wider band = more uncertain forecast."},
-      {q:"When is a line chart better than a bar chart?",options:["For category comparisons","For temporal progressions and trends","For shares of total revenue","For geographic distributions"],correct:1,explain:"Line charts are ideal for time series: they emphasise progression and direction. Bar charts suit discrete category comparisons."},
-      {q:"What does the MONTH() function do in Tableau?",options:["Returns annual revenue","Extracts the month number (1-12) from a date","Calculates the monthly average","Filters data by month"],correct:1,explain:"MONTH([order_date]) returns a number 1-12. Lets you group all January values regardless of year."},
-      {q:"What does 'granularity' mean in a time series?",options:["Number of data sources","Level of time detail (day/month/quarter/year)","Accuracy of revenue data","Colour gradation"],correct:1,explain:"Granularity = temporal resolution. Daily shows detail; monthly shows trends; yearly shows overall development."},
-      {q:"What is a rolling average?",options:["Average of all data points","An average over a moving time window (e.g. last 3 months)","Sum of all revenues","Forecast for next month"],correct:1,explain:"Rolling average = moving average over a fixed time window. Smooths short-term fluctuations to reveal trends."},
-      {q:"What to do with strong outliers in a time series?",options:["Always delete for forecast accuracy","Investigate cause, annotate in dashboard, then decide","Ignore as statistically irrelevant","Replace with the average"],correct:1,explain:"Outliers always have a cause. Understand them first, then annotate ('system outage') or clean for forecasting."},
-      {q:"What does a Tableau Forecast show?",options:["Retrospective on the past","Statistical prediction of future values based on past patterns","Comparison between two years","Cumulative sum of revenues"],correct:1,explain:"Tableau's Forecast uses exponential smoothing (Holt-Winters) to calculate predictions with confidence intervals."},
-      {q:"What is a time series?",options:["Products sorted by price","A sequence of measurements recorded in chronological order","A geographic sales map","A multi-category chart"],correct:1,explain:"A time series is an ordered sequence of data points recorded over time (e.g. revenue per day/month/year)."},
-      {q:"Why is November often the highest-revenue month in e-commerce?",options:["New school year starts","Black Friday and Cyber Monday – biggest shopping events of the year","Winter clothing is more expensive","Fewer returns in November"],correct:1,explain:"Black Friday (last Friday November) and Cyber Monday drive the November peak in e-commerce worldwide."},
-      {q:"Difference between continuous and discrete dates in Tableau?",options:["No difference","Continuous shows time axis; discrete shows date points as categories","Discrete is less accurate","Continuous cannot be filtered"],correct:1,explain:"Continuous (green pill): time axis – ideal for time series. Discrete (blue pill): categories – ideal for comparing 'all January values'."},
-      {q:"What is 'Dual-Axis' in Tableau?",options:["Two colour scales","Two overlaid Y-axes for different units","A second data sheet","Two simultaneous filters"],correct:1,explain:"Dual-Axis allows two Y-axes: e.g. revenue (left) and order count (right). Ideal for YoY comparisons with different scales."}
+      {q:"What is a conversion rate?",options:["Number of page views","The percentage of users who complete a desired action","Revenue per customer","Homepage bounce rate"],correct:1,explain:"Conversion Rate = Number of Conversions / Total Visitors × 100. Example: 100 visitors, 5 purchases → CR = 5%."},
+      {q:"Where is the typical biggest drop-off in the e-commerce funnel?",options:["Checkout → Purchase","Visitors → Product View (homepage abandonment)","Cart → Checkout","Product View → Cart"],correct:1,explain:"The biggest drop-off is usually at the start: many visitors leave on the homepage without clicking any product."},
+      {q:"What is A/B testing?",options:["A database query","Testing two variants of a page against each other simultaneously","A time series analysis method","A Tableau chart type"],correct:1,explain:"A/B testing: Version A (control) vs. Version B (variant). Random user assignment measures which version converts better."},
+      {q:"What is the difference between Bounce Rate and Exit Rate?",options:["No difference","Bounce Rate: leaves after one page; Exit Rate: leaves on this page (after possibly visiting others)","Bounce rate is always higher","Exit rate only applies to checkout pages"],correct:1,explain:"Bounce Rate = user sees only ONE page then leaves. Exit Rate = user leaves on THIS page (may have visited multiple pages before)."},
+      {q:"What does 'Cart Abandonment' mean?",options:["A customer returns to their cart","A customer adds products to cart but doesn't purchase","An empty cart","A technical checkout error"],correct:1,explain:"Cart abandonment: user adds products but doesn't complete purchase. Typical rate: 70-80%. Causes: shipping costs, complex checkout, missing payment options."},
+      {q:"Which channel typically has the highest conversion rate?",options:["Social media","Direct / Email (pre-qualified users)","SEA (paid search)","Display advertising"],correct:1,explain:"Email marketing and direct access usually have the highest CR because users are pre-qualified – they already know the brand."},
+      {q:"How do you calculate a conversion rate in Tableau?",options:["COUNT([purchase]) / MAX([visitors])","SUM([purchase]) / SUM([visitors])","AVG([purchase])","COUNTD([purchase]) / COUNT([visitors])"],correct:1,explain:"CR = SUM(Conversions) / SUM(Total visitors). Use SUM to aggregate across all rows."},
+      {q:"What is a conversion funnel?",options:["A bar chart in Tableau","A visualisation of the purchase process from visitor to buyer, showing drop-offs","A total revenue KPI","A filter in Tableau"],correct:1,explain:"The conversion funnel visualises the purchase process: at each stage users drop off – visible as a narrowing funnel shape."},
+      {q:"What is Multi-Touch Attribution?",options:["A Tableau feature","A method that evaluates the contribution of multiple marketing touchpoints to the conversion","A heatmap visualisation","An A/B test for multiple channels"],correct:1,explain:"Multi-Touch Attribution: which channel contributed what share to the purchase? Last-click gives 100% to the last channel; multi-touch distributes credit across all touchpoints."},
+      {q:"When is a funnel diagram better than a time series?",options:["For seasonal analysis","When analysing drop-off rates between process steps","For geographic comparisons","For budget forecasts"],correct:1,explain:"Funnel diagrams visualise process steps and drop-off rates. Time series show development over time. For conversion analysis, the funnel is the right tool."},
+      {q:"What is the benchmark for a 'good' e-commerce conversion rate?",options:["Below 1%","2–5%","10–15%","Above 20%"],correct:1,explain:"Industry e-commerce CR benchmark: 2–5%. Below 2% = needs optimisation. Above 5% = very good. UrbanCart's 9.2% = above average."},
+      {q:"Why is email marketing often the best conversion channel?",options:["Because emails are always opened","Because recipients already know and trust the brand (pre-qualified)","Because email marketing is free","Because emails don't have unsubscribes"],correct:1,explain:"Email recipients are pre-qualified: they deliberately signed up and know the brand. This significantly increases purchase intent."},
+      {q:"What is a 'micro-conversion'?",options:["A very small purchase","An intermediate action before the actual purchase (e.g. newsletter signup, product view)","A mobile conversion","A conversion under €5"],correct:1,explain:"Micro-conversions are intermediate goals: newsletter signup, product bookmarked, review read. They measure engagement and precede the purchase (macro-conversion)."},
+      {q:"What is 'retargeting' in relation to the conversion funnel?",options:["Re-analysing the funnel","Advertising to users who left the funnel to bring them back","A Tableau function","Renaming funnel stages"],correct:1,explain:"Retargeting: users who viewed products or added to cart are shown targeted ads to bring them back and complete the conversion."},
+      {q:"Which metric shows the value of each visitor to the business?",options:["Bounce rate","Revenue per Visitor (RPV = Total Revenue / Visitors)","Page views per session","Time on site"],correct:1,explain:"Revenue per Visitor (RPV) = Total Revenue / Total Visitors. Shows how much each visitor is worth on average. Important for marketing budget decisions."}
     ],
-    aiEye:"AI Outlook", aiTitle:"Time Series in Python: pandas + Prophet Forecast",
-    aiText:"What you built in Tableau can be automated in Python – with Facebook Prophet you get even better forecasts. Here's the prompt and code starter:",
+    aiEye:"AI Outlook", aiTitle:"Funnel Analysis in Python: Plotly go.Funnel + Heatmap",
+    aiText:"The funnel chart and heatmap can be built elegantly in Python with Plotly. Here's the prompt and code:",
     aiCode:`# Prompt for ChatGPT / Claude:
-"I have orders.csv with columns: order_date, total_revenue.
-Write Python code that:
-1. Loads data with pandas and resamples monthly (resample('ME'))
-2. Creates a Plotly line chart: 2023 vs. 2024 YoY
-3. Installs Facebook Prophet and creates 6-month forecast
-4. Combines everything in a Plotly dashboard
-Colour scheme: Orange #E87722 for 2024, Blue #005B9A for 2023."
+"I have sessions.csv with: visitors, product_views, add_to_cart,
+checkout, purchase, channel, year_month.
+Create:
+1. A Plotly Funnel chart (go.Funnel) for the overall funnel
+2. A heatmap (seaborn or plotly) of CR per channel × stage
+3. Calculate all 4 conversion rates between stages
+Colour scheme: Orange #E87722 + Blue #005B9A."
 
 import pandas as pd
 import plotly.graph_objects as go
-from prophet import Prophet
 
-df = pd.read_csv('orders.csv', parse_dates=['order_date'])
-monthly = df.resample('ME', on='order_date')['total_revenue'].sum().reset_index()
-prophet_df = monthly.rename(columns={'order_date':'ds','total_revenue':'y'})
-model = Prophet(yearly_seasonality=True, weekly_seasonality=False)
-model.fit(prophet_df)
-future = model.make_future_dataframe(periods=6, freq='ME')
-forecast = model.predict(future)`,
-    prevLab:"← Lab 04", nextLab:"Lab 06: Conversion Funnel →",
-    prevHref:"lab04.html", nextHref:"lab06.html"
+df = pd.read_csv('sessions.csv')
+total = df.sum(numeric_only=True)
+
+fig = go.Figure(go.Funnel(
+    y=["Visitors","Product Views","Add to Cart","Checkout","Purchase"],
+    x=[total['visitors'], total['product_views'],
+       total['add_to_cart'], total['checkout'], total['purchase']],
+    marker=dict(color=["#005B9A","#1e7ab8","#E87722","#d06a1a","#3D7A56"])
+))
+fig.update_layout(title="UrbanCart Conversion Funnel")
+fig.show()`,
+    prevLab:"← Lab 05", nextLab:"Lab 07: Sentiment Analysis →",
+    prevHref:"lab05.html", nextHref:"lab07.html"
   }
 };
 
@@ -295,7 +317,25 @@ function Quiz({ questions, lang, quizTitle, quizSub }) {
           {revealed[qi]!==undefined&&<div className={`feedback ${answers[qi]===q.correct?'correct':'wrong'}`}>{answers[qi]===q.correct?(lang==='de'?'✓ Richtig! ':'✓ Correct! '):(lang==='de'?'✗ Nicht ganz. ':'✗ Not quite. ')}{q.explain}</div>}
         </div>
       ))}
-      {done&&<div className="quiz-result"><div className="quiz-result-score">{score}/{questions.length}</div><div className="quiz-result-label">{lang==='de'?'Punkte':'Points'}</div><div className="quiz-result-msg">{score>=13?(lang==='de'?'🎉 Ausgezeichnet! Weiter zu Lab 06.':'🎉 Excellent! Continue to Lab 06.'):score>=10?(lang==='de'?'👍 Gut! Lies die Erklärungen nochmal durch.':'👍 Good! Review the explanations.'):(lang==='de'?'💪 Noch einmal! Schau dir die Erklärungen an.':'💪 Try again! Check the explanations.')}</div></div>}
+      {done&&<div className="quiz-result"><div className="quiz-result-score">{score}/{questions.length}</div><div className="quiz-result-label">{lang==='de'?'Punkte':'Points'}</div><div className="quiz-result-msg">{score>=13?(lang==='de'?'🎉 Ausgezeichnet! Weiter zu Lab 07.':'🎉 Excellent! Continue to Lab 07.'):score>=10?(lang==='de'?'👍 Gut! Lies die Erklärungen nochmal durch.':'👍 Good! Review the explanations.'):(lang==='de'?'💪 Noch einmal! Schau dir die Erklärungen an.':'💪 Try again! Check the explanations.')}</div></div>}
+    </div>
+  );
+}
+
+function FunnelViz({ data, lang }) {
+  return (
+    <div className="funnel-viz">
+      {data.map((row,i)=>(
+        <div key={i} className="funnel-row">
+          <div className="funnel-stage">{row.stage}</div>
+          <div className="funnel-bar-wrap">
+            <div className="funnel-bar" style={{width:row.val+'%', background: i===1?'#E87722':'#005B9A'}}>
+              <span className="funnel-bar-label">{row.val}%</span>
+            </div>
+          </div>
+          <div className="funnel-pct">{row.pct}</div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -314,7 +354,7 @@ function App() {
       <nav className="navbar">
         <div className="nav-brand">
           <a href="index.html" style={{textDecoration:'none',display:'flex',alignItems:'center',gap:'10px'}}>
-            <img src={LOGO} alt="THWS Business School" style={{height:'30px',width:'auto'}}/>
+            <img src={LOGO} alt="THWS" style={{height:'30px',width:'auto'}}/>
             <div style={{width:'1px',height:'24px',background:'#E9ECEF'}}/>
             <span className="nav-brand-text">E-Commerce Labs</span>
           </a>
@@ -353,13 +393,10 @@ function App() {
           <h2 className="block-title">{t.s1title}</h2>
           <div className="divider"/>
           <p className="block-lead">{t.s1lead}</p>
-          <div className="info-box">
-            <div className="info-box-title">{lang==='de'?'Zeitreihen-Komponenten im Überblick':'Time Series Components Overview'}</div>
-            <div className="info-box-text">
-              {lang==='de'
-                ?'Jede Zeitreihe besteht aus: (1) Trend – langfristige Richtung, (2) Saisonalität – wiederkehrende Muster, (3) Rauschen – zufällige Schwankungen. Tableau kann alle drei sichtbar machen.'
-                :'Every time series consists of: (1) Trend – long-term direction, (2) Seasonality – recurring patterns, (3) Noise – random fluctuations. Tableau can visualise all three.'}
-            </div>
+          <FunnelViz data={t.funnelData} lang={lang}/>
+          <div className="info-box" style={{marginTop:'16px'}}>
+            <div className="info-box-title">{lang==='de'?'UrbanCart Funnel – Zahlen aus sessions.csv':'UrbanCart Funnel – Numbers from sessions.csv'}</div>
+            <div className="info-box-text">{lang==='de'?'Datenstruktur: year_month, channel, visitors, product_views, add_to_cart, checkout, purchase, conv_rate_pct. Mehrere Kanäle (SEA, Social, E-Mail, Organic) über 24 Monate.':'Data structure: year_month, channel, visitors, product_views, add_to_cart, checkout, purchase, conv_rate_pct. Multiple channels (SEA, Social, Email, Organic) over 24 months.'}</div>
           </div>
         </div>
         <div className="section-block sr">

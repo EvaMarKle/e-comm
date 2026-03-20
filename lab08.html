@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lab 08 – Marketing ROI · UrbanCart · THWS</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif; background:#fff; color:#212529; }
+    .top-bar { height:4px; background:#E87722; position:fixed; top:0; left:0; right:0; z-index:200; }
+    .navbar {
+      position:sticky; top:4px; z-index:100;
+      background:#fff; border-bottom:1px solid #E9ECEF;
+      box-shadow:0 1px 8px rgba(0,0,0,0.05);
+      height:52px; display:flex; align-items:center;
+      padding:0 32px; justify-content:space-between;
+    }
+    .nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .nav-brand-text { font-size:0.78rem; font-weight:700; color:#005B9A; letter-spacing:0.04em; text-transform:uppercase; }
+    .nav-lab-badge {
+      background:rgba(232,119,34,0.12); color:#E87722;
+      font-size:0.68rem; font-weight:700;
+      padding:3px 10px; letter-spacing:0.06em; text-transform:uppercase;
+    }
+    .lang-wrap { display:flex; gap:4px; }
+    .lang-btn {
+      padding:4px 10px; border-radius:3px;
+      border:1.5px solid #E9ECEF; background:#fff;
+      cursor:pointer; font-weight:700; font-size:0.72rem;
+      color:#6C757D; transition:all 0.15s; font-family:inherit;
+    }
+    .lang-btn.active { background:#E87722; color:#fff; border-color:#E87722; }
+    .progress-bar {
+      background:#F1F3F5; padding:12px 32px;
+      display:flex; align-items:center; gap:8px; overflow-x:auto;
+    }
+    .prog-step {
+      display:flex; align-items:center; gap:6px; white-space:nowrap;
+      font-size:0.72rem; font-weight:700; color:#9ca3af;
+    }
+    .prog-step.active { color:#E87722; }
+    .prog-step.done { color:#3D7A56; }
+    .prog-dot {
+      width:24px; height:24px; border-radius:50%;
+      background:#E9ECEF; display:flex; align-items:center;
+      justify-content:center; font-size:0.68rem; font-weight:800; flex-shrink:0;
+    }
+    .prog-dot.active { background:#E87722; color:#fff; }
+    .prog-dot.done { background:#3D7A56; color:#fff; }
+    .prog-arrow { color:#D1D5DB; font-size:0.9rem; }
+    .lab-hero { background:#005B9A; padding:48px 32px; position:relative; overflow:hidden; }
+    .lab-hero-inner { max-width:800px; }
+    .lab-num { font-size:0.72rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:8px; }
+    .lab-title { font-size:clamp(1.8rem,4vw,2.8rem); font-weight:800; color:#fff; line-height:1.1; margin-bottom:12px; }
+    .lab-title span { color:#E87722; }
+    .lab-sub { font-size:1rem; color:rgba(255,255,255,0.75); line-height:1.7; max-width:560px; }
+    .lab-meta { display:flex; gap:16px; flex-wrap:wrap; margin-top:24px; }
+    .lab-meta-item { display:flex; align-items:center; gap:6px; font-size:0.78rem; font-weight:600; color:rgba(255,255,255,0.6); }
+    .lab-meta-item strong { color:#fff; }
+    .content { max-width:800px; margin:0 auto; padding:48px 32px; }
+    .section-block { margin-bottom:48px; }
+    .block-eyebrow { font-size:0.68rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#E87722; margin-bottom:6px; }
+    .block-title { font-size:1.3rem; font-weight:800; color:#005B9A; margin-bottom:8px; }
+    .block-lead { font-size:0.95rem; color:#6C757D; line-height:1.75; margin-bottom:20px; }
+    .divider { width:40px; height:3px; background:#E87722; margin:8px 0 16px; }
+    .steps { display:flex; flex-direction:column; gap:16px; }
+    .step-card { border:1.5px solid #E9ECEF; padding:20px 24px; border-left:3px solid #005B9A; transition:border-color 0.2s; }
+    .step-card:hover { border-left-color:#E87722; }
+    .step-header { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+    .step-num { width:28px; height:28px; border-radius:50%; background:#005B9A; color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:800; flex-shrink:0; }
+    .step-title { font-size:0.95rem; font-weight:800; color:#212529; }
+    .step-body { font-size:0.87rem; color:#6C757D; line-height:1.7; margin-left:40px; }
+    .step-body code { background:#F1F3F5; padding:1px 6px; font-family:'Consolas','Monaco',monospace; font-size:0.82rem; color:#E87722; border-radius:2px; }
+    .step-tip { background:rgba(0,91,154,0.06); border-left:2px solid #005B9A; padding:10px 14px; margin-top:10px; margin-left:40px; font-size:0.82rem; color:#005B9A; line-height:1.6; }
+    .screenshot-placeholder { background:#F1F3F5; border:1.5px dashed #D1D5DB; padding:32px; text-align:center; margin:16px 0; border-radius:2px; }
+    .screenshot-placeholder-text { font-size:0.78rem; color:#9ca3af; font-weight:600; }
+    .kpi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; margin:16px 0; }
+    .kpi-card { background:#fff; border:1.5px solid #E9ECEF; border-top:3px solid #E87722; padding:20px 16px; text-align:center; }
+    .kpi-val { font-size:1.6rem; font-weight:900; color:#E87722; line-height:1; }
+    .kpi-lbl { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#005B9A; margin-top:4px; }
+    .kpi-def { font-size:0.78rem; color:#9ca3af; margin-top:6px; line-height:1.5; }
+    .quiz-section { background:#F1F3F5; padding:40px 32px; margin:0 -32px; border-radius:2px; }
+    .quiz-title { font-size:1.1rem; font-weight:800; color:#005B9A; margin-bottom:4px; }
+    .quiz-sub { font-size:0.84rem; color:#6C757D; margin-bottom:24px; }
+    .quiz-progress { font-size:0.72rem; font-weight:700; color:#9ca3af; margin-bottom:20px; text-transform:uppercase; letter-spacing:0.08em; }
+    .question-block { background:#fff; border:1.5px solid #E9ECEF; padding:24px; margin-bottom:16px; }
+    .question-num { font-size:0.68rem; font-weight:700; color:#E87722; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px; }
+    .question-text { font-size:0.95rem; font-weight:700; color:#212529; margin-bottom:16px; line-height:1.5; }
+    .options { display:flex; flex-direction:column; gap:8px; }
+    .option-btn { background:#F9FAFB; border:1.5px solid #E9ECEF; padding:10px 16px; text-align:left; font-size:0.87rem; font-weight:600; color:#374151; cursor:pointer; transition:all 0.15s; font-family:inherit; }
+    .option-btn:hover { border-color:#005B9A; color:#005B9A; background:rgba(0,91,154,0.04); }
+    .option-btn.correct { background:rgba(61,122,86,0.1); border-color:#3D7A56; color:#3D7A56; }
+    .option-btn.wrong { background:rgba(239,68,68,0.08); border-color:#ef4444; color:#ef4444; }
+    .option-btn.revealed { pointer-events:none; }
+    .feedback { margin-top:10px; padding:10px 14px; font-size:0.84rem; line-height:1.6; font-weight:600; }
+    .feedback.correct { background:rgba(61,122,86,0.1); color:#3D7A56; border-left:2px solid #3D7A56; }
+    .feedback.wrong { background:rgba(239,68,68,0.08); color:#dc2626; border-left:2px solid #dc2626; }
+    .quiz-result { background:#fff; border:1.5px solid #E9ECEF; border-top:3px solid #E87722; padding:32px; text-align:center; margin-top:16px; }
+    .quiz-result-score { font-size:3rem; font-weight:900; color:#E87722; line-height:1; }
+    .quiz-result-label { font-size:0.84rem; color:#6C757D; margin-top:6px; }
+    .quiz-result-msg { font-size:1rem; font-weight:700; color:#212529; margin-top:16px; }
+    .ai-section { background:#0f172a; padding:32px; border-left:3px solid #E87722; margin:32px 0; }
+    .ai-eyebrow { font-size:0.68rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#E87722; margin-bottom:6px; }
+    .ai-title { font-size:1.1rem; font-weight:800; color:#fff; margin-bottom:12px; }
+    .ai-text { font-size:0.87rem; color:rgba(255,255,255,0.65); line-height:1.75; margin-bottom:16px; }
+    .code-block { background:#1e293b; border-left:2px solid #E87722; color:#e2e8f0; font-family:'Consolas','Monaco',monospace; font-size:0.78rem; line-height:1.8; padding:16px 20px; overflow-x:auto; white-space:pre; }
+    .lab-nav { border-top:1px solid #E9ECEF; padding:32px; display:flex; justify-content:space-between; align-items:center; max-width:800px; margin:0 auto; }
+    .lab-nav-btn { display:flex; align-items:center; gap:8px; font-size:0.87rem; font-weight:700; color:#005B9A; text-decoration:none; cursor:pointer; transition:color 0.15s; }
+    .lab-nav-btn:hover { color:#E87722; }
+    .lab-nav-btn.primary { background:#E87722; color:#fff; padding:10px 20px; border:2px solid #E87722; }
+    .lab-nav-btn.primary:hover { background:#d06a1a; border-color:#d06a1a; }
+    .sr { opacity:0; transform:translateY(12px); transition:opacity 0.5s ease,transform 0.5s ease; }
+    .sr.visible { opacity:1; transform:translateY(0); }
+  </style>
+</head>
+<body>
+<div class="top-bar"></div>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const T = {
+  de: {
+    labNum: "Lab 08 von 09",
+    labTitle: ["Marketing-Kanalanalyse & ", "ROI"],
+    labSub: "Welcher Kanal bringt den besten Return on Investment? Du lernst ROAS und CPA zu verstehen, Kanäle nach ROI zu bewerten und fundierte Budget-Empfehlungen abzuleiten.",
+    metaDauer: "75–90 Min.",
+    metaLevel: "Fortgeschritten",
+    metaData: "marketing.csv",
+    metaTool: "Tableau Public",
+    progSteps: ["Einführung","Daten laden","Analyse","Visualisierung","Quiz","KI-Ausblick"],
+    s1eye: "Konzept",
+    s1title: "ROAS und CPA verstehen",
+    s1lead: "ROAS (Return on Ad Spend) und CPA (Cost per Acquisition) sind die zwei zentralen KPIs im Performance Marketing. ROAS misst, wie viel Umsatz pro investiertem Euro generiert wird. CPA misst, was eine Neukundengewinnung kostet.",
+    s2eye: "Schritt-für-Schritt",
+    s2title: "Tableau: Marketing-ROI-Dashboard",
+    s2lead: "Öffne Tableau Public und verbinde marketing.csv. Folge diesen 5 Schritten für das vollständige Marketing-Dashboard.",
+    steps: [
+      {
+        title: "marketing.csv laden",
+        body: "Verbinde <code>marketing.csv</code> in Tableau. Spalten: <code>channel</code>, <code>spend_eur</code>, <code>orders</code>, <code>revenue_eur</code>, <code>avg_order_value</code>, <code>cpa_eur</code>, <code>roas</code>, <code>year_month</code>. Überprüfe: spend_eur und revenue_eur als Dezimalzahlen, year_month als Datum.",
+        tip: "Tipp: ROAS ist bereits in der CSV vorberechnet (roas = revenue_eur / spend_eur). Du kannst es zur Kontrolle als berechnetes Feld nachrechnen: SUM([revenue_eur]) / SUM([spend_eur])."
+      },
+      {
+        title: "Balkendiagramm: ROAS nach Kanal",
+        body: "Neues Arbeitsblatt. <code>channel</code> auf Spalten, <code>AVG([roas])</code> auf Zeilen. Sortiere absteigend. Füge Farbe basierend auf ROAS hinzu: Erstelle ein berechnetes Feld <code>ROAS_Kategorie</code>:<br/>• <code>IF [roas] > 3 THEN 'Gut' ELSEIF [roas] >= 1 THEN 'OK' ELSE 'Verlust' END</code><br/>Farben: Grün = Gut, Orange = OK, Rot = Verlust.",
+        tip: "Benchmarks E-Commerce ROAS: <1 = Verlust (Ausgaben > Einnahmen), 1-3 = Kostendeckend bis schwach, >3 = Profitabel, >4 = Exzellent (Branchendurchschnitt E-Commerce: 4x)."
+      },
+      {
+        title: "Scatter Plot: Spend vs. Revenue",
+        body: "Neues Arbeitsblatt. <code>SUM([spend_eur])</code> auf X-Achse, <code>SUM([revenue_eur])</code> auf Y-Achse. <code>channel</code> auf Detail und Farbe. <code>SUM([orders])</code> auf Größe ziehen. Füge eine Referenzlinie hinzu: y = x (Breakeven-Linie, ROAS = 1). Alles über der Linie = profitabel.",
+        tip: "Der Scatter Plot zeigt in einer Grafik: Kanaleffizienz (Steigung der Punkte), Budget-Verteilung (X-Position) und Volumen (Punktgröße = Bestellungen). Perfektes Executive-Chart."
+      },
+      {
+        title: "Treemap: Revenue-Anteil nach Kanal",
+        body: "Neues Arbeitsblatt. Wechsle zu 'Treemap' (Markierungstyp). <code>channel</code> auf Farbe und Detail. <code>SUM([revenue_eur])</code> auf Größe. <code>channel</code> und <code>SUM([revenue_eur])</code> auf Label. Die Treemap zeigt auf einen Blick, welche Kanäle den größten Umsatzanteil haben.",
+        tip: "Treemaps eignen sich hervorragend für 'Part of Whole'-Analysen. Im Gegensatz zu Kreisdiagrammen sind sie bei vielen Kategorien leichter lesbar."
+      },
+      {
+        title: "Dashboard: UrbanCart Marketing ROI",
+        body: "Neues Dashboard. Füge ein: (1) ROAS-Balkendiagramm, (2) Scatter Plot Spend vs. Revenue, (3) Treemap Revenue-Anteil, (4) 3 KPI-Cards: Gesamt-ROAS, Bester Kanal (ROAS), Schlechtester Kanal (CPA). Titel: <strong>UrbanCart Marketing ROI</strong>.",
+        tip: "Dashboard-Tipp: Die Treemap oben (Überblick), ROAS-Balken rechts (Effizienz), Scatter unten (Detail). Füge einen Jahresfilter hinzu für Zeitvergleiche."
+      }
+    ],
+    s3eye: "Kennzahlen",
+    s3title: "Marketing-ROI-KPIs",
+    s3lead: "Diese KPIs stehen im Header des Marketing-Dashboards und geben der Geschäftsführung sofort die wichtigsten Erkenntnisse.",
+    kpis: [
+      { val:"3,8x", lbl:"Gesamt-ROAS", def:"Return on Ad Spend: Pro investiertem Euro werden 3,80 € Umsatz generiert. Ziel: ≥4x (E-Commerce-Benchmark)." },
+      { val:"SEA", lbl:"Bester Kanal (ROAS)", def:"Search Engine Advertising (Google Ads) hat den höchsten ROAS (~5,2x): Nutzer mit konkretem Kaufinteresse werden direkt angesprochen." },
+      { val:"Display", lbl:"Schlechtester CPA", def:"Display Advertising hat den höchsten CPA (teuerste Neukundengewinnung). Branding-Effekt schwer messbar – ROAS allein reicht hier nicht." }
+    ],
+    quizTitle: "Quiz: Lab 08 – Marketing ROI & Kanalanalyse",
+    quizSub: "15 Fragen · Beantworte alle, bevor du zum nächsten Lab gehst.",
+    questions: [
+      {
+        q: "Was bedeutet ROAS (Return on Ad Spend)?",
+        options: ["Der prozentuale Anteil des Marketingbudgets am Gesamtumsatz","Der Umsatz, der pro investiertem Euro in Werbung generiert wird","Die Anzahl der Käufer pro Werbekampagne","Die Kosten pro Klick auf eine Anzeige"],
+        correct: 1,
+        explain: "ROAS = Umsatz / Werbeausgaben. Beispiel: 1.000€ Spend, 4.000€ Umsatz → ROAS = 4,0x. Das bedeutet: pro investiertem Euro wurden 4€ Umsatz generiert."
+      },
+      {
+        q: "Was bedeutet CPA (Cost per Acquisition)?",
+        options: ["Der durchschnittliche Bestellwert","Die Kosten, die anfallen, um einen Neukunden zu gewinnen oder eine Conversion zu erzielen","Der Return on Investment einer Kampagne","Die Click-through-Rate einer Anzeige"],
+        correct: 1,
+        explain: "CPA = Werbeausgaben / Anzahl Conversions. Beispiel: 500€ Spend, 20 Käufe → CPA = 25€. Der CPA sollte unter dem Customer Lifetime Value (CLV) liegen."
+      },
+      {
+        q: "Was bedeutet ein ROAS < 1?",
+        options: ["Die Kampagne ist sehr profitabel","Die Werbeausgaben übersteigen den generierten Umsatz – die Kampagne macht Verlust","Der ROAS ist noch nicht berechnet worden","Es gibt keine Conversions"],
+        correct: 1,
+        explain: "ROAS < 1 = Verlust: Wenn du 100€ ausgibst und nur 80€ Umsatz generierst → ROAS = 0,8. Die Kampagne kostet mehr als sie einbringt. Sofortiger Handlungsbedarf."
+      },
+      {
+        q: "Was ist Last-Click Attribution?",
+        options: ["Eine Methode, die dem letzten Touchpoint vor der Conversion 100% des Erfolgs zuschreibt","Eine Methode, die alle Touchpoints gleichwertig bewertet","Ein Verfahren zur Messung der Klickrate","Eine Art von A/B-Test"],
+        correct: 0,
+        explain: "Last-Click Attribution: Der letzte Kanal, den ein Nutzer vor dem Kauf genutzt hat, bekommt 100% des Erfolgs. Problem: Frühere Touchpoints (Awareness) werden ignoriert. Oft überschätzt Direct und Search."
+      },
+      {
+        q: "Wann ist SEA (Search Engine Advertising) besser als Social Media Marketing?",
+        options: ["SEA ist immer besser als Social Media","SEA ist besser für Nutzer mit konkretem Kaufinteresse (aktive Suche); Social Media ist besser für Awareness und Discovery","Social Media ist immer günstiger","SEA eignet sich nur für große Unternehmen"],
+        correct: 1,
+        explain: "SEA (Google Ads): Nutzer suchen aktiv → hohe Kaufintention → hoher ROAS, aber hohe CPCs. Social Media (Facebook/Instagram): Nutzer suchen nicht aktiv → gut für Awareness/Discovery/Retargeting → oft niedrigerer ROAS."
+      },
+      {
+        q: "Wie priorisiert man das Budget auf verschiedene Kanäle?",
+        options: ["Gleichmäßig auf alle Kanäle verteilen","Kanäle mit höchstem ROAS und niedrigstem CPA priorisieren, dabei CLV und strategische Ziele berücksichtigen","Immer dem günstigsten Kanal priorisieren","Budget nur auf einen Kanal konzentrieren"],
+        correct: 1,
+        explain: "Budget-Priorisierung: 1) Kanäle mit ROAS > Breakeven zuerst skalieren, 2) CLV beachten (hoher CPA kann ok sein, wenn CLV hoch ist), 3) Mix für Awareness (Branding) + Conversion (Performance) beibehalten."
+      },
+      {
+        q: "Was ist CAC (Customer Acquisition Cost)?",
+        options: ["Der durchschnittliche Bestellwert eines Neukunden","Die Gesamtkosten, die anfallen, um einen neuen Kunden zu gewinnen (Marketing + Vertrieb + Overhead)","Der Umsatz pro Kunde im ersten Monat","Die Retourenquote von Neukunden"],
+        correct: 1,
+        explain: "CAC = Alle Kosten zur Neukundengewinnung / Anzahl Neukunden. Im Gegensatz zu CPA (nur Werbekosten) inkludiert CAC alle Marketing-, Vertriebs- und Overhead-Kosten."
+      },
+      {
+        q: "Was ist die LTV/CAC-Ratio und warum ist sie wichtig?",
+        options: ["Ein Verfahren zur Messung der Website-Ladezeit","Das Verhältnis von Customer Lifetime Value zu Customer Acquisition Cost – zeigt langfristige Profitabilität","Die Ratio von organischen zu bezahlten Besuchen","Der Return on Investment einer einzelnen Kampagne"],
+        correct: 1,
+        explain: "LTV/CAC = Customer Lifetime Value / Customer Acquisition Cost. Benchmark: >3 = gesund, >5 = exzellent. Wenn LTV/CAC < 1, verliert das Unternehmen langfristig Geld für jeden Neukunden."
+      },
+      {
+        q: "Was ist Multi-Touch Attribution im Marketing-Kontext?",
+        options: ["Eine Methode, die nur den ersten Touchpoint bewertet","Eine Methode, die den Wert einer Conversion auf mehrere Touchpoints verteilt (z.B. Awareness → Interesse → Kauf)","Ein Verfahren zur Optimierung von Anzeigentexten","Eine Analysemethode für Bounce Rates"],
+        correct: 1,
+        explain: "Multi-Touch Attribution berücksichtigt alle Touchpoints auf dem Weg zur Conversion. Modelle: Linear (gleiche Verteilung), Time-Decay (neuere Touchpoints mehr Gewicht), Data-Driven (KI-basiert)."
+      },
+      {
+        q: "Was ist Affiliate Marketing?",
+        options: ["Eine Art von SEA-Kampagne","Ein Vertriebsmodell, bei dem Partner (Affiliates) für vermittelte Verkäufe provisionsbasiert vergütet werden","Eine Methode zur Optimierung der organischen Suchergebnisse","Ein Programm für Mitarbeiterwerbung"],
+        correct: 1,
+        explain: "Affiliate Marketing: Publisher/Influencer/Websites werben für ein Produkt und erhalten eine Provision pro Verkauf (CPA-Basis). Vorteil: Zahlung nur bei Erfolg. Nachteil: Kontrolle über Markendarstellung begrenzt."
+      },
+      {
+        q: "Wie hoch ist typischerweise der Wert von organischem Traffic (SEO)?",
+        options: ["Organischer Traffic hat keinen messbaren Wert","Organischer Traffic ist sehr wertvoll, da er keine direkten Kosten pro Klick hat und hochqualifizierte Besucher bringt","Organischer Traffic ist immer schlechter als bezahlter Traffic","Organischer Traffic ist nur für B2B relevant"],
+        correct: 1,
+        explain: "Organischer Traffic (SEO): Keine CPC-Kosten, hohe Conversion Rate (Nutzer mit Suchintention), nachhaltig. 'Wert' = was du für den Traffic bezahlen würdest. SEO-Investitionen haben oft den besten langfristigen ROI."
+      },
+      {
+        q: "Was gilt im E-Commerce als Benchmark-ROAS?",
+        options: ["1x (Breakeven)","2x (leicht profitabel)","4x (Branchendurchschnitt E-Commerce)","10x (nur erreichbar für große Konzerne)"],
+        correct: 2,
+        explain: "E-Commerce-Benchmark: ROAS von 4x gilt als Standard. Das bedeutet: pro 1€ Werbeausgaben werden 4€ Umsatz generiert. Mit typischen Margen von 25-30% bleiben dann noch 0€-0,20€ Profit nach Kosten."
+      },
+      {
+        q: "Was ist der Unterschied zwischen Performance Marketing und Branding Marketing?",
+        options: ["Performance Marketing ist immer teurer","Performance Marketing = messbare, direkte Konversionsziele (Käufe, Leads, CPA); Branding = Bekanntheit, Image, langfristige Wirkung (schwer messbar)","Branding Marketing hat immer einen höheren ROAS","Performance Marketing ist nur für Online-Kanäle geeignet"],
+        correct: 1,
+        explain: "Performance Marketing: Klare KPIs (ROAS, CPA, Conversions), kurzfristig messbar, direkte Wirkung. Branding: Awarenes, Trust, Markenwahrnehmung – wichtig für langfristige CLV, aber schwer mit ROAS zu messen."
+      },
+      {
+        q: "Was ist CPM (Cost per Mille)?",
+        options: ["Die Kosten pro Kauf","Die Kosten pro 1.000 Impressionen (Anzeigeneinblendungen)","Die Conversion Rate einer Kampagne","Die Kosten pro 1.000 Klicks"],
+        correct: 1,
+        explain: "CPM (Cost per Mille = pro Tausend): Kosten für 1.000 Anzeigeneinblendungen. Typisch für Branding-Kampagnen (Display, Video). Gegensatz zu CPC (Cost per Click) für Performance-Kampagnen."
+      },
+      {
+        q: "Warum reicht ROAS allein nicht aus, um den Erfolg einer Kampagne zu bewerten?",
+        options: ["ROAS ist immer ausreichend für eine vollständige Bewertung","ROAS berücksichtigt keine Produktmarge – eine Kampagne kann hohen ROAS und trotzdem Verlust machen, wenn die Marge niedrig ist","ROAS ist ein zu komplizierter KPI","ROAS kann nur für SEA berechnet werden"],
+        correct: 1,
+        explain: "ROAS ignoriert Marge: ROAS 4x klingt gut, aber wenn die Marge 20% ist, bleibt nach Wareneinsatz kaum Profit. Richtiger ist: POAS (Profit on Ad Spend) = (Umsatz × Marge - Kosten) / Werbeausgaben."
+      }
+    ],
+    aiEye: "KI-Ausblick",
+    aiTitle: "Marketing-ROI in Python: Plotly Treemap + Scatter + KI-Budget",
+    aiText: "Tableau-Analysen in Python replizieren und mit KI-gestützten Budget-Empfehlungen erweitern:",
+    aiPrompt: `# Prompt für ChatGPT / Claude:
+"Ich habe marketing.csv mit Spalten: channel, spend_eur, orders,
+revenue_eur, avg_order_value, cpa_eur, roas, year_month.
+Schreibe Python-Code der:
+1. Eine Plotly Treemap erstellt: Größe=revenue_eur, Farbe=roas, Label=channel
+2. Einen Scatter Plot erstellt: X=spend_eur, Y=revenue_eur, Größe=orders,
+   Farbe=channel, inkl. Breakeven-Linie (y=x)
+3. Eine einfache Budget-Empfehlung ausgibt: Kanäle mit ROAS>4 skalieren,
+   Kanäle mit ROAS<1 stoppen
+Außerdem: Gib mir einen ChatGPT-Prompt, den ich verwenden kann, um
+eine vollständige Budget-Optimierungsempfehlung zu generieren."
+
+# Technischer Stack:
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+
+df = pd.read_csv('marketing.csv')
+channel_agg = df.groupby('channel').agg({
+    'spend_eur': 'sum',
+    'revenue_eur': 'sum',
+    'orders': 'sum',
+    'cpa_eur': 'mean',
+    'roas': 'mean'
+}).reset_index()
+
+# Treemap:
+fig_tree = px.treemap(channel_agg, path=['channel'],
+    values='revenue_eur', color='roas',
+    color_continuous_scale='RdYlGn',
+    title='Revenue-Anteil nach Kanal (Größe=Umsatz, Farbe=ROAS)')
+
+# Scatter Plot:
+fig_scatter = px.scatter(channel_agg, x='spend_eur', y='revenue_eur',
+    size='orders', color='channel', text='channel',
+    title='Spend vs. Revenue nach Kanal')
+fig_scatter.add_shape(type='line', x0=0, y0=0,
+    x1=channel_agg['spend_eur'].max(),
+    y1=channel_agg['spend_eur'].max(),
+    line=dict(dash='dash', color='gray'))
+
+# Budget-Empfehlung:
+print("Budget-Empfehlung:")
+for _, row in channel_agg.iterrows():
+    if row['roas'] > 4: print(f"  SKALIEREN: {row['channel']} (ROAS: {row['roas']:.1f}x)")
+    elif row['roas'] < 1: print(f"  STOPPEN: {row['channel']} (ROAS: {row['roas']:.1f}x)")`,
+    nextLab: "Lab 09: Executive Dashboard →",
+    prevLab: "← Lab 07: Sentiment-Analyse"
+  },
+  en: {
+    labNum: "Lab 08 of 09",
+    labTitle: ["Marketing Channel Analysis & ", "ROI"],
+    labSub: "Which channel delivers the best return on investment? You'll learn to understand ROAS and CPA, evaluate channels by ROI and derive well-founded budget recommendations.",
+    metaDauer: "75–90 min.",
+    metaLevel: "Intermediate",
+    metaData: "marketing.csv",
+    metaTool: "Tableau Public",
+    progSteps: ["Introduction","Load Data","Analysis","Visualisation","Quiz","AI Outlook"],
+    s1eye: "Concept",
+    s1title: "Understanding ROAS and CPA",
+    s1lead: "ROAS (Return on Ad Spend) and CPA (Cost per Acquisition) are the two central KPIs in performance marketing. ROAS measures how much revenue is generated per euro invested. CPA measures what customer acquisition costs.",
+    s2eye: "Step by Step",
+    s2title: "Tableau: Marketing ROI Dashboard",
+    s2lead: "Open Tableau Public and connect marketing.csv. Follow these 5 steps for the complete marketing dashboard.",
+    steps: [
+      {
+        title: "Load marketing.csv",
+        body: "Connect <code>marketing.csv</code> in Tableau. Columns: <code>channel</code>, <code>spend_eur</code>, <code>orders</code>, <code>revenue_eur</code>, <code>avg_order_value</code>, <code>cpa_eur</code>, <code>roas</code>, <code>year_month</code>. Check: spend_eur and revenue_eur as decimals, year_month as date.",
+        tip: "Tip: ROAS is already pre-calculated in the CSV (roas = revenue_eur / spend_eur). You can verify it as a calculated field: SUM([revenue_eur]) / SUM([spend_eur])."
+      },
+      {
+        title: "Bar Chart: ROAS by Channel",
+        body: "New worksheet. <code>channel</code> on Columns, <code>AVG([roas])</code> on Rows. Sort descending. Add colour based on ROAS: Create a calculated field <code>ROAS_Category</code>:<br/>• <code>IF [roas] > 3 THEN 'Good' ELSEIF [roas] >= 1 THEN 'OK' ELSE 'Loss' END</code><br/>Colours: Green = Good, Orange = OK, Red = Loss.",
+        tip: "E-Commerce ROAS benchmarks: <1 = Loss (spend > revenue), 1-3 = Break-even to weak, >3 = Profitable, >4 = Excellent (e-commerce industry average: 4x)."
+      },
+      {
+        title: "Scatter Plot: Spend vs. Revenue",
+        body: "New worksheet. <code>SUM([spend_eur])</code> on X-axis, <code>SUM([revenue_eur])</code> on Y-axis. <code>channel</code> on Detail and Colour. Drag <code>SUM([orders])</code> to Size. Add a reference line: y = x (breakeven line, ROAS = 1). Everything above the line = profitable.",
+        tip: "The scatter plot shows in one chart: channel efficiency (slope of points), budget distribution (X position) and volume (point size = orders). Perfect executive chart."
+      },
+      {
+        title: "Treemap: Revenue Share by Channel",
+        body: "New worksheet. Switch to 'Treemap' (mark type). <code>channel</code> to Colour and Detail. <code>SUM([revenue_eur])</code> to Size. <code>channel</code> and <code>SUM([revenue_eur])</code> to Label. The treemap shows at a glance which channels have the largest revenue share.",
+        tip: "Treemaps are excellent for 'part of whole' analyses. Unlike pie charts, they are easier to read with many categories."
+      },
+      {
+        title: "Dashboard: UrbanCart Marketing ROI",
+        body: "New dashboard. Add: (1) ROAS bar chart, (2) Scatter plot spend vs. revenue, (3) Treemap revenue share, (4) 3 KPI cards: Overall ROAS, Best Channel (ROAS), Worst Channel (CPA). Title: <strong>UrbanCart Marketing ROI</strong>.",
+        tip: "Dashboard tip: Treemap at top (overview), ROAS bars right (efficiency), scatter below (detail). Add a year filter for time comparisons."
+      }
+    ],
+    s3eye: "Key Metrics",
+    s3title: "Marketing ROI KPIs",
+    s3lead: "These KPIs appear in the marketing dashboard header and give management immediate insights.",
+    kpis: [
+      { val:"3.8x", lbl:"Overall ROAS", def:"Return on Ad Spend: €3.80 revenue is generated per euro invested. Target: ≥4x (e-commerce benchmark)." },
+      { val:"SEA", lbl:"Best Channel (ROAS)", def:"Search Engine Advertising (Google Ads) has the highest ROAS (~5.2x): users with concrete purchase intent are directly targeted." },
+      { val:"Display", lbl:"Worst CPA", def:"Display advertising has the highest CPA (most expensive customer acquisition). Branding effect hard to measure – ROAS alone is insufficient here." }
+    ],
+    quizTitle: "Quiz: Lab 08 – Marketing ROI & Channel Analysis",
+    quizSub: "15 questions · Complete all before moving to the next lab.",
+    questions: [
+      { q:"What does ROAS (Return on Ad Spend) mean?", options:["The percentage of marketing budget in total revenue","The revenue generated per euro invested in advertising","The number of buyers per ad campaign","The cost per click on an ad"], correct:1, explain:"ROAS = Revenue / Ad Spend. Example: €1,000 spend, €4,000 revenue → ROAS = 4.0x. This means: €4 revenue was generated for every €1 invested." },
+      { q:"What does CPA (Cost per Acquisition) mean?", options:["The average order value","The cost incurred to acquire a new customer or achieve a conversion","The return on investment of a campaign","The click-through rate of an ad"], correct:1, explain:"CPA = Ad Spend / Number of Conversions. Example: €500 spend, 20 purchases → CPA = €25. CPA should be below Customer Lifetime Value (CLV)." },
+      { q:"What does a ROAS < 1 mean?", options:["The campaign is very profitable","Ad spend exceeds generated revenue – the campaign is making a loss","ROAS hasn't been calculated yet","There are no conversions"], correct:1, explain:"ROAS < 1 = Loss: If you spend €100 and only generate €80 revenue → ROAS = 0.8. The campaign costs more than it earns. Immediate action required." },
+      { q:"What is last-click attribution?", options:["A method that attributes 100% of success to the last touchpoint before conversion","A method that evaluates all touchpoints equally","A procedure for measuring click rate","A type of A/B test"], correct:0, explain:"Last-click attribution: The last channel a user used before purchase gets 100% of the credit. Problem: Earlier touchpoints (awareness) are ignored. Often overestimates Direct and Search." },
+      { q:"When is SEA (Search Engine Advertising) better than Social Media Marketing?", options:["SEA is always better than social media","SEA is better for users with concrete purchase intent (active search); social media is better for awareness and discovery","Social media is always cheaper","SEA is only suitable for large companies"], correct:1, explain:"SEA (Google Ads): Users search actively → high purchase intent → high ROAS, but high CPCs. Social Media (Facebook/Instagram): Users don't search actively → good for awareness/discovery/retargeting → often lower ROAS." },
+      { q:"How do you prioritise budget across channels?", options:["Distribute evenly across all channels","Prioritise channels with highest ROAS and lowest CPA, considering CLV and strategic goals","Always prioritise the cheapest channel","Concentrate budget on one channel only"], correct:1, explain:"Budget prioritisation: 1) First scale channels with ROAS > breakeven, 2) Consider CLV (high CPA can be ok if CLV is high), 3) Maintain mix for awareness (branding) + conversion (performance)." },
+      { q:"What is CAC (Customer Acquisition Cost)?", options:["The average order value of a new customer","The total cost incurred to acquire a new customer (marketing + sales + overhead)","The revenue per customer in the first month","The return rate of new customers"], correct:1, explain:"CAC = All new customer acquisition costs / Number of new customers. Unlike CPA (only ad costs), CAC includes all marketing, sales and overhead costs." },
+      { q:"What is the LTV/CAC ratio and why is it important?", options:["A procedure for measuring website load time","The ratio of Customer Lifetime Value to Customer Acquisition Cost – shows long-term profitability","The ratio of organic to paid visits","The return on investment of a single campaign"], correct:1, explain:"LTV/CAC = Customer Lifetime Value / Customer Acquisition Cost. Benchmark: >3 = healthy, >5 = excellent. If LTV/CAC < 1, the company is losing money long-term for every new customer." },
+      { q:"What is multi-touch attribution in a marketing context?", options:["A method that only evaluates the first touchpoint","A method that distributes the value of a conversion across multiple touchpoints (e.g. awareness → interest → purchase)","A procedure for optimising ad copy","An analysis method for bounce rates"], correct:1, explain:"Multi-touch attribution considers all touchpoints on the path to conversion. Models: Linear (equal distribution), Time-Decay (newer touchpoints more weight), Data-Driven (AI-based)." },
+      { q:"What is affiliate marketing?", options:["A type of SEA campaign","A distribution model where partners (affiliates) are paid commission for referred sales","A method for optimising organic search results","A programme for employee referrals"], correct:1, explain:"Affiliate marketing: Publishers/influencers/websites promote a product and receive commission per sale (CPA basis). Advantage: Pay only for success. Disadvantage: Limited control over brand representation." },
+      { q:"How valuable is organic traffic (SEO) typically?", options:["Organic traffic has no measurable value","Organic traffic is very valuable as it has no direct cost per click and brings highly qualified visitors","Organic traffic is always worse than paid traffic","Organic traffic is only relevant for B2B"], correct:1, explain:"Organic traffic (SEO): No CPC costs, high conversion rate (users with search intent), sustainable. 'Value' = what you would pay for the traffic. SEO investments often have the best long-term ROI." },
+      { q:"What is considered the benchmark ROAS in e-commerce?", options:["1x (break-even)","2x (slightly profitable)","4x (e-commerce industry average)","10x (only achievable for large corporations)"], correct:2, explain:"E-commerce benchmark: ROAS of 4x is considered the standard. This means: €4 revenue is generated per €1 ad spend. With typical margins of 25-30%, that leaves barely €0-0.20 profit after costs." },
+      { q:"What is the difference between performance marketing and branding marketing?", options:["Performance marketing is always more expensive","Performance marketing = measurable, direct conversion goals (purchases, leads, CPA); Branding = awareness, image, long-term effect (hard to measure)","Branding marketing always has a higher ROAS","Performance marketing is only suitable for online channels"], correct:1, explain:"Performance marketing: Clear KPIs (ROAS, CPA, conversions), measurable short-term, direct effect. Branding: Awareness, trust, brand perception – important for long-term CLV, but hard to measure with ROAS." },
+      { q:"What is CPM (Cost per Mille)?", options:["The cost per purchase","The cost per 1,000 impressions (ad views)","The conversion rate of a campaign","The cost per 1,000 clicks"], correct:1, explain:"CPM (Cost per Mille = per thousand): Cost for 1,000 ad impressions. Typical for branding campaigns (display, video). Contrast with CPC (Cost per Click) for performance campaigns." },
+      { q:"Why is ROAS alone insufficient to evaluate campaign success?", options:["ROAS is always sufficient for a complete evaluation","ROAS doesn't consider product margin – a campaign can have high ROAS and still make a loss if margin is low","ROAS is too complex a KPI","ROAS can only be calculated for SEA"], correct:1, explain:"ROAS ignores margin: ROAS 4x sounds good, but if the margin is 20%, barely any profit remains after cost of goods. Better: POAS (Profit on Ad Spend) = (Revenue × Margin - Costs) / Ad Spend." }
+    ],
+    aiEye: "AI Outlook",
+    aiTitle: "Marketing ROI in Python: Plotly Treemap + Scatter + AI Budget",
+    aiText: "Replicate Tableau analyses in Python and extend with AI-powered budget recommendations:",
+    aiPrompt: `# Prompt for ChatGPT / Claude:
+"I have marketing.csv with columns: channel, spend_eur, orders,
+revenue_eur, avg_order_value, cpa_eur, roas, year_month.
+Write Python code that:
+1. Creates a Plotly treemap: size=revenue_eur, colour=roas, label=channel
+2. Creates a scatter plot: X=spend_eur, Y=revenue_eur, size=orders,
+   colour=channel, incl. breakeven line (y=x)
+3. Outputs a simple budget recommendation: scale channels with ROAS>4,
+   stop channels with ROAS<1
+Also: Give me a ChatGPT prompt I can use to generate a complete
+budget optimisation recommendation."
+
+# Technical stack:
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+
+df = pd.read_csv('marketing.csv')
+channel_agg = df.groupby('channel').agg({
+    'spend_eur': 'sum',
+    'revenue_eur': 'sum',
+    'orders': 'sum',
+    'cpa_eur': 'mean',
+    'roas': 'mean'
+}).reset_index()
+
+# Treemap:
+fig_tree = px.treemap(channel_agg, path=['channel'],
+    values='revenue_eur', color='roas',
+    color_continuous_scale='RdYlGn',
+    title='Revenue Share by Channel (Size=Revenue, Colour=ROAS)')
+
+# Scatter Plot:
+fig_scatter = px.scatter(channel_agg, x='spend_eur', y='revenue_eur',
+    size='orders', color='channel', text='channel',
+    title='Spend vs. Revenue by Channel')
+fig_scatter.add_shape(type='line', x0=0, y0=0,
+    x1=channel_agg['spend_eur'].max(),
+    y1=channel_agg['spend_eur'].max(),
+    line=dict(dash='dash', color='gray'))
+
+# Budget recommendation:
+print("Budget Recommendation:")
+for _, row in channel_agg.iterrows():
+    if row['roas'] > 4: print(f"  SCALE: {row['channel']} (ROAS: {row['roas']:.1f}x)")
+    elif row['roas'] < 1: print(f"  STOP: {row['channel']} (ROAS: {row['roas']:.1f}x)")`,
+    nextLab: "Lab 09: Executive Dashboard →",
+    prevLab: "← Lab 07: Sentiment Analysis"
+  }
+};
+
+function Quiz({ questions, t, lang }) {
+  const [answers, setAnswers] = useState({});
+  const [revealed, setRevealed] = useState({});
+  const done = Object.keys(revealed).length === questions.length;
+  const score = Object.entries(answers).filter(([i, a]) => a === questions[i].correct).length;
+  const handleAnswer = (qi, oi) => {
+    if (revealed[qi] !== undefined) return;
+    setAnswers(prev => ({ ...prev, [qi]: oi }));
+    setRevealed(prev => ({ ...prev, [qi]: true }));
+  };
+  return (
+    <div className="quiz-section">
+      <h3 className="quiz-title">{t.quizTitle}</h3>
+      <p className="quiz-sub">{t.quizSub}</p>
+      <div className="quiz-progress">{Object.keys(revealed).length} / {questions.length} {lang==='de'?'beantwortet':'answered'}</div>
+      {questions.map((q, qi) => (
+        <div key={qi} className="question-block">
+          <div className="question-num">{lang==='de'?'Frage':'Question'} {qi + 1}</div>
+          <div className="question-text">{q.q}</div>
+          <div className="options">
+            {q.options.map((opt, oi) => {
+              let cls = "option-btn";
+              if (revealed[qi] !== undefined) {
+                cls += " revealed";
+                if (oi === q.correct) cls += " correct";
+                else if (oi === answers[qi]) cls += " wrong";
+              }
+              return (
+                <button key={oi} className={cls} onClick={() => handleAnswer(qi, oi)}>
+                  <span style={{marginRight:'8px',fontWeight:800}}>{String.fromCharCode(65+oi)}.</span>{opt}
+                </button>
+              );
+            })}
+          </div>
+          {revealed[qi] !== undefined && (
+            <div className={`feedback ${answers[qi] === q.correct ? 'correct' : 'wrong'}`}>
+              {answers[qi] === q.correct ? (lang==='de'?"✓ Richtig! ":"✓ Correct! ") : (lang==='de'?"✗ Nicht ganz. ":"✗ Not quite. ")}
+              {q.explain}
+            </div>
+          )}
+        </div>
+      ))}
+      {done && (
+        <div className="quiz-result">
+          <div className="quiz-result-score">{score}/{questions.length}</div>
+          <div className="quiz-result-label">{lang==='de'?'Punkte':'Points'}</div>
+          <div className="quiz-result-msg">
+            {score >= 13 ? (lang==='de'?'Ausgezeichnet! Weiter zu Lab 09.':'Excellent! Continue to Lab 09.') :
+             score >= 10 ? (lang==='de'?'Gut! Lies die Erklärungen nochmal durch.':'Good! Review the explanations.') :
+             (lang==='de'?'Noch einmal! Schau dir die Erklärungen an.':'Try again! Check the explanations.')}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  const [lang, setLang] = useState('de');
+  const t = T[lang];
+  useEffect(() => {
+    const els = document.querySelectorAll('.sr');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    els.forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  }, [lang]);
+
+  return (
+    <>
+      <nav className="navbar">
+        <div className="nav-brand">
+          <a href="index.html" style={{textDecoration:'none', display:'flex', alignItems:'center', gap:'10px'}}>
+            <img src={"data:image/png;base64,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"} alt="THWS Business School" style={{height:'30px',width:'auto'}}/>
+            <div style={{width:'1px',height:'24px',background:'#E9ECEF'}}/>
+            <span className="nav-brand-text">E-Commerce Labs</span>
+          </a>
+          <span className="nav-lab-badge">{t.labNum}</span>
+        </div>
+        <div className="lang-wrap">
+          <button className={`lang-btn${lang==='de'?' active':''}`} onClick={()=>setLang('de')}>DE</button>
+          <button className={`lang-btn${lang==='en'?' active':''}`} onClick={()=>setLang('en')}>EN</button>
+        </div>
+      </nav>
+
+      <div className="progress-bar">
+        {t.progSteps.map((s, i) => (
+          <React.Fragment key={i}>
+            <div className={`prog-step ${i < 3 ? 'done' : i === 3 ? 'active' : ''}`}>
+              <div className={`prog-dot ${i < 3 ? 'done' : i === 3 ? 'active' : ''}`}>
+                {i < 3 ? '✓' : i + 1}
+              </div>
+              {s}
+            </div>
+            {i < t.progSteps.length - 1 && <div className="prog-arrow">›</div>}
+          </React.Fragment>
+        ))}
+      </div>
+
+      <div className="lab-hero">
+        <div className="lab-hero-inner">
+          <div className="lab-num">{t.labNum}</div>
+          <h1 className="lab-title">{t.labTitle[0]}<span>{t.labTitle[1]}</span></h1>
+          <p className="lab-sub">{t.labSub}</p>
+          <div className="lab-meta">
+            {[
+              [<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, t.metaDauer],
+              [<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>, t.metaLevel],
+              [<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>, t.metaData],
+              [<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>, t.metaTool]
+            ].map(([icon,val],i) => (
+              <div key={i} className="lab-meta-item">{icon} <strong>{val}</strong></div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="content">
+        <div className="section-block sr">
+          <div className="block-eyebrow">{t.s1eye}</div>
+          <h2 className="block-title">{t.s1title}</h2>
+          <div className="divider"/>
+          <p className="block-lead">{t.s1lead}</p>
+          <div className="kpi-grid" style={{marginTop:'20px'}}>
+            {[
+              {val:"ROAS = Revenue / Spend", lbl:lang==='de'?"Return on Ad Spend":"Return on Ad Spend", def:lang==='de'?"Beispiel: 4.000€ Umsatz / 1.000€ Spend = ROAS 4,0x":"Example: €4,000 revenue / €1,000 spend = ROAS 4.0x"},
+              {val:"CPA = Spend / Orders", lbl:lang==='de'?"Cost per Acquisition":"Cost per Acquisition", def:lang==='de'?"Beispiel: 500€ Spend / 20 Käufe = 25€ CPA":"Example: €500 spend / 20 purchases = €25 CPA"},
+              {val:">4x", lbl:lang==='de'?"Benchmark ROAS E-Commerce":"Benchmark ROAS E-Commerce", def:lang==='de'?"E-Commerce-Standard: ROAS von 4x gilt als profitabel. Unter 1x = Verlust.":"E-commerce standard: ROAS of 4x is considered profitable. Below 1x = loss."}
+            ].map((k,i) => (
+              <div key={i} className="kpi-card">
+                <div className="kpi-val" style={{fontSize:'0.9rem', fontFamily:'monospace'}}>{k.val}</div>
+                <div className="kpi-lbl">{k.lbl}</div>
+                <div className="kpi-def">{k.def}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="section-block sr">
+          <div className="block-eyebrow">{t.s2eye}</div>
+          <h2 className="block-title">{t.s2title}</h2>
+          <div className="divider"/>
+          <p className="block-lead">{t.s2lead}</p>
+          <div className="steps">
+            {t.steps.map((step, i) => (
+              <div key={i} className="step-card">
+                <div className="step-header">
+                  <div className="step-num">{i+1}</div>
+                  <div className="step-title">{step.title}</div>
+                </div>
+                <div className="step-body" dangerouslySetInnerHTML={{__html: step.body}}/>
+                {step.tip && <div className="step-tip">{step.tip}</div>}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="section-block sr">
+          <div className="block-eyebrow">{t.s3eye}</div>
+          <h2 className="block-title">{t.s3title}</h2>
+          <div className="divider"/>
+          <p className="block-lead">{t.s3lead}</p>
+          <div className="kpi-grid">
+            {t.kpis.map((k,i) => (
+              <div key={i} className="kpi-card">
+                <div className="kpi-val">{k.val}</div>
+                <div className="kpi-lbl">{k.lbl}</div>
+                <div className="kpi-def">{k.def}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="section-block sr">
+          <Quiz questions={t.questions} t={t} lang={lang}/>
+        </div>
+
+        <div className="section-block sr">
+          <div className="ai-section">
+            <div className="ai-eyebrow">{t.aiEye}</div>
+            <h3 className="ai-title">{t.aiTitle}</h3>
+            <p className="ai-text">{t.aiText}</p>
+            <div className="code-block">{t.aiPrompt}</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="lab-nav">
+        <a href="lab07.html" className="lab-nav-btn">
+          {t.prevLab}
+        </a>
+        <a href="lab09.html" className="lab-nav-btn primary">
+          {t.nextLab}
+        </a>
+      </div>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
