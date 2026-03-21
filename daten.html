@@ -135,6 +135,22 @@
 .dark-section h2 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; color: #fff; margin-bottom: 16px; }
 .dark-section .block__eyebrow { color: var(--orange); margin-bottom: 16px; }
 .dark-section p.lead { font-size: 15px; color: rgba(255,255,255,.55); line-height: 1.8; max-width: 700px; margin-bottom: 48px; }
+
+/* ── Overflow fix: prevent grids from exceeding lab-main ── */
+.lab-main { min-width: 0; overflow: hidden; }
+.block { min-width: 0; overflow: hidden; }
+
+/* ── Ethics grid: responsive ── */
+.ethics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
+@media (max-width: 800px) { .ethics-grid { grid-template-columns: 1fr; } }
+
+/* ── Two-col content grid: responsive ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; align-items: stretch; }
+@media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+
+/* ── Pipeline responsive ── */
+@media (max-width: 700px) { .pipeline-flow { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 480px) { .pipeline-flow { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -535,7 +551,7 @@
     </div>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;align-items:stretch;" class="sr">
+  <div class="two-col sr">
     <div>
       <h3 data-de="Dark Patterns: manipulative Interface-Design" data-en="Dark Patterns: Manipulative Interface Design"></h3>
       <p style="color:var(--gray-600);line-height:1.8;margin-bottom:12px;" data-de="Dark Patterns sind Interface-Designs, die Nutzer zu Entscheidungen manipulieren, die sie eigentlich nicht treffen wollen. Im E-Commerce weit verbreitet &#8211; und seit 2024 in der EU explizit verboten (Digital Services Act):" data-en="Dark patterns are interface designs that manipulate users into decisions they would not otherwise make. Widespread in e-commerce &#8211; and since 2024 explicitly prohibited in the EU (Digital Services Act):"></div>
@@ -557,7 +573,7 @@
 
   <div style="margin-top:32px;">
     <h3 data-de="Ethische Leitfragen &#8211; zum Nachdenken" data-en="Ethical Questions &#8211; for Reflection"></h3>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch;">
+    <div class="ethics-grid">
       <div class="ethics-q" data-de="Wenn ein Algorithmus günstigeren Kunden automatisch höhere Preise anzeigt, weil er ihr Kaufverhalten als 'weniger preissensitiv' klassifiziert hat &#8211; ist das Optimierung oder Ausbeutung?" data-en="If an algorithm automatically shows higher prices to customers because it has classified their buying behaviour as 'less price-sensitive' &#8211; is that optimisation or exploitation?"></div>
       <div class="ethics-q" data-de="Wie lange darf ein Unternehmen Kaufhistorien speichern? Was passiert, wenn aus Kaufdaten politische Überzeugungen oder gesundheitliche Probleme abgeleitet werden können?" data-en="How long may a company store purchase histories? What happens when political views or health issues can be inferred from purchase data?"></div>
       <div class="ethics-q" data-de="Darf ein Empfehlungssystem Produkte priorisieren, die mehr Marge bringen &#8211; auch wenn sie für den Kunden nicht die beste Wahl sind? Ist das Transparenz schulden?" data-en="May a recommendation system prioritise products that generate more margin &#8211; even if they are not the best choice for the customer? Does transparency owe something here?"></div>
