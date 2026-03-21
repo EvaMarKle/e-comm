@@ -49,45 +49,45 @@
 .ds-links{margin-top:14px;font-size:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
 .ds-links a.dl{display:inline-flex;align-items:center;gap:4px;color:var(--blue);font-weight:700;}
 .ds-links a.lab{color:var(--orange);font-weight:700;}
-.ds-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;}
+.ds-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;align-items:stretch;}
 @media(max-width:700px){.ds-grid{grid-template-columns:1fr;}}
 
 /* ── Dark-section Callouts ── */
 .dark-section{padding:80px 48px;background:#0F172A;}
 .dark-section__inner{max-width:1100px;margin:0 auto;}
-.dark-callout{background:rgba(255,255,255,.04);border-left:3px solid var(--orange);padding:24px;color:rgba(255,255,255,.8);font-size:13px;line-height:1.85;}
-.dark-callout__title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--orange);margin-bottom:8px;}
+.dark-callout{background:rgba(255,255,255,.04);border-left:3px solid var(--orange);padding:24px;color:rgba(255,255,255,.75);font-size:13px;line-height:1.85;display:flex;flex-direction:column;}
+.dark-callout__title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--orange);margin-bottom:10px;}
 .dark-callout--blue{border-left-color:#005B9A;}
 .dark-callout--blue .dark-callout__title{color:#7AB8DC;}
 .dark-callout--green{border-left-color:#3D7A56;}
 .dark-callout--green .dark-callout__title{color:#6ECC95;}
 
 /* ── DSGVO / Ethics ── */
-.law-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);padding:20px 24px;font-size:13px;color:rgba(255,255,255,.8);line-height:1.8;}
-.law-card__title{font-size:14px;font-weight:800;color:#fff;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
-.law-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;}
+.law-card{background:var(--gray-100);border:1px solid var(--gray-200);padding:20px 24px;font-size:13px;color:var(--gray-700);line-height:1.8;display:flex;flex-direction:column;}
+.law-card__title{font-size:14px;font-weight:800;color:var(--gray-900);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.law-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;align-items:stretch;}
 @media(max-width:800px){.law-grid{grid-template-columns:1fr;}}
 .law-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;}
 @media(max-width:640px){.law-grid-2{grid-template-columns:1fr;}}
-.ethics-q{background:rgba(232,119,34,.08);border:1px solid rgba(232,119,34,.25);padding:16px 20px;font-size:14px;font-weight:600;color:rgba(255,255,255,.9);font-style:italic;line-height:1.7;}
-.ethics-q::before{content:'"';font-size:28px;color:var(--orange);line-height:.5;display:block;margin-bottom:4px;}
+.ethics-q{background:rgba(255,255,255,.06);border:1px solid rgba(232,119,34,.4);border-left:3px solid var(--orange);padding:20px 24px;font-size:13px;font-weight:500;color:rgba(255,255,255,.88);font-style:normal;line-height:1.8;}
+.ethics-q::before{content:'"';font-size:28px;color:var(--orange);line-height:.8;display:block;margin-bottom:8px;font-style:normal;font-weight:900;}
 
 /* ── External data cards ── */
-.ext-card{background:#fff;border:1px solid var(--gray-200);border-left:3px solid var(--blue);padding:20px 24px;}
+.ext-card{background:#fff;border:1px solid var(--gray-200);border-left:3px solid var(--blue);padding:20px 24px;display:flex;flex-direction:column;}
 .ext-card__source{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);margin-bottom:6px;}
 .ext-card__title{font-size:14px;font-weight:800;margin-bottom:8px;}
-.ext-card__hyp{font-size:12px;color:var(--gray-600);line-height:1.7;margin-bottom:10px;}
-.ext-card__tag{display:inline-block;background:#EEF6FF;color:var(--blue);font-size:10px;font-weight:700;padding:2px 8px;margin-right:4px;}
-.ext-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px;}
+.ext-card__hyp{font-size:12px;color:var(--gray-600);line-height:1.7;margin-bottom:10px;flex:1;}
+.ext-card__tag{display:inline-block;background:#EEF6FF;color:var(--blue);font-size:10px;font-weight:700;padding:2px 8px;margin-right:4px;margin-top:4px;}
+.ext-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px;align-items:stretch;}
 @media(max-width:900px){.ext-grid{grid-template-columns:1fr 1fr;}}
 @media(max-width:600px){.ext-grid{grid-template-columns:1fr;}}
 
 /* ── Research questions ── */
-.rq{display:flex;gap:20px;padding:20px 0;border-bottom:1px solid var(--gray-200);}
+.rq{display:flex;gap:20px;padding:24px 0;border-bottom:1px solid var(--gray-200);align-items:flex-start;}
 .rq:last-child{border-bottom:none;}
-.rq__num{font-size:32px;font-weight:900;color:var(--orange);line-height:1;flex-shrink:0;width:48px;font-variant-numeric:tabular-nums;}
-.rq__title{font-size:14px;font-weight:700;margin-bottom:4px;}
-.rq__sub{font-size:13px;color:var(--gray-600);line-height:1.7;}
+.rq__num{font-size:36px;font-weight:900;color:var(--orange);line-height:1;flex-shrink:0;width:52px;font-variant-numeric:tabular-nums;padding-top:2px;}
+.rq__title{font-size:14px;font-weight:800;margin-bottom:6px;}
+.rq__sub{font-size:13px;color:var(--gray-600);line-height:1.75;}
 
 /* ── Arch tooltip ── */
 #arch-tooltip{display:none;position:fixed;z-index:999;max-width:280px;background:#1E293B;border-left:3px solid var(--orange);padding:12px 16px;font-size:12px;color:rgba(255,255,255,.8);line-height:1.7;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,.4);}
@@ -512,8 +512,8 @@
   </div>
 
   <div style="margin-top:32px;" class="sr">
-    <h3 style="font-size:15px;font-weight:800;margin-bottom:16px;" data-de="Ethische Leitfragen &#8211; zum Nachdenken" data-en="Ethical Questions &#8211; for Reflection"></h3>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <h3 style="font-size:15px;font-weight:800;margin-bottom:16px;color:var(--gray-900);" data-de="Ethische Leitfragen &#8211; zum Nachdenken" data-en="Ethical Questions &#8211; for Reflection"></h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch;">
       <div class="ethics-q" data-de="Wenn ein Algorithmus günstigeren Kunden automatisch höhere Preise anzeigt, weil er ihr Kaufverhalten als 'weniger preissensitiv' klassifiziert hat &#8211; ist das Optimierung oder Ausbeutung?" data-en="If an algorithm automatically shows higher prices to customers because it has classified their buying behaviour as 'less price-sensitive' &#8211; is that optimisation or exploitation?"></div>
       <div class="ethics-q" data-de="Wie lange darf ein Unternehmen Kaufhistorien speichern? Was passiert, wenn aus Kaufdaten politische Überzeugungen oder gesundheitliche Probleme abgeleitet werden können?" data-en="How long may a company store purchase histories? What happens when political views or health issues can be inferred from purchase data?"></div>
       <div class="ethics-q" data-de="Darf ein Empfehlungssystem Produkte priorisieren, die mehr Marge bringen &#8211; auch wenn sie für den Kunden nicht die beste Wahl sind? Ist das Transparenz schulden?" data-en="May a recommendation system prioritise products that generate more margin &#8211; even if they are not the best choice for the customer? Does transparency owe something here?"></div>
