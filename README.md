@@ -2,7 +2,6 @@
 
 **Interaktive Lernplattform · Master Marken- und Medienmanagement · THWS Business School**
 
-Dozentin: Prof. Dr.-Ing. Eva Klenk
 
 🌐 **Live:** https://swrobuts.github.io/e-comm/
 
@@ -53,6 +52,4 @@ UrbanCart ist ein fiktives europäisches Online-Handelsunternehmen.
 | 08 | Marketing-Kanalanalyse | Fortgeschritten |
 | 09 | Executive Dashboard | Fortgeschritten |
 
----
 
-© THWS Business School Würzburg · Prof. Dr.-Ing. Eva Klenk
