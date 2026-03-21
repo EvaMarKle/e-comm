@@ -67,10 +67,10 @@
 .law-card__title{font-size:14px;font-weight:800;color:var(--gray-900);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
 .law-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;align-items:stretch;}
 @media(max-width:800px){.law-grid{grid-template-columns:1fr;}}
-.law-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;}
+.law-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;align-items:stretch;}
 @media(max-width:640px){.law-grid-2{grid-template-columns:1fr;}}
-.ethics-q{background:rgba(255,255,255,.06);border:1px solid rgba(232,119,34,.4);border-left:3px solid var(--orange);padding:20px 24px;font-size:13px;font-weight:500;color:rgba(255,255,255,.88);font-style:normal;line-height:1.8;}
-.ethics-q::before{content:'"';font-size:28px;color:var(--orange);line-height:.8;display:block;margin-bottom:8px;font-style:normal;font-weight:900;}
+.ethics-q{background:#FFF8F0;border:1px solid rgba(232,119,34,.3);border-left:3px solid var(--orange);padding:20px 24px;font-size:13px;font-weight:600;color:#7C2D12;font-style:normal;line-height:1.8;}
+.ethics-q::before{content:'\201C';font-size:28px;color:var(--orange);line-height:.8;display:block;margin-bottom:8px;font-weight:900;}
 
 /* ── External data cards ── */
 .ext-card{background:#fff;border:1px solid var(--gray-200);border-left:3px solid var(--blue);padding:20px 24px;display:flex;flex-direction:column;}
@@ -491,7 +491,7 @@
     </div>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;" class="sr">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;align-items:stretch;" class="sr">
     <div>
       <h3 style="font-size:15px;font-weight:800;margin-bottom:12px;" data-de="Dark Patterns: manipulative Interface-Design" data-en="Dark Patterns: Manipulative Interface Design"></h3>
       <p style="font-size:13px;color:var(--gray-600);line-height:1.8;margin-bottom:12px;" data-de="Dark Patterns sind Interface-Designs, die Nutzer zu Entscheidungen manipulieren, die sie eigentlich nicht treffen wollen. Im E-Commerce weit verbreitet &#8211; und seit 2024 in der EU explizit verboten (Digital Services Act):" data-en="Dark patterns are interface designs that manipulate users into decisions they would not otherwise make. Widespread in e-commerce &#8211; and since 2024 explicitly prohibited in the EU (Digital Services Act):"></div>
@@ -513,7 +513,7 @@
 
   <div style="margin-top:32px;" class="sr">
     <h3 style="font-size:15px;font-weight:800;margin-bottom:16px;color:var(--gray-900);" data-de="Ethische Leitfragen &#8211; zum Nachdenken" data-en="Ethical Questions &#8211; for Reflection"></h3>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch;">
       <div class="ethics-q" data-de="Wenn ein Algorithmus günstigeren Kunden automatisch höhere Preise anzeigt, weil er ihr Kaufverhalten als 'weniger preissensitiv' klassifiziert hat &#8211; ist das Optimierung oder Ausbeutung?" data-en="If an algorithm automatically shows higher prices to customers because it has classified their buying behaviour as 'less price-sensitive' &#8211; is that optimisation or exploitation?"></div>
       <div class="ethics-q" data-de="Wie lange darf ein Unternehmen Kaufhistorien speichern? Was passiert, wenn aus Kaufdaten politische Überzeugungen oder gesundheitliche Probleme abgeleitet werden können?" data-en="How long may a company store purchase histories? What happens when political views or health issues can be inferred from purchase data?"></div>
       <div class="ethics-q" data-de="Darf ein Empfehlungssystem Produkte priorisieren, die mehr Marge bringen &#8211; auch wenn sie für den Kunden nicht die beste Wahl sind? Ist das Transparenz schulden?" data-en="May a recommendation system prioritise products that generate more margin &#8211; even if they are not the best choice for the customer? Does transparency owe something here?"></div>
