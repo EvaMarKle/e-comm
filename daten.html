@@ -69,14 +69,14 @@
 @media(max-width:800px){.law-grid{grid-template-columns:1fr;}}
 .law-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;align-items:stretch;}
 @media(max-width:640px){.law-grid-2{grid-template-columns:1fr;}}
-.ethics-q{background:#FFF8F0;border:1px solid rgba(232,119,34,.25);padding:20px 24px;font-size:13px;font-weight:600;color:#7C2D12;font-style:normal;line-height:1.8;}
+.ethics-q{background:#FFF8F0;border:1px solid rgba(232,119,34,.25);padding:20px 24px;font-size:14px;font-weight:600;color:#7C2D12;font-style:normal;line-height:1.8;}
 .ethics-q::before{content:'\201C';font-size:28px;color:var(--orange);line-height:.8;display:block;margin-bottom:8px;font-weight:900;}
 
 /* ── External data cards ── */
 .ext-card{background:#fff;border:1px solid var(--gray-200);border-left:3px solid var(--blue);padding:20px 24px;display:flex;flex-direction:column;}
 .ext-card__source{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);margin-bottom:6px;}
 .ext-card__title{font-size:14px;font-weight:800;margin-bottom:8px;}
-.ext-card__hyp{font-size:12px;color:var(--gray-600);line-height:1.7;margin-bottom:10px;flex:1;}
+.ext-card__hyp{font-size:13px;color:var(--gray-600);line-height:1.7;margin-bottom:10px;flex:1;}
 .ext-card__tag{display:inline-block;background:#EEF6FF;color:var(--blue);font-size:10px;font-weight:700;padding:2px 8px;margin-right:4px;margin-top:4px;}
 .ext-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px;align-items:stretch;}
 @media(max-width:900px){.ext-grid{grid-template-columns:1fr 1fr;}}
@@ -531,32 +531,52 @@
   <div class="block__rule"></div>
   <p class="block__lead" data-de="Die 9 Labs sind ein Einstieg. Aber was könntet ihr mit echten Daten anfangen? Hier sind 5 konkrete Forschungsfragen &#8211; jede davon wäre ein solides Abschlussarbeitstopic." data-en="The 9 labs are a starting point. But what could you do with real data? Here are 5 concrete research questions &#8211; each of them would make a solid thesis topic."></p>
 
-  <div style="margin-top:24px;">
-    <div style="padding:20px 0;border-bottom:1px solid #E9ECEF;">
-      <div style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;background:rgba(232,119,34,.12);color:#E87722;padding:2px 8px;margin-bottom:8px;">01</div>
-      <div style="font-size:14px;font-weight:800;margin-bottom:6px;" data-de="Wie beeinflussen Social-Media-Kampagnen die Conversion Rate im E-Commerce &#8211; und mit welchem zeitlichen Versatz?" data-en="How do social media campaigns affect e-commerce conversion rates &#8211; and with what time lag?"></div>
-        <div style="font-size:13px;color:#6C757D;line-height:1.75;" data-de="Datenbasis: UrbanCart marketing.csv + sessions.csv + Social-Media-API (Meta/TikTok). Methodik: Granger-Kausalitätstest, Kreuzkorrelationsanalyse nach Kanal." data-en="Data basis: UrbanCart marketing.csv + sessions.csv + social media API (Meta/TikTok). Methodology: Granger causality test, cross-correlation analysis by channel."></div>
-    </div>
-    <div style="padding:20px 0;border-bottom:1px solid #E9ECEF;">
-      <div style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;background:rgba(232,119,34,.12);color:#E87722;padding:2px 8px;margin-bottom:8px;">02</div>
-      <div style="font-size:14px;font-weight:800;margin-bottom:6px;" data-de="Können unstrukturierte Review-Texte Umsatztrends 4&#8211;6 Wochen im Voraus signalisieren?" data-en="Can unstructured review texts signal revenue trends 4&#8211;6 weeks in advance?"></div>
-        <div style="font-size:13px;color:#6C757D;line-height:1.75;" data-de="Datenbasis: reviews.csv + orders.csv (zeitlicher Verlauf). Methodik: NLP Sentiment-Zeitreihe, Korrelation mit nachfolgendem Umsatz per Produktkategorie." data-en="Data basis: reviews.csv + orders.csv (temporal). Methodology: NLP sentiment time series, correlation with subsequent revenue per product category."></div>
-    </div>
-    <div style="padding:20px 0;border-bottom:1px solid #E9ECEF;">
-      <div style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;background:rgba(232,119,34,.12);color:#E87722;padding:2px 8px;margin-bottom:8px;">03</div>
-      <div style="font-size:14px;font-weight:800;margin-bottom:6px;" data-de="Welche Kombination aus demografischen Merkmalen und Kaufverhalten prognostiziert Kundenchurn am zuverlässigsten?" data-en="Which combination of demographic characteristics and purchase behaviour most reliably predicts customer churn?"></div>
-        <div style="font-size:13px;color:#6C757D;line-height:1.75;" data-de="Datenbasis: customers.csv + orders.csv (RFM-Features). Methodik: Logistische Regression, Random Forest, Modellvergleich mit AUC-ROC." data-en="Data basis: customers.csv + orders.csv (RFM features). Methodology: logistic regression, random forest, model comparison with AUC-ROC."></div>
-    </div>
-    <div style="padding:20px 0;border-bottom:1px solid #E9ECEF;">
-      <div style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;background:rgba(232,119,34,.12);color:#E87722;padding:2px 8px;margin-bottom:8px;">04</div>
-      <div style="font-size:14px;font-weight:800;margin-bottom:6px;" data-de="Wie verändert sich die Marketing-Effizienz (ROAS) in Abhängigkeit vom GfK-Konsumklima?" data-en="How does marketing efficiency (ROAS) vary depending on the GfK consumer confidence index?"></div>
-        <div style="font-size:13px;color:#6C757D;line-height:1.75;" data-de="Datenbasis: marketing.csv + Statistisches Bundesamt (GfK-Daten). Methodik: Regressionsanalyse, Rolling-Window-Korrelation, saisonale Bereinigung." data-en="Data basis: marketing.csv + Federal Statistical Office (GfK data). Methodology: regression analysis, rolling-window correlation, seasonal adjustment."></div>
-    </div>
-    <div style="padding:20px 0;border-bottom:1px solid #E9ECEF;">
-      <div style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;background:rgba(232,119,34,.12);color:#E87722;padding:2px 8px;margin-bottom:8px;">05</div>
-      <div style="font-size:14px;font-weight:800;margin-bottom:6px;" data-de="Inwiefern spiegeln UrbanCarts Bewertungsmuster ethische Risiken algorithmischer Systeme wider?" data-en="To what extent do UrbanCart's review patterns reflect ethical risks of algorithmic systems?"></div>
-        <div style="font-size:13px;color:#6C757D;line-height:1.75;" data-de="Datenbasis: reviews.csv + customers.csv. Fragestellung: Gibt es systematische Unterschiede in Bewertungsmustern nach Region oder Altersgruppe, die auf algorithmische Benachteiligung hindeuten könnten?" data-en="Data basis: reviews.csv + customers.csv. Question: are there systematic differences in review patterns by region or age group that might indicate algorithmic disadvantage?"></div>
-    </div>
+    <div class="steps" style="margin-top:24px;">
+    <details class="step" open>
+      <summary class="step__summary">
+        <div class="step__num">01</div>
+        <div class="step__title" data-de="Wie beeinflussen Social-Media-Kampagnen die Conversion Rate im E-Commerce &#8211; und mit welchem zeitlichen Versatz?" data-en="How do social media campaigns affect e-commerce conversion rates &#8211; and with what time lag?"></div>
+      </summary>
+      <div class="step__body">
+        <p data-de="Datenbasis: UrbanCart marketing.csv + sessions.csv + Social-Media-API (Meta/TikTok). Methodik: Granger-Kausalitätstest, Kreuzkorrelationsanalyse nach Kanal." data-en="Data basis: UrbanCart marketing.csv + sessions.csv + social media API (Meta/TikTok). Methodology: Granger causality test, cross-correlation analysis by channel."></p>
+      </div>
+    </details>
+    <details class="step" open>
+      <summary class="step__summary">
+        <div class="step__num">02</div>
+        <div class="step__title" data-de="Können unstrukturierte Review-Texte Umsatztrends 4&#8211;6 Wochen im Voraus signalisieren?" data-en="Can unstructured review texts signal revenue trends 4&#8211;6 weeks in advance?"></div>
+      </summary>
+      <div class="step__body">
+        <p data-de="Datenbasis: reviews.csv + orders.csv (zeitlicher Verlauf). Methodik: NLP Sentiment-Zeitreihe, Korrelation mit nachfolgendem Umsatz per Produktkategorie." data-en="Data basis: reviews.csv + orders.csv (temporal). Methodology: NLP sentiment time series, correlation with subsequent revenue per product category."></p>
+      </div>
+    </details>
+    <details class="step" open>
+      <summary class="step__summary">
+        <div class="step__num">03</div>
+        <div class="step__title" data-de="Welche Kombination aus demografischen Merkmalen und Kaufverhalten prognostiziert Kundenchurn am zuverlässigsten?" data-en="Which combination of demographic characteristics and purchase behaviour most reliably predicts customer churn?"></div>
+      </summary>
+      <div class="step__body">
+        <p data-de="Datenbasis: customers.csv + orders.csv (RFM-Features). Methodik: Logistische Regression, Random Forest, Modellvergleich mit AUC-ROC." data-en="Data basis: customers.csv + orders.csv (RFM features). Methodology: logistic regression, random forest, model comparison with AUC-ROC."></p>
+      </div>
+    </details>
+    <details class="step" open>
+      <summary class="step__summary">
+        <div class="step__num">04</div>
+        <div class="step__title" data-de="Wie verändert sich die Marketing-Effizienz (ROAS) in Abhängigkeit vom GfK-Konsumklima?" data-en="How does marketing efficiency (ROAS) vary depending on the GfK consumer confidence index?"></div>
+      </summary>
+      <div class="step__body">
+        <p data-de="Datenbasis: marketing.csv + Statistisches Bundesamt (GfK-Daten). Methodik: Regressionsanalyse, Rolling-Window-Korrelation, saisonale Bereinigung." data-en="Data basis: marketing.csv + Federal Statistical Office (GfK data). Methodology: regression analysis, rolling-window correlation, seasonal adjustment."></p>
+      </div>
+    </details>
+    <details class="step" open>
+      <summary class="step__summary">
+        <div class="step__num">05</div>
+        <div class="step__title" data-de="Inwiefern spiegeln UrbanCarts Bewertungsmuster ethische Risiken algorithmischer Systeme wider?" data-en="To what extent do UrbanCart's review patterns reflect ethical risks of algorithmic systems?"></div>
+      </summary>
+      <div class="step__body">
+        <p data-de="Datenbasis: reviews.csv + customers.csv. Fragestellung: Gibt es systematische Unterschiede in Bewertungsmustern nach Region oder Altersgruppe, die auf algorithmische Benachteiligung hindeuten könnten?" data-en="Data basis: reviews.csv + customers.csv. Question: are there systematic differences in review patterns by region or age group that might indicate algorithmic disadvantage?"></p>
+      </div>
+    </details>
   </div>
 
   <div class="infobox sr" style="margin-top:32px;">
