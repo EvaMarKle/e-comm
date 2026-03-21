@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta name="description" content="E-Commerce &amp; Digitale Geschäftsmodelle – 9 interaktive Tableau-Labs mit synthetischen Echtdaten. THWS Business School, Master MMM."/>
 <title>E-Commerce &amp; Digitale Geschäftsmodelle · THWS Business School</title>
 <style>
 /* ── RESET ── */
@@ -26,18 +25,18 @@ button{font-family:inherit;cursor:pointer}
 @media(max-width:640px){.container{padding:0 16px}}
 
 /* ── AICHER TOP BAR ── */
-.topbar{height:3px;background:#E87722;position:fixed;top:0;left:0;right:0;z-index:200}
+.topbar{height:4px;background:#E87722;position:fixed;top:0;left:0;right:0;z-index:200}
 
 /* ── NAVBAR ── */
 .navbar{
-  position:sticky;top:3px;z-index:100;
+  position:sticky;top:4px;z-index:100;
   background:#fff;
   border-bottom:1px solid #E9ECEF;
-  height:56px;
+  height:64px;
 }
 .navbar__inner{
   max-width:1200px;margin:0 auto;padding:0 32px;
-  height:56px;display:flex;align-items:center;
+  height:64px;display:flex;align-items:center;
   justify-content:space-between;gap:24px;
 }
 .navbar__brand{display:flex;align-items:center;gap:16px;flex-shrink:0}
@@ -429,10 +428,6 @@ button{font-family:inherit;cursor:pointer}
   border-top:1px solid rgba(255,255,255,.08);
 }
 
-/* ── BONUS GRID ── */
-.bonus-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px}
-@media(max-width:700px){.bonus-grid{grid-template-columns:1fr}}
-
 /* ── SCROLL REVEAL ── */
 .sr{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease}
 .sr.visible{opacity:1;transform:none}
@@ -460,8 +455,8 @@ button{font-family:inherit;cursor:pointer}
       <span class="navbar__kurs" data-de="E-Commerce &amp; Digitale Geschäftsmodelle" data-en="E-Commerce &amp; Digital Business Models"></span>
     </div>
     <div class="navbar__right">
-      <button class="lang-btn is-active" onclick="setLang('de')" aria-pressed="true">DE</button>
-      <button class="lang-btn" onclick="setLang('en')" aria-pressed="false">EN</button>
+      <button class="lang-btn is-active" onclick="setLang('de')">DE</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
     </div>
   </div>
 </nav>
@@ -484,6 +479,7 @@ button{font-family:inherit;cursor:pointer}
       </div>
       <div class="hero__cta-row">
         <a href="#labs" class="btn-primary" data-de="Labs entdecken" data-en="Explore Labs"></a>
+        <a href="urbancart.html" class="btn-outline-white" data-de="UrbanCart Shop →" data-en="UrbanCart Shop →"></a>
         <a href="#kurs" class="btn-outline-white" data-de="Über den Kurs" data-en="About the course"></a>
       </div>
     </div>
@@ -541,8 +537,8 @@ button{font-family:inherit;cursor:pointer}
         <div style="font-size:28px;margin-bottom:8px;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--orange,#E87722)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         </div>
-        <div style="font-size:13px;font-weight:700;margin-bottom:4px;">7 CSV-Datens&#228;tze</div>
-        <div style="font-size:11px;color:#888;" data-de="58.344 Datenpunkte" data-en="58,344 data points"></div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px;">6 CSV-Datens&#228;tze</div>
+        <div style="font-size:11px;color:#888;" data-de="58.714 Datenpunkte" data-en="58,714 data points"></div>
       </div>
       <div style="color:var(--orange,#E87722);font-size:20px;font-weight:700;padding:0 12px;">&#8594;</div>
       <div style="text-align:center;padding:24px 16px;background:#fff;border:1px solid var(--gray-200,#E9ECEF);border-top:3px solid var(--orange,#E87722);">
@@ -700,9 +696,9 @@ button{font-family:inherit;cursor:pointer}
 
       <a href="lab07.html" class="lab-card sr" style="transition-delay:240ms">
         <div class="lab-card__num" data-de="Lab 07 · Fortgeschritten" data-en="Lab 07 · Advanced"></div>
-        <svg class="lab-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        <div class="lab-card__title" data-de="Sentiment-Analyse &amp; Kundenfeedback" data-en="Sentiment Analysis &amp; Customer Feedback"></div>
-        <div class="lab-card__desc" data-de="Analysiere 5.857 Kundenbewertungen. Visualisiere Rating-Verteilung, Sentiment pro Produkt und identifiziere kritische Produkte mit Handlungsbedarf." data-en="Analyse 5,857 customer reviews. Visualise rating distribution, sentiment per product and identify critical products requiring action."></div>
+        <svg class="lab-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        <div class="lab-card__title" data-de="Process Mining &amp; Automatisierung" data-en="Process Mining &amp; Automation"></div>
+        <div class="lab-card__desc" data-de="Analysiere Gesch&#228;ftsprozesse im E-Commerce mit Tableau. Identifiziere Engp&#228;sse, Varianten und Optimierungspotenziale in Bestell- und Lieferprozessen." data-en="Analyse business processes in e-commerce with Tableau. Identify bottlenecks, variants and optimisation potential in order and delivery processes."></div>
         <div class="lab-card__footer">
           <span class="lab-card__diff diff--f" data-de="Fortgeschritten" data-en="Advanced"></span>
           <span class="lab-card__cta"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
@@ -753,13 +749,13 @@ button{font-family:inherit;cursor:pointer}
     <h2 class="section__title sr" data-de="Bonus-Lab: Sentiment-Analyse mit Python" data-en="Bonus Lab: Sentiment Analysis with Python"></h2>
     <p class="section__lead sr" data-de="Dieses Bonus-Lab ist bewusst anders als die regulaeren Labs: Es nutzt Python statt Tableau &#8211; und zeigt, was m&#246;glich wird, wenn Programmierung ins Spiel kommt. Ein erster Schritt in Richtung Data Science." data-en="This bonus lab is intentionally different: it uses Python instead of Tableau &#8211; showing what becomes possible when programming enters the picture. A first step towards data science."></p>
 
-    <div class="bonus-grid sr">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px;" class="sr">
       <a href="lab-bonus.html" class="lab-card" style="border-top-color:#005B9A;background:linear-gradient(135deg,#F0F7FF,#EAF3FF);position:relative;">
         <div style="position:absolute;top:12px;right:12px;background:#005B9A;color:#fff;font-size:10px;font-weight:700;letter-spacing:1px;padding:4px 10px;text-transform:uppercase;">Bonus</div>
         <div class="lab-card__num" data-de="Bonus-Lab &#183; Python" data-en="Bonus Lab &#183; Python"></div>
         <svg class="lab-card__icon" viewBox="0 0 24 24" fill="none" stroke="#005B9A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <div class="lab-card__title" data-de="Sentiment-Analyse mit Python" data-en="Sentiment Analysis with Python"></div>
-        <div class="lab-card__desc" data-de="Erg&#228;nzt Lab 07 (Tableau) um programmatische Methoden: NLP mit VADER und Transformers, Wordclouds, Themen-Clustering und automatische Klassifikation &#8211; Schritt f&#252;r Schritt in Python." data-en="Extends Lab 07 (Tableau) with programmatic methods: NLP with VADER and Transformers, word clouds, topic clustering and automatic classification &#8211; step by step in Python."></div>
+        <div class="lab-card__desc" data-de="NLP mit VADER und Transformers. Wordclouds, Themen-Clustering, automatische Klassifikation von Review-Texten &#8211; Schritt f&#252;r Schritt in Python erkl&#228;rt." data-en="NLP with VADER and Transformers. Word clouds, topic clustering, automatic classification of review texts &#8211; explained step by step in Python."></div>
         <div class="lab-card__footer">
           <span class="lab-card__diff" style="background:#EEF6FF;color:#005B9A;" data-de="Python &#183; NLP" data-en="Python &#183; NLP"></span>
           <span class="lab-card__cta"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
@@ -768,7 +764,7 @@ button{font-family:inherit;cursor:pointer}
 
       <div style="padding:32px;background:#F1F3F5;border-top:3px solid #005B9A;display:flex;flex-direction:column;justify-content:center;">
         <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#005B9A;margin-bottom:12px;" data-de="Warum hier Python?" data-en="Why Python here?"></div>
-        <p style="font-size:14px;line-height:1.8;color:#444;margin-bottom:20px;" data-de="In Lab 07 hast du Sentiment mit Tableau visualisiert &#8211; auf Basis vorberechneter Felder. Hier gehst du tiefer: VADER berechnet Scores direkt aus dem Text, Transformers verstehen Kontext, und Python automatisiert die gesamte Pipeline. So wird der &#220;bergang von BI-Tool zu Data Science greifbar." data-en="In Lab 07 you visualised sentiment with Tableau &#8211; based on pre-calculated fields. Here you go deeper: VADER calculates scores directly from text, Transformers understand context, and Python automates the entire pipeline. This makes the transition from BI tool to data science tangible."></p>
+        <p style="font-size:14px;line-height:1.8;color:#444;margin-bottom:20px;" data-de="Tableau ist stark bei interaktiver Exploration &#8211; ohne Code. F&#252;r Textanalyse (NLP), automatische Klassifikation und skalierbare Pipelines braucht man Programmierung. Das Bonus-Lab zeigt genau diesen &#220;bergang und macht deutlich, warum beide Werkzeuge ihren Platz haben." data-en="Tableau is strong for interactive exploration &#8211; no code. For text analysis (NLP), automatic classification and scalable pipelines, programming is needed. The bonus lab shows exactly this transition and makes clear why both tools have their place."></p>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <span style="background:#fff;border:1px solid #E9ECEF;padding:4px 12px;font-size:12px;font-weight:700;font-family:monospace;">pandas</span>
           <span style="background:#fff;border:1px solid #E9ECEF;padding:4px 12px;font-size:12px;font-weight:700;font-family:monospace;">VADER</span>
@@ -836,7 +832,7 @@ button{font-family:inherit;cursor:pointer}
       <a href="https://github.com/swrobuts/e-comm" class="footer__link" target="_blank" rel="noopener">GitHub</a>
       <a href="https://business.thws.de" class="footer__link" target="_blank" rel="noopener">THWS Business School</a>
       <a href="urbancart.html" class="footer__link">UrbanCart Webshop</a>
-      <a href="daten.html" class="footer__link" data-de="Datensätze" data-en="Datasets"></a>
+      <a href="data/" class="footer__link" data-de="Datensätze" data-en="Datasets"></a>
     </div>
     <p class="footer__disclaimer" data-de="UrbanCart ist ein fiktives Unternehmen. Alle Datensätze sind synthetisch und dienen ausschließlich Lehrzwecken. Keine Verbindung zu real existierenden Unternehmen." data-en="UrbanCart is a fictional company. All datasets are synthetic and serve educational purposes only. No connection to any real company."></p>
   </div>
@@ -856,7 +852,7 @@ function setLang(lang) {
     }
   });
   document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.classList.toggle('is-active', btn.textContent.toLowerCase() === lang); btn.setAttribute('aria-pressed', btn.textContent.toLowerCase() === lang);
+    btn.classList.toggle('is-active', btn.textContent.toLowerCase() === lang);
   });
   localStorage.setItem('lang', lang);
 }
@@ -872,8 +868,7 @@ function setLang(lang) {
 
 // ── INIT ──
 (function() {
-  const params = new URLSearchParams(location.search);
-  const lang = params.get('lang') || localStorage.getItem('lang') || 'de';
+  const lang = localStorage.getItem('lang') || 'de';
   setLang(lang);
 })();
 </script>
